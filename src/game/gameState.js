@@ -15,7 +15,8 @@ export function createInitialState() {
     version: SAVE_VERSION,
     inventory: structuredClone(START.inventory), // 보유 아이템 { 아이템ID: 수량 }
     systems: structuredClone(START.systems),     // 시스템별 복구도
-    installLog: [],                               // 부품 투입 내역 (B단계에서 사용)
+    installLog: [],                               // 부품 투입 내역
+    expeditionLog: [],                            // 탐사 내역
     archiveReadIds: [],                           // 읽은 아카이브 기록 ID
   }
 }
@@ -32,7 +33,7 @@ export function loadState() {
     if (saved.version !== SAVE_VERSION) return createInitialState()
 
     // 처음 상태 위에 저장된 값을 덮어씌웁니다.
-    // (나중에 새 항목이 추가돼도, 예전 저장 기록에 없는 항목은 기본값으로 채워짐)
+    // (새 항목이 추가돼도, 예전 저장 기록에 없는 항목은 기본값으로 채워짐)
     return { ...createInitialState(), ...saved }
   } catch {
     // 저장소를 쓸 수 없거나(개인정보 보호 모드 등) 기록이 망가진 경우

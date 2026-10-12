@@ -1,15 +1,12 @@
 {
   "inventory": {
-    "bolt": 0,
     "fuse": 1,
-    "duct-tape": 0,
-    "wire-bundle": 0,
-    "repair-parts": 0,
-    "industrial-cable": 0,
     "small-battery": 1,
-    "coolant-pipe": 0,
-    "circuit-board": 0,
-    "spare-cooling-core": 0
+    "hardtack": 2,
+    "protein-bar": 2,
+    "powdered-soup": 1,
+    "canned-whelk": 1,
+    "cold-weather-suit": 1
   },
   "systems": {
     "temperature-control": {

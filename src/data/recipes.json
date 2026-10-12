@@ -1,0 +1,11 @@
+[
+  {
+    "id": "patch-suit",
+    "label": "MEND",
+    "inputs": [
+      { "itemId": "torn-cold-weather-suit", "count": 1 },
+      { "itemId": "duct-tape", "count": 1 }
+    ],
+    "output": { "itemId": "patched-cold-weather-suit", "count": 1 }
+  }
+]

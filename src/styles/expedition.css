@@ -1,0 +1,390 @@
+/* =========================================
+   탐사 화면 (ExpeditionView) 전용 스타일
+   색상·글꼴 규칙은 index.css의 :root 값을 그대로 사용합니다.
+   ========================================= */
+
+/* 전체: 왼쪽 지역 카드 2×2 + 오른쪽 인벤토리(280px), 높이는 다른 화면과 같은 492px */
+.exp {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 30px;
+  height: 492px;
+  animation: term-fade-in 0.25s ease;
+}
+
+/* ── 지역 카드 ── */
+.exp-cards {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+}
+
+.exp-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 16px 16px 24px;
+  border: 1px solid var(--color-terminal-line);
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* 호버: 흰 배경 + 검은 글씨 */
+.exp-card:hover,
+.exp-card:focus-visible {
+  background: var(--color-line);
+  border-color: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+.exp-card:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 4px;
+}
+
+/* 출발할 수 없는 카드: 마우스 모양 🚫, 이름 흐리게 */
+.exp-card.is-blocked {
+  cursor: not-allowed;
+}
+
+.exp-card.is-blocked .exp-card-name {
+  opacity: 0.5;
+}
+
+.exp-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.exp-card-name {
+  font: 400 28px var(--font-sans);
+}
+
+.exp-card-arrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.exp-card:hover .exp-card-arrow,
+.exp-card:focus-visible .exp-card-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* 카드 아래: 비용과 경고 */
+.exp-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: 400 11px/1.5 var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.exp-card-meta > span:first-child {
+  opacity: 0.75;
+}
+
+.exp-card-warning {
+  color: var(--color-danger-text);
+}
+
+/* ── 결과 보고 ── */
+.exp-report {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 28px 24px;
+  border: 1px solid var(--color-line);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+  animation: term-fade-in 0.25s ease;
+}
+
+.exp-report-code {
+  margin: 0;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.exp-report-title {
+  margin: 4px 0 0;
+  font: 400 40px var(--font-sans);
+}
+
+/* 조기 귀환 경고: 주황 테두리 */
+.exp-report-alert {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border: 1px solid var(--color-warning);
+  color: var(--color-warning);
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.exp-report-cols {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-terminal-line);
+}
+
+.exp-report h3 {
+  margin: 0 0 8px;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.exp-report ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exp-report li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--color-terminal-faint);
+  font: 300 13px/1.5 var(--font-sans);
+}
+
+.exp-report-total {
+  font-weight: 400 !important;
+}
+
+.exp-tag {
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+}
+
+.exp-report-empty {
+  margin: 0;
+  font: 300 13px var(--font-sans);
+  opacity: 0.6;
+}
+
+.exp-report-back {
+  align-self: flex-start;
+  margin-top: 16px;
+}
+
+/* ── 인벤토리 ── */
+.exp-inv {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 14px;
+  border: 1px solid var(--color-terminal-line);
+}
+
+.exp-inv-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 16px 10px;
+  border-bottom: 1px solid var(--color-terminal-faint);
+}
+
+.exp-inv-title {
+  margin: 0;
+  font: 400 18px var(--font-sans);
+}
+
+.exp-inv-rations {
+  margin: 0;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.exp-inv-rations strong {
+  margin-left: 6px;
+  font-size: 16px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.exp-inv-list {
+  flex: 1;
+  min-height: 0;
+  padding: 4px 0 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
+
+.exp-inv-group h3 {
+  margin: 10px 16px 4px;
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+}
+
+.exp-inv-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exp-inv-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 16px;
+  border: none;
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: 400 12px/1.4 var(--font-sans);
+  cursor: pointer;
+}
+
+.exp-inv-item:hover {
+  background: var(--color-terminal-hover);
+}
+
+.exp-inv-item:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: -2px;
+}
+
+.exp-inv-item.is-selected {
+  background: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+.exp-inv-qty {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 아래 설명 칸 */
+.exp-inv-detail {
+  min-height: 104px;
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--color-terminal-faint);
+  font: 300 12px/1.6 var(--font-sans);
+}
+
+.exp-inv-detail p {
+  margin: 0;
+}
+
+.exp-inv-detail-name {
+  margin-bottom: 4px !important;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.exp-inv-detail-stat {
+  margin-top: 6px !important;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+  color: var(--color-accessible);
+}
+
+/* 위험 수치: 주황 */
+.exp-inv-detail-stat.is-warning {
+  color: var(--color-warning);
+}
+
+.exp-inv-detail-muted {
+  opacity: 0.5;
+}
+
+/* ── 조합 (MEND 등) ── */
+.exp-recipe {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--color-terminal-faint);
+}
+
+.exp-recipe-title {
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.exp-recipe ul {
+  margin: 4px 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.exp-recipe li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: 400 11px/1.6 var(--font-sans);
+}
+
+/* 부족한 재료: 주황 */
+.exp-recipe li.is-missing {
+  color: var(--color-warning);
+}
+
+.exp-mend-btn {
+  height: 26px;
+  padding: 0 16px;
+  border: 1px solid var(--color-line);
+  background: none;
+  color: inherit;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.exp-mend-btn:hover:not(:disabled) {
+  background: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+.exp-mend-btn:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 3px;
+}
+
+.exp-mend-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── 태블릿: 카드 위, 인벤토리 아래 ── */
+@media (max-width: 900px) {
+  .exp {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .exp-card {
+    min-height: 160px;
+  }
+
+  .exp-inv {
+    max-height: 520px;
+  }
+}
+
+/* ── 휴대폰: 카드를 한 줄에 하나씩 ── */
+@media (max-width: 600px) {
+  .exp-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .exp-report-cols {
+    grid-template-columns: 1fr;
+  }
+}
