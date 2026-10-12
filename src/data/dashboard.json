@@ -1,0 +1,18 @@
+{
+  "status": {
+    "inside": { "base": 12.4, "range": 1.5 },
+    "outside": { "base": -72.8, "range": 3 },
+    "tempUpdateMs": 3000,
+    "residents": 487,
+    "sectors": ["THETA", "IOTA", "KAPPA", "MU", "NU", "XI"]
+  },
+  "logs": [
+    { "time": "03:12", "text": "TEMPERATURE SYSTEM FAILURE DETECTED" },
+    { "time": "03:14", "text": "EMERGENCY HEATING ENABLED" },
+    { "time": "03:20", "text": "RECOVERY PROTOCOL INITIATED" }
+  ],
+  "recovery": {
+    "label": "TEMPERATURE SYSTEM RECOVERY IN PROGRESS",
+    "percent": 45
+  }
+}

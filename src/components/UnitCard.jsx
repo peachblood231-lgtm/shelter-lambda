@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import PlantListDialog from './PlantListDialog'
+// 식물 목록 (JSON 파일에서 불러오기)
+import PLANTS from '../data/greenhouse-plants.json'
 
 // 재배 구역 카드 하나입니다. 조명·SHUTDOWN·목록 팝업 상태를 카드마다 따로 기억합니다.
-// 받는 값: unit (code, crop, temperature, humidity, lightOn, plants)
+// 받는 값: unit (code, crop, temperature, humidity, lightOn, plantListId)
 function UnitCard({ unit }) {
   // 조명이 켜져 있는지 (처음 값은 데이터의 lightOn)
   const [lightOn, setLightOn] = useState(unit.lightOn)
@@ -10,6 +12,10 @@ function UnitCard({ unit }) {
   const [isShutdown, setIsShutdown] = useState(false)
   // 식물 목록 팝업이 열려 있는지
   const [isListOpen, setIsListOpen] = useState(false)
+
+  // 이 구역의 식물 목록: 이름표(plantListId)로 찾아옵니다.
+  // 이름표가 틀려서 못 찾으면 빈 목록([])을 씁니다.
+  const plants = PLANTS[unit.plantListId] ?? []
 
   // 화면에 보여 줄 상태 글자
   const status = isShutdown ? 'OFFLINE' : 'ACTIVE'
@@ -82,7 +88,7 @@ function UnitCard({ unit }) {
       {isListOpen && (
         <PlantListDialog
           title={unit.code}
-          plants={unit.plants}
+          plants={plants}
           onClose={() => setIsListOpen(false)}
         />
       )}

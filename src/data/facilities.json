@@ -1,0 +1,106 @@
+[
+  {
+    "id": "greenhouse",
+    "name": "GREENHOUSE",
+    "access": "accessible",
+    "description": "셸터 식량의 대부분을 생산하는 수경 재배 구역.\n온도 시스템 장애 이후 일부 재배 선반의 가동이 중단되었다.",
+    "units": [
+      {
+        "id": "b1-a-03",
+        "code": "B1 - A - 03",
+        "crop": "LEAFY GREENS",
+        "temperature": 21.4,
+        "humidity": 64,
+        "lightOn": true,
+        "plantListId": "leafyGreens"
+      },
+      {
+        "id": "b2-a-02",
+        "code": "B2 - A - 02",
+        "crop": "ROOT CROPS",
+        "temperature": 23.1,
+        "humidity": 56,
+        "lightOn": true,
+        "plantListId": "rootCrops"
+      },
+      {
+        "id": "b2-a-03",
+        "code": "B2 - A - 03",
+        "crop": "HONEYCOMB",
+        "temperature": 20.8,
+        "humidity": 62,
+        "lightOn": true,
+        "plantListId": "flowers"
+      },
+      {
+        "id": "b3-a-01",
+        "code": "B3 - A - 01",
+        "crop": "FRUITS",
+        "temperature": 24.2,
+        "humidity": 70,
+        "lightOn": true,
+        "plantListId": "fruits"
+      }
+    ]
+  },
+  {
+    "id": "dining-hall",
+    "name": "DINING HALL",
+    "access": "accessible",
+    "description": "주민 전원이 교대로 식사하는 공용 식당.\n하루 세 번의 배식 시간은 셸터에서 가장 붐비는 순간이다.",
+    "foodProduce": "LIMITED",
+    "logs": [
+      { "time": "06:00", "text": "B1-B-01 BREAKFAST SERVICE STARTED" },
+      { "time": "06:05", "text": "B2-B-01 BREAKFAST SERVICE STARTED" },
+      { "time": "06:40", "text": "FOOD PRODUCE LEVEL: LIMITED" }
+    ],
+    "halls": [
+      {
+        "id": "b1-b-01",
+        "code": "B1 - B - 01",
+        "capacityRange": [11, 120],
+        "maxCapacity": 190,
+        "powerLoad": "STABLE",
+        "temperature": 14.7,
+        "menuId": "047"
+      },
+      {
+        "id": "b2-b-01",
+        "code": "B2 - B - 01",
+        "capacityRange": [11, 120],
+        "maxCapacity": 240,
+        "powerLoad": "STABLE",
+        "temperature": 12.1,
+        "menuId": "102"
+      }
+    ]
+  },
+  {
+    "id": "residential",
+    "name": "RESIDENTIAL",
+    "access": "accessible",
+    "description": "주민들이 머무는 거주 구역. 각 세대는 번호로만 구분된다.\n야간에는 조도가 자동으로 낮아진다.",
+    "sectors": ["A", "B", "C"],
+    "lightOn": true,
+    "floors": [
+      { "id": "b3", "code": "B3", "restricted": [] },
+      { "id": "b4", "code": "B4", "restricted": ["B"] },
+      { "id": "b5", "code": "B5", "restricted": ["A", "B", "C"] },
+      { "id": "b6", "code": "B6", "restricted": ["C"] },
+      { "id": "b7", "code": "B7", "restricted": [] },
+      { "id": "b8", "code": "B8", "restricted": ["A"] },
+      { "id": "b9", "code": "B9", "restricted": [] },
+      { "id": "b10", "code": "B10", "restricted": ["B", "C"] },
+      { "id": "b11", "code": "B11", "restricted": [] },
+      { "id": "b12", "code": "B12", "restricted": ["A", "B", "C"] },
+      { "id": "b13", "code": "B13", "restricted": ["C"] },
+      { "id": "b14", "code": "B14", "restricted": ["A", "B", "C"] }
+    ]
+  },
+  {
+    "id": "laboratory",
+    "name": "LABORATORY",
+    "access": "restricted",
+    "description": "출입이 제한된 연구 구역.\n허가된 인원 외에는 출입 기록조차 열람할 수 없다."
+  }
+]
