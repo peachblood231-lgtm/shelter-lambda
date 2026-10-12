@@ -1,0 +1,260 @@
+{
+  "archives": {
+    "dining-hall": {
+      "subtitle": "Records of food supply, rationing and shortage.",
+      "accessLevel": 1
+    }
+  },
+  "records": [
+    {
+      "id": "DH-001",
+      "facility": "dining-hall",
+      "title": "RATION ALLOCATION NOTICE",
+      "category": "DISTRIBUTION",
+      "date": "2432.05.05",
+      "author": "DINING HALL ADMINISTRATION",
+      "integrity": "RECOVERED",
+      "summary": "2432.05.07부터 1인 1일 기준 열량을 1,750 kcal로 낮추는 공지.",
+      "blocks": [
+        { "type": "heading", "text": "배급 기준 변경 안내" },
+        { "type": "paragraph", "text": "공급 상황 재검토 결과, 아래와 같이 배급 기준을 변경합니다." },
+        { "type": "fields", "items": [{ "label": "적용 시점", "value": "2432.05.07 아침 배식부터" }] },
+        { "type": "subheading", "text": "변경 내용" },
+        {
+          "type": "list",
+          "ordered": true,
+          "items": [
+            "1인 1일 기준 열량: 2,100 kcal → 1,750 kcal",
+            "신선 채소: 점심 배식에 한해 제공",
+            "과일류: 3일 1회 제공",
+            "추가 배식(재배식) 중단",
+            "배식권은 거주 구역별로 확인"
+          ]
+        },
+        {
+          "type": "fields",
+          "items": [
+            {
+              "label": "변경 사유",
+              "value": "그린하우스 환경 제어 설비 점검에 따른 신선 작물 공급의 일시적 감소. 저장고 재고 재확인이 진행 중입니다."
+            }
+          ]
+        },
+        { "type": "paragraph", "text": "본 기준은 공급이 회복되는 대로 재조정됩니다. 문의는 다이닝홀 관리실로 해 주십시오." },
+        { "type": "signature", "text": "— 다이닝홀 관리실" }
+      ],
+      "related": ["DH-002", "DH-003", "GH-006", "RS-003"],
+      "relatedFacilities": ["DINING HALL", "RESIDENTIAL"]
+    },
+    {
+      "id": "DH-002",
+      "facility": "dining-hall",
+      "title": "DAILY MEAL SCHEDULE",
+      "category": "DISTRIBUTION",
+      "date": "2432.05.07",
+      "author": "KITCHEN TEAM",
+      "integrity": "RECOVERED",
+      "summary": "새 배급 기준이 적용된 첫날의 식단표. 메뉴 047.",
+      "blocks": [
+        { "type": "heading", "text": "일일 식단표 — MENU 047" },
+        {
+          "type": "fields",
+          "items": [
+            { "label": "배식일", "value": "2432.05.07 (새 배급 기준 적용 첫날)" },
+            { "label": "배식 순서", "value": "B3–B8 1교대 / B9–B14 2교대" }
+          ]
+        },
+        {
+          "type": "table",
+          "columns": ["구분", "시간", "메뉴"],
+          "rows": [
+            ["Breakfast", "06:00 – 07:30", "Grain soup"],
+            ["Lunch", "11:30 – 13:30", "Rye bread with apple jam, carrot soup, cabbage salad"],
+            ["Dinner", "18:00 – 19:30", "Synthetic protein kit"]
+          ]
+        },
+        { "type": "subheading", "text": "비고" },
+        {
+          "type": "list",
+          "ordered": false,
+          "items": [
+            "감자 수프 → 당근 수프로 대체",
+            "양배추 샐러드 1인분 축소",
+            "사과잼은 저장고 마지막 배치 사용",
+            "B6 주민 생일자 2명: 잼 추가 지급 승인"
+          ]
+        }
+      ],
+      "related": ["DH-001", "DH-014"],
+      "relatedFacilities": ["DINING HALL"]
+    },
+    {
+      "id": "DH-003",
+      "facility": "dining-hall",
+      "title": "FOOD INVENTORY LEDGER",
+      "category": "INVENTORY",
+      "date": "2432.05.01",
+      "author": "STORAGE CLERK T. VARGA",
+      "integrity": "PARTIAL",
+      "summary": "4월 마지막 주 저장고 입출고 장부. 여백 메모 일부 손상.",
+      "blocks": [
+        { "type": "heading", "text": "저장고 주간 입출고 장부" },
+        {
+          "type": "fields",
+          "items": [
+            { "label": "기간", "value": "2432.04.25 – 2432.05.01" },
+            { "label": "확인일", "value": "2432.05.01" },
+            { "label": "보관 위치", "value": "냉장 저장고 CS-2" }
+          ]
+        },
+        {
+          "type": "table",
+          "columns": ["품목", "기초", "입고", "출고", "장부 잔량"],
+          "rows": [
+            ["Grain (barley, rye)", "1,240 kg", "0", "182 kg", "1,058 kg"],
+            ["Root vegetables", "640 kg", "96 kg", "210 kg", "526 kg"],
+            ["Leafy greens", "85 kg", "40 kg", "72 kg", "53 kg"],
+            ["Textured soy protein", "410 kg", "0", "63 kg", "347 kg"],
+            ["Synthetic protein kit", "2,900", "0", "340", "2,560"],
+            ["Nutritional Energy Gel", "1,500", "0", "0", "1,500"],
+            ["Dried fruit", "120 kg", "0", "18 kg", "102 kg"]
+          ]
+        },
+        { "type": "subheading", "text": "특이 사항" },
+        {
+          "type": "list",
+          "ordered": false,
+          "items": [
+            "2432.04.27 Root vegetables 입고: B2-A-02 수확 예정 180 kg 중 96 kg만 반입",
+            "2432.04.28 ▓▓▓▓▓▓ 88 kg — 부패, 폐기 대기 (ST-005 ▓▓▓▓)"
+          ]
+        },
+        { "type": "signature", "text": "— T. VARGA" }
+      ],
+      "missing": "여백 메모 일부 판독 불가. 폐기 수량이 출고란에 반영되었는지 확인할 수 없음.",
+      "related": ["DH-008", "ST-002", "GH-006"],
+      "relatedFacilities": ["DINING HALL", "STORAGE"]
+    },
+    {
+      "id": "DH-004",
+      "facility": "dining-hall",
+      "integrity": "CORRUPTED"
+    },
+    {
+      "id": "DH-006",
+      "facility": "dining-hall",
+      "integrity": "CORRUPTED"
+    },
+    {
+      "id": "DH-008",
+      "facility": "dining-hall",
+      "title": "FOOD SUPPLY DISCREPANCY",
+      "category": "INCIDENT",
+      "date": "2432.05.03",
+      "author": "STORAGE CLERK T. VARGA",
+      "integrity": "RECOVERED",
+      "summary": "장부상 재고와 실제 재고가 맞지 않는다는 보고서.",
+      "blocks": [
+        { "type": "heading", "text": "재고 불일치 보고" },
+        {
+          "type": "fields",
+          "items": [
+            { "label": "보고 일자", "value": "2432.05.03" },
+            { "label": "발견 장소", "value": "다이닝홀 냉장 저장고 CS-2 (B1-B-01 후면)" },
+            { "label": "대조 기준", "value": "2432.05.01 장부 마감 시점" },
+            { "label": "보고자", "value": "T. VARGA" }
+          ]
+        },
+        { "type": "subheading", "text": "차이 확인 항목" },
+        {
+          "type": "table",
+          "columns": ["품목", "장부", "실측", "차이"],
+          "rows": [
+            ["Root vegetables", "526 kg", "438 kg", "−88 kg"],
+            ["Grain (barley, rye)", "1,058 kg", "1,031 kg", "−27 kg"],
+            ["그 외 품목", "—", "—", "일치"]
+          ]
+        },
+        { "type": "subheading", "text": "조치" },
+        {
+          "type": "list",
+          "ordered": true,
+          "items": [
+            "2회 재계량, 동일 결과 확인",
+            "CS-2 출입 기록 확인 및 임시 봉인",
+            "저장 시설에 폐기 기록 요청",
+            "그린하우스에 반입 기록 대조 요청"
+          ]
+        },
+        {
+          "type": "fields",
+          "items": [{ "label": "원인", "value": "미확인. 장부 기입 누락과 기타 가능성을 모두 열어 두고 조사 중." }]
+        }
+      ],
+      "related": ["DH-003", "DH-001", "ST-005"],
+      "relatedFacilities": ["DINING HALL", "STORAGE"]
+    },
+    {
+      "id": "DH-009",
+      "facility": "dining-hall",
+      "integrity": "CORRUPTED"
+    },
+    {
+      "id": "DH-012",
+      "facility": "dining-hall",
+      "integrity": "CORRUPTED"
+    },
+    {
+      "id": "DH-014",
+      "facility": "dining-hall",
+      "title": "FINAL MENU REVISION",
+      "category": "DISTRIBUTION",
+      "date": "2432.05.14",
+      "author": "SHELTER SUPPLY COMMITTEE",
+      "integrity": "PARTIAL",
+      "summary": "공급 감소 이후 확정된 최종 식단 개정안.",
+      "unlock": {
+        "requires": ["DH-003", "DH-008"],
+        "message": "ACCESS DENIED — CROSS-REFERENCE REQUIRED"
+      },
+      "blocks": [
+        { "type": "heading", "text": "식단 개정 안내 (최종)" },
+        { "type": "fields", "items": [{ "label": "시행일", "value": "2432.05.15" }] },
+        { "type": "subheading", "text": "개정 사유" },
+        {
+          "type": "list",
+          "ordered": false,
+          "items": [
+            "그린하우스 B2-A-02 이번 주기 수확량: 예정 대비 53% (관개 라인 고장 및 침수 피해, GH-004 · GH-006 참조)",
+            "저장고 뿌리채소 88 kg 부패 폐기 확인 (ST-005)",
+            "곡물 27 kg 차이: 2432.04.30 야간 난방 출력 저하 당시 주방 임시 배식으로 확인, 장부 정정 완료"
+          ]
+        },
+        { "type": "subheading", "text": "개정 내용" },
+        {
+          "type": "table",
+          "columns": ["구분", "이전", "개정"],
+          "rows": [
+            ["저녁", "단백질 키트 주 3회", "매일 Synthetic protein kit"],
+            ["뿌리채소", "매일", "격일"],
+            ["과일류", "3일 1회", "B3-A-01 회복 시까지 중단"],
+            ["메뉴 변경 권한", "주방", "관리실 승인 후"],
+            ["▓▓▓▓", "▓▓▓▓▓▓", "▓▓▓▓▓▓▓▓"]
+          ]
+        },
+        { "type": "paragraph", "text": "공급이 회복되면 즉시 재검토합니다." },
+        { "type": "signature", "text": "— 셸터 공급 위원회" }
+      ],
+      "missing": "개정표 마지막 행 판독 불가.",
+      "related": ["DH-001", "DH-003", "DH-008", "GH-006", "ST-005"],
+      "relatedFacilities": ["DINING HALL", "GREENHOUSE"]
+    }
+  ],
+  "external": [
+    { "id": "GH-004", "facility": "GREENHOUSE", "title": "IRRIGATION LINE FAILURE", "date": "2432.04.20" },
+    { "id": "GH-006", "facility": "GREENHOUSE", "title": "CROP DAMAGE REPORT: B2-A-02", "date": "2432.04.23" },
+    { "id": "ST-002", "facility": "STORAGE", "title": "WEEKLY STORAGE COUNT", "date": "2432.04.29" },
+    { "id": "ST-005", "facility": "STORAGE", "title": "DISPOSAL CERTIFICATE", "date": "2432.05.04" },
+    { "id": "RS-003", "facility": "RESIDENTIAL", "title": "RATION NOTICE POSTING", "date": "2432.05.06" }
+  ]
+}

@@ -9,13 +9,14 @@
 
   --color-terminal-bg: #191919;                    /* 대시보드 배경 */
   --color-terminal-line: rgba(255, 255, 255, 0.65); /* 대시보드 테두리 */
+  --color-terminal-faint: rgba(255, 255, 255, 0.15); /* 아주 흐린 구분선 */
   --color-terminal-track: #444444;                 /* 진행 바 빈 부분 */
   --color-terminal-hover: #2a2a2a;                 /* 카드 호버 배경 */
 
-  --color-accessible: #55f06b;      /* 출입 가능 (초록) */
+  --color-accessible: #55f06b;      /* 출입 가능·해금 (초록) */
   --color-restricted: #d41414;      /* 출입 제한 (빨강) */
   --color-restricted-text: #ffb0b0; /* 출입 제한 위 글자 (연분홍) */
-  --color-warning: #ff7a1a;         /* 주의 상태 (주황, 예: LIMITED) */
+  --color-warning: #ff7a1a;         /* 주의 상태 (주황, 예: LIMITED, PARTIAL) */
 
   --color-expedition: #1a3be8;       /* EXPEDITION 카드 (파랑) */
   --color-expedition-hover: #3352f2; /* EXPEDITION 카드 호버 */
@@ -259,8 +260,12 @@ body {
   margin-top: 10px;
 }
 
-/* ── 헤더 ── */
+/* ── 헤더: 왼쪽 제목 + 오른쪽 보조 정보(있을 때) ── */
 .term-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
   margin-bottom: 28px;
 }
 
@@ -400,7 +405,7 @@ body {
   color: var(--color-restricted-text);
 }
 
-/* ── 설명형 안내 패널 (구역이 없는 시설·중앙제어시스템·탐사·ARCHIVE) ── */
+/* ── 설명형 안내 패널 (구역이 없는 시설·중앙제어시스템·탐사) ── */
 .term-detail {
   height: 100%;
   min-height: 492px; /* 카드 2줄 높이와 맞춤 */
@@ -821,6 +826,522 @@ body {
   color: var(--color-warning);
 }
 
+/* =========================================
+   아카이브 (ArchiveView / RecordDetail / ArchiveProgress)
+   ========================================= */
+
+/* 헤더 오른쪽: 부제와 요약 */
+.arc-header-meta {
+  text-align: right;
+  font: 300 12px/1.7 var(--font-sans);
+}
+
+.arc-subtitle {
+  margin: 0;
+  opacity: 0.85;
+}
+
+.arc-summary {
+  margin: 0;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}
+
+/* 가운데 전체: 왼쪽 목록(300px) + 오른쪽 상세, 높이는 다른 화면과 같은 492px */
+.arc {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 12px;
+  height: 492px;
+  animation: term-fade-in 0.25s ease;
+}
+
+/* ── 왼쪽: 목록 영역 ── */
+.arc-index {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-terminal-line);
+}
+
+/* 분류 탭 */
+.arc-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 12px;
+  border-bottom: 1px solid var(--color-terminal-faint);
+}
+
+.arc-tab {
+  padding: 4px 8px;
+  border: 1px solid var(--color-terminal-line);
+  background: none;
+  color: inherit;
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.arc-tab:hover {
+  background: var(--color-terminal-hover);
+}
+
+/* 선택된 탭: 흰 바탕 반전 */
+.arc-tab.is-active {
+  background: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+.arc-tab:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 2px;
+}
+
+/* 해금 알림 줄: 초록 글자 + 초록 밑줄 */
+.arc-granted {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 1px solid var(--color-accessible);
+  background: rgba(85, 240, 107, 0.1);
+  color: var(--color-accessible);
+  font: 400 11px/1.5 var(--font-sans);
+  letter-spacing: 0.08em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.arc-granted:hover {
+  background: rgba(85, 240, 107, 0.18);
+}
+
+.arc-granted:focus-visible {
+  outline: 1px dashed var(--color-accessible);
+  outline-offset: -3px;
+}
+
+/* 기록 목록: 길면 이 안에서만 스크롤 */
+.arc-list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
+
+/* 기록 하나 (버튼) */
+.arc-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border: none;
+  border-bottom: 1px solid var(--color-terminal-faint);
+  background: none;
+  color: inherit;
+  text-align: left;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+.arc-item:hover {
+  background: var(--color-terminal-hover);
+}
+
+.arc-item:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: -3px;
+}
+
+/* 선택된 기록: 흰 바탕 반전 */
+.arc-item.is-selected {
+  background: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+/* 손상된 기록: 흐리게 */
+.arc-item.is-corrupted {
+  opacity: 0.45;
+}
+
+/* 윗줄: 기록 ID(왼쪽) + 상태(오른쪽) */
+.arc-item-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.arc-item-title {
+  font: 400 14px/1.3 var(--font-sans);
+}
+
+.arc-item-meta {
+  font: 300 10px var(--font-sans);
+  letter-spacing: 0.06em;
+  opacity: 0.65;
+}
+
+/* 요약: 한 줄만, 넘치면 … */
+.arc-item-summary {
+  overflow: hidden;
+  font: 300 12px/1.4 var(--font-sans);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0.8;
+}
+
+/* 상태 글자 색 */
+.arc-status {
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.arc-status--recovered,
+.arc-status--corrupted {
+  opacity: 0.7;
+}
+
+.arc-status--partial {
+  color: var(--color-warning);
+}
+
+.arc-status--locked {
+  color: var(--color-danger-text);
+}
+
+/* ── 오른쪽: 상세 패널 (길면 이 안에서만 스크롤) ── */
+.arc-detail {
+  min-height: 0;
+  padding: 20px 28px 28px;
+  border: 1px solid var(--color-terminal-line);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+  animation: term-fade-in 0.25s ease;
+}
+
+.arc-detail-id {
+  margin: 0;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.arc-detail-title {
+  margin: 6px 0 0;
+  font: 400 24px/1.2 var(--font-sans);
+}
+
+/* 작성자 / 날짜 / 상태 */
+.arc-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 24px;
+  margin: 16px 0 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-terminal-line);
+  font: 400 12px var(--font-sans);
+}
+
+.arc-detail-meta div {
+  display: flex;
+  gap: 8px;
+}
+
+.arc-detail-meta dt {
+  opacity: 0.55;
+}
+
+.arc-detail-meta dd {
+  margin: 0;
+}
+
+/* 손상·잠김 안내 문구 */
+.arc-detail-error {
+  margin: 16px 0 0;
+  font: 400 13px/1.6 var(--font-sans);
+  letter-spacing: 0.08em;
+  color: var(--color-danger-text);
+}
+
+.arc-detail--corrupted .arc-detail-error {
+  color: var(--color-line);
+  opacity: 0.6;
+}
+
+/* 해금 조건 목록 */
+.arc-requires {
+  max-width: 360px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.arc-requires li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-terminal-faint);
+}
+
+/* 조건 ID: 누르면 그 기록으로 이동 */
+.arc-requires-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: 400 14px var(--font-sans);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.arc-requires-link:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 3px;
+}
+
+.arc-requires-state {
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.arc-requires-state.is-done {
+  color: var(--color-accessible);
+}
+
+.arc-requires-state.is-pending {
+  color: var(--color-danger-text);
+}
+
+/* ── 문서 본문 (RecordBody) ── */
+.arc-doc {
+  max-width: 68ch; /* 한 줄이 너무 길지 않게 */
+  margin-top: 20px;
+  font: 300 14px/1.75 var(--font-sans);
+}
+
+.arc-doc p {
+  margin: 0 0 12px;
+}
+
+.arc-doc-heading {
+  margin: 0 0 12px;
+  font: 400 18px/1.4 var(--font-sans);
+}
+
+.arc-doc-subheading {
+  margin: 20px 0 8px;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.arc-doc-list {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+/* "항목: 값" 묶음: 왼쪽 항목 이름 고정 너비 */
+.arc-doc-fields {
+  margin: 0 0 12px;
+}
+
+.arc-doc-fields div {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 12px;
+}
+
+.arc-doc-fields dt {
+  font-weight: 400;
+  opacity: 0.55;
+}
+
+.arc-doc-fields dd {
+  margin: 0;
+}
+
+/* 표: 가로로 넘치면 표 안에서만 스크롤 */
+.arc-doc-table-wrap {
+  margin: 0 0 16px;
+  overflow-x: auto;
+}
+
+.arc-doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: 300 13px/1.5 var(--font-sans);
+}
+
+.arc-doc-table th,
+.arc-doc-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-terminal-faint);
+  text-align: left;
+}
+
+.arc-doc-table th {
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
+.arc-doc-signature {
+  text-align: right;
+  opacity: 0.8;
+}
+
+/* 손상 구간 ▓: 흐린 회색 덩어리 */
+.arc-redacted {
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: -0.05em;
+}
+
+/* MISSING DATA 상자: 주황 점선 */
+.arc-missing {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border: 1px dashed var(--color-warning);
+}
+
+.arc-missing h3 {
+  margin: 0 0 4px;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.12em;
+  color: var(--color-warning);
+}
+
+.arc-missing p {
+  margin: 0;
+  font: 300 13px/1.6 var(--font-sans);
+}
+
+/* ── 관련 기록·시설 ── */
+.arc-related {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-terminal-line);
+}
+
+.arc-related h3 {
+  margin: 0 0 8px;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.arc-related h3:not(:first-child) {
+  margin-top: 16px;
+}
+
+.arc-related ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 관련 기록 한 줄: ID / 제목 / 상태 (버튼이든 아니든 같은 모양) */
+.arc-related-item {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 6px 0;
+  border: none;
+  border-bottom: 1px solid var(--color-terminal-faint);
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: 300 13px/1.5 var(--font-sans);
+}
+
+/* 누를 수 있는 관련 기록 */
+button.arc-related-item {
+  cursor: pointer;
+}
+
+button.arc-related-item:hover .arc-related-title {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+button.arc-related-item:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 2px;
+}
+
+/* 다른 시설의 기록: 흐리게 (누를 수 없음) */
+.arc-related-item.is-external {
+  opacity: 0.5;
+}
+
+.arc-related-id {
+  min-width: 56px;
+  font-weight: 400;
+}
+
+/* 오른쪽 끝 상태 표시 */
+.arc-related-state {
+  margin-left: auto;
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+}
+
+/* 안 읽은 기록: 밝게 (눈에 띄게) */
+.arc-related-state.is-unread {
+  opacity: 1;
+}
+
+/* 잠긴 기록: 빨강 */
+.arc-related-state.is-locked {
+  color: var(--color-danger-text);
+  opacity: 1;
+}
+
+.arc-related p {
+  margin: 0;
+  font: 300 13px var(--font-sans);
+}
+
+/* ── 오른쪽 열: ARCHIVE PROGRESS ── */
+.arc-progress {
+  flex: 1;
+  padding: 16px;
+  border: 1px solid var(--color-terminal-line);
+}
+
+.arc-progress-list {
+  margin: 16px 0 0;
+}
+
+.arc-progress-row {
+  display: flex;
+  justify-content: space-between;
+  font: 400 13px/2 var(--font-sans);
+}
+
+.arc-progress-row dt {
+  opacity: 0.7;
+}
+
+.arc-progress-row dd {
+  margin: 0;
+}
+
 /* ── 버튼 (공통) ── */
 .term-btn {
   height: 60px;
@@ -981,7 +1502,7 @@ body {
   break-inside: avoid; /* 한 항목이 두 단에 걸쳐 잘리지 않게 */
 }
 
-/* ── 오른쪽 열 (제어시스템·탐사·로그 / FOOD PRODUCE·로그·ARCHIVE) ── */
+/* ── 오른쪽 열 (제어시스템·탐사·로그 / FOOD PRODUCE·로그·ARCHIVE / 아카이브 진행) ── */
 .term-side {
   display: flex;
   flex-direction: column;
@@ -1110,6 +1631,16 @@ body {
     margin-bottom: 20px;
   }
 
+  /* 헤더: 제목 아래로 보조 정보 */
+  .term-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .arc-header-meta {
+    text-align: left;
+  }
+
   .term-body {
     grid-template-columns: 1fr;
   }
@@ -1130,6 +1661,20 @@ body {
   /* 층 카드: 한 화면에 2개 + 다음 카드 일부 */
   .term-floor {
     flex-basis: calc((100% - 12px) / 2.15);
+  }
+
+  /* 아카이브: 목록 위, 상세 아래로 쌓기 */
+  .arc {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .arc-list {
+    max-height: 260px;
+  }
+
+  .arc-detail {
+    max-height: 520px;
   }
 
   /* 팝업 목록을 2단으로 */
@@ -1197,6 +1742,10 @@ body {
   .term-floor {
     flex-basis: 80%;
     height: 340px;
+  }
+
+  .arc-detail {
+    padding: 16px;
   }
 
   .term-btn {

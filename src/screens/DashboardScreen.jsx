@@ -7,6 +7,9 @@ import ExpeditionCard from '../components/ExpeditionCard'
 import LogPanel from '../components/LogPanel'
 import FoodStatus from '../components/FoodStatus'
 import ArchiveCard from '../components/ArchiveCard'
+import ArchiveView from '../components/ArchiveView'
+import ArchiveProgress from '../components/ArchiveProgress'
+import { getArchiveStats } from '../utils/archiveStats'
 
 // ─────────────────────────────────────────────
 // 화면에 보여 줄 내용은 JSON 파일에서 불러옵니다.
@@ -15,6 +18,7 @@ import ArchiveCard from '../components/ArchiveCard'
 // ─────────────────────────────────────────────
 import FACILITIES from '../data/facilities.json'
 import DASHBOARD from '../data/dashboard.json'
+import ARCHIVE from '../data/archive-records.json'
 
 // dashboard.json 안의 세 묶음을 각각 꺼내 둡니다.
 const STATUS = DASHBOARD.status     // 오른쪽 위 상태 표시
@@ -52,6 +56,15 @@ function DashboardScreen() {
   // 시설 안에서 ARCHIVE를 열었는지
   const [isArchiveOpen, setIsArchiveOpen] = useState(false)
 
+  // 지금까지 읽은 아카이브 기록 ID 목록
+  // (여기에 두면 아카이브를 나갔다 들어와도 기억됨. 5-3단계에서 새로고침해도 유지되게 바꿀 예정)
+  const [archiveReadIds, setArchiveReadIds] = useState([])
+
+  // 기록을 읽었을 때: 목록에 없으면 추가
+  function markRecordRead(id) {
+    setArchiveReadIds((previous) => (previous.includes(id) ? previous : [...previous, id]))
+  }
+
   // 화면을 바꿀 때는 ARCHIVE 상태도 함께 처음으로 돌립니다.
   function openScreen(id) {
     setOpenId(id)
@@ -61,8 +74,47 @@ function DashboardScreen() {
   // 열린 시설의 정보를 찾습니다. (없으면 undefined)
   const openFacility = FACILITIES.find((facility) => facility.id === openId)
 
-  // ── 시설을 열었을 때: 제목이 시설 이름으로 바뀜 ──
+  // ── 시설을 열었을 때 ──
   if (openFacility) {
+    // ▶ 아카이브를 열었으면: 아카이브 전용 화면
+    if (isArchiveOpen) {
+      // 이 시설의 기록만 골라냅니다.
+      const records = ARCHIVE.records.filter((record) => record.facility === openFacility.id)
+      // 이 시설 아카이브의 부제·접근 레벨 (없으면 빈 값)
+      const archiveInfo = ARCHIVE.archives[openFacility.id] ?? {}
+      // 개수 계산 (전체, 손상, 잠김 등) — 읽은 기록에 따라 잠김 개수가 바뀜
+      const stats = getArchiveStats(records, archiveReadIds)
+
+      return (
+        <DashboardLayout
+          code={`S - LAMBDA - 032 / ${openFacility.name}`}
+          title={`${openFacility.name} ARCHIVE`}
+          headerAside={
+            <div className="arc-header-meta">
+              <p className="arc-subtitle">{archiveInfo.subtitle}</p>
+              <p className="arc-summary">
+                ACCESS LEVEL {archiveInfo.accessLevel} · {stats.total} RECORDS · {stats.locked} LOCKED ·{' '}
+                {stats.corrupted} CORRUPTED
+              </p>
+            </div>
+          }
+          status={STATUS}
+          recovery={RECOVERY}
+          side={<ArchiveProgress stats={stats} />}
+          onBack={() => setIsArchiveOpen(false)}
+          backLabel={openFacility.name}
+        >
+          <ArchiveView
+            records={records}
+            external={ARCHIVE.external}
+            readIds={archiveReadIds}
+            onRead={markRecordRead}
+          />
+        </DashboardLayout>
+      )
+    }
+
+    // ▶ 시설 기본 화면
     // 오른쪽 열: 식당이 있는 시설(다이닝홀)만 있음. 그 외에는 없음(null) → 가운데가 넓게
     let side = null
     if (openFacility.halls) {
@@ -75,19 +127,6 @@ function DashboardScreen() {
       )
     }
 
-    // 가운데: ARCHIVE를 열었으면 안내 화면, 아니면 시설 내용
-    let main
-    if (isArchiveOpen) {
-      main = renderNotice({
-        title: 'ARCHIVE',
-        message: '문서 열람 기능은 5단계에서 구현됩니다.',
-        backLabel: openFacility.name,
-        onBack: () => setIsArchiveOpen(false),
-      })
-    } else {
-      main = <FacilityDetail facility={openFacility} />
-    }
-
     return (
       <DashboardLayout
         title={openFacility.name}
@@ -96,7 +135,7 @@ function DashboardScreen() {
         side={side}
         onBack={() => openScreen(null)}
       >
-        {main}
+        <FacilityDetail facility={openFacility} />
       </DashboardLayout>
     )
   }
