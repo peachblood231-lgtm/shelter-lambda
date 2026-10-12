@@ -10,9 +10,5 @@
     { "time": "03:12", "text": "TEMPERATURE SYSTEM FAILURE DETECTED" },
     { "time": "03:14", "text": "EMERGENCY HEATING ENABLED" },
     { "time": "03:20", "text": "RECOVERY PROTOCOL INITIATED" }
-  ],
-  "recovery": {
-    "label": "TEMPERATURE SYSTEM RECOVERY IN PROGRESS",
-    "percent": 45
-  }
+  ]
 }

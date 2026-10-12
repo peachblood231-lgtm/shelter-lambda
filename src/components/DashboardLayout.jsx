@@ -9,7 +9,8 @@ import StatusPanel from './StatusPanel'
 // - title: 큰 제목 (예: 'CENTRAL TERMINAL', 'GREENHOUSE')
 // - code: (선택) 제목 위 작은 글자. 기본값 'S - LAMBDA - 032'
 // - headerAside: (선택) 제목 오른쪽에 놓을 내용 (예: 아카이브 부제와 요약)
-// - status: 오른쪽 위 상태 표시 값
+// - status: 오른쪽 위 상태 표시 값 (주민 수, 구역 목록)
+// - temperatures: 지금 온도 { inside, outside }
 // - recovery: 진행 바의 문구와 퍼센트
 // - side: (선택) 오른쪽 열에 넣을 내용. 없으면 가운데가 전체 너비를 씀
 // - onBack: (선택) 있으면 화면 왼쪽 위에 돌아가기 버튼을 보여 줌
@@ -20,6 +21,7 @@ function DashboardLayout({
   code = 'S - LAMBDA - 032',
   headerAside,
   status,
+  temperatures,
   recovery,
   side,
   onBack,
@@ -41,7 +43,7 @@ function DashboardLayout({
     <div className="term">
       <div className="term-inner">
         {/* ── 오른쪽 위 구석 상태 표시 ── */}
-        <StatusPanel status={status} />
+        <StatusPanel status={status} inside={temperatures.inside} outside={temperatures.outside} />
 
         {/* ── 돌아가기 버튼 (onBack이 있을 때만) ── */}
         {hasBack && (

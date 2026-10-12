@@ -9,7 +9,11 @@ import FoodStatus from '../components/FoodStatus'
 import ArchiveCard from '../components/ArchiveCard'
 import ArchiveView from '../components/ArchiveView'
 import ArchiveProgress from '../components/ArchiveProgress'
+import ControlSystemView from '../components/ControlSystemView'
+import useFluctuatingValue from '../hooks/useFluctuatingValue'
 import { getArchiveStats } from '../utils/archiveStats'
+import { formatClock } from '../utils/format'
+import { getStage, getRepairPercent } from '../utils/controlStage'
 
 // ─────────────────────────────────────────────
 // 화면에 보여 줄 내용은 JSON 파일에서 불러옵니다.
@@ -19,15 +23,21 @@ import { getArchiveStats } from '../utils/archiveStats'
 import FACILITIES from '../data/facilities.json'
 import DASHBOARD from '../data/dashboard.json'
 import ARCHIVE from '../data/archive-records.json'
+import ITEMS from '../data/items.json'
+import CONTROL from '../data/control-system.json'
 
-// dashboard.json 안의 세 묶음을 각각 꺼내 둡니다.
-const STATUS = DASHBOARD.status     // 오른쪽 위 상태 표시
-const LOGS = DASHBOARD.logs         // 메인 대시보드 CURRENT LOG
-const RECOVERY = DASHBOARD.recovery // 하단 진행 바
+// dashboard.json 안의 묶음을 꺼내 둡니다.
+const STATUS = DASHBOARD.status // 오른쪽 위 상태 표시
+const LOGS = DASHBOARD.logs     // 메인 대시보드 CURRENT LOG 기본 기록
 
 // 시설이 아닌 화면을 열었을 때 openId에 넣을 특별한 값
-const CONTROL_ID = 'control'       // 중앙제어시스템
+const CONTROL_ID = 'control'       // 중앙온도제어시스템
 const EXPEDITION_ID = 'expedition' // 탐사
+
+// 아이템 ID로 이름 찾기 (없으면 ID 그대로)
+function findItemName(itemId) {
+  return ITEMS.find((item) => item.id === itemId)?.name ?? itemId
+}
 
 // 아직 기능이 없는 화면에 보여 줄 안내 상자
 // - title: 큰 제목 / message: 안내 문구 / backLabel: 돌아가기 버튼 글자 / onBack: 돌아가기 동작
@@ -45,30 +55,92 @@ function renderNotice({ title, message, backLabel, onBack }) {
   )
 }
 
-function DashboardScreen() {
+// 대시보드 화면
+// - game: 게임 진행 상태 (App에서 받음, 브라우저에 자동 저장됨)
+// - dispatch: 게임 상태를 바꾸는 명령을 보내는 함수
+function DashboardScreen({ game, dispatch }) {
   // 지금 열려 있는 화면을 기억합니다.
   // - null: 아무것도 안 연 상태 → 카드 4개
   // - 시설 id (예: 'greenhouse'): 그 시설 화면
-  // - 'control': 중앙제어시스템 화면
+  // - 'control': 중앙온도제어시스템 화면
   // - 'expedition': 탐사 화면
   const [openId, setOpenId] = useState(null)
 
   // 시설 안에서 ARCHIVE를 열었는지
   const [isArchiveOpen, setIsArchiveOpen] = useState(false)
 
-  // 지금까지 읽은 아카이브 기록 ID 목록
-  // (여기에 두면 아카이브를 나갔다 들어와도 기억됨. 5-3단계에서 새로고침해도 유지되게 바꿀 예정)
-  const [archiveReadIds, setArchiveReadIds] = useState([])
+  // ── 온도제어시스템 복구도와 단계 ──
+  // (저장 기록에 없을 때를 대비한 기본값)
+  const controlSystem = game.systems[CONTROL.id] ?? { repair: 0, maxRepair: 1000 }
+  const repairPercent = getRepairPercent(controlSystem)
+  const controlStage = getStage(CONTROL.stages, repairPercent)
+  const isOperational = controlSystem.repair >= controlSystem.maxRepair
 
-  // 기록을 읽었을 때: 목록에 없으면 추가
+  // ── 온도 ──
+  // 실내 온도: 지금 복구 단계의 온도 설정(기준값·흔들림 폭)을 따릅니다.
+  //   단계에 설정이 없으면 dashboard.json의 값을 씁니다.
+  // 여기서 한 번만 계산해서 오른쪽 위 상태 표시와 제어시스템 화면이 "같은 값"을 쓰게 합니다.
+  const insideSetting = controlStage.inside ?? STATUS.inside
+  const inside = useFluctuatingValue(insideSetting.base, insideSetting.range, STATUS.tempUpdateMs)
+  const outside = useFluctuatingValue(STATUS.outside.base, STATUS.outside.range, STATUS.tempUpdateMs)
+
+  // ── 하단 진행 바 = 복구도 ──
+  const recovery = {
+    label: isOperational ? CONTROL.operationalLabel : CONTROL.recoveryLabel,
+    percent: repairPercent,
+  }
+
+  // 모든 화면의 틀(DashboardLayout)에 공통으로 넘겨줄 값
+  const layoutBase = {
+    status: STATUS,
+    temperatures: { inside, outside },
+    recovery,
+  }
+
+  // ── 메인 CURRENT LOG = 기본 기록 + 부품 투입 내역 ──
+  const installLogs = game.installLog.map((entry) => ({
+    time: formatClock(entry.time),
+    text: `${findItemName(entry.itemId)} INSTALLED +${entry.gained}`,
+  }))
+  const mainLogs = [...LOGS, ...installLogs]
+
+  // ── 아카이브 읽음 기록 (게임 상태에서 가져옴 → 새로고침해도 유지) ──
+  const archiveReadIds = game.archiveReadIds
+
   function markRecordRead(id) {
-    setArchiveReadIds((previous) => (previous.includes(id) ? previous : [...previous, id]))
+    dispatch({ type: 'archive/markRead', id })
+  }
+
+  // ── 부품 투입: 명령 하나로 차감 + 증가 + 기록 ──
+  function installPart(itemId) {
+    dispatch({
+      type: 'system/installPart',
+      systemId: CONTROL.id,
+      itemId,
+      time: new Date().toISOString(), // 투입 시각
+    })
   }
 
   // 화면을 바꿀 때는 ARCHIVE 상태도 함께 처음으로 돌립니다.
   function openScreen(id) {
     setOpenId(id)
     setIsArchiveOpen(false)
+  }
+
+  // ── 중앙온도제어시스템 화면 (전체 화면이 바뀜) ──
+  if (openId === CONTROL_ID) {
+    return (
+      <DashboardLayout {...layoutBase} title={CONTROL.title} onBack={() => openScreen(null)}>
+        <ControlSystemView
+          config={CONTROL}
+          system={controlSystem}
+          inventory={game.inventory}
+          items={ITEMS}
+          currentTemperature={inside}
+          onInstall={installPart}
+        />
+      </DashboardLayout>
+    )
   }
 
   // 열린 시설의 정보를 찾습니다. (없으면 undefined)
@@ -87,6 +159,7 @@ function DashboardScreen() {
 
       return (
         <DashboardLayout
+          {...layoutBase}
           code={`S - LAMBDA - 032 / ${openFacility.name}`}
           title={`${openFacility.name} ARCHIVE`}
           headerAside={
@@ -98,8 +171,6 @@ function DashboardScreen() {
               </p>
             </div>
           }
-          status={STATUS}
-          recovery={RECOVERY}
           side={<ArchiveProgress stats={stats} />}
           onBack={() => setIsArchiveOpen(false)}
           backLabel={openFacility.name}
@@ -128,13 +199,7 @@ function DashboardScreen() {
     }
 
     return (
-      <DashboardLayout
-        title={openFacility.name}
-        status={STATUS}
-        recovery={RECOVERY}
-        side={side}
-        onBack={() => openScreen(null)}
-      >
+      <DashboardLayout {...layoutBase} title={openFacility.name} side={side} onBack={() => openScreen(null)}>
         <FacilityDetail facility={openFacility} />
       </DashboardLayout>
     )
@@ -145,21 +210,13 @@ function DashboardScreen() {
     <>
       <ControlCard onOpen={() => openScreen(CONTROL_ID)} />
       <ExpeditionCard onOpen={() => openScreen(EXPEDITION_ID)} />
-      <LogPanel logs={LOGS} />
+      <LogPanel logs={mainLogs} />
     </>
   )
 
   // 가운데 영역에 보여 줄 내용
   let content
-  if (openId === CONTROL_ID) {
-    // 중앙제어시스템 화면 (임시 안내)
-    content = renderNotice({
-      title: 'CENTRAL TEMPERATURE CONTROL SYSTEM',
-      message: '온도 제어 기능은 이후 단계에서 구현됩니다.',
-      backLabel: 'CENTRAL TERMINAL',
-      onBack: () => openScreen(null),
-    })
-  } else if (openId === EXPEDITION_ID) {
+  if (openId === EXPEDITION_ID) {
     // 탐사 화면 (임시 안내)
     content = renderNotice({
       title: 'EXPEDITION',
@@ -184,12 +241,7 @@ function DashboardScreen() {
   }
 
   return (
-    <DashboardLayout
-      title="CENTRAL TERMINAL"
-      status={STATUS}
-      recovery={RECOVERY}
-      side={sidePanels}
-    >
+    <DashboardLayout {...layoutBase} title="CENTRAL TERMINAL" side={sidePanels}>
       {content}
     </DashboardLayout>
   )

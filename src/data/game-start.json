@@ -1,0 +1,20 @@
+{
+  "inventory": {
+    "bolt": 0,
+    "fuse": 1,
+    "duct-tape": 0,
+    "wire-bundle": 0,
+    "repair-parts": 0,
+    "industrial-cable": 0,
+    "small-battery": 1,
+    "coolant-pipe": 0,
+    "circuit-board": 0,
+    "spare-cooling-core": 0
+  },
+  "systems": {
+    "temperature-control": {
+      "repair": 450,
+      "maxRepair": 1000
+    }
+  }
+}

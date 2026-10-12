@@ -1,0 +1,18 @@
+{
+  "id": "temperature-control",
+  "title": "CENTRAL TEMPERATURE CONTROL SYSTEM",
+  "targetTemperature": 24,
+  "cause": "FACILITY AGING",
+  "completeCause": "ALL SUBSYSTEMS NOMINAL",
+  "projectLabel": "PROJECT\nHELIOS",
+  "completeMessage": "SYSTEM RECOVERY COMPLETE",
+  "recoveryLabel": "TEMPERATURE SYSTEM RECOVERY IN PROGRESS",
+  "operationalLabel": "TEMPERATURE SYSTEM OPERATIONAL",
+  "stages": [
+    { "min": 0, "label": "OFFLINE", "tone": "danger", "inside": { "base": 6.0, "range": 2.0 } },
+    { "min": 25, "label": "INITIALIZING", "tone": "warning", "inside": { "base": 12.4, "range": 1.5 } },
+    { "min": 50, "label": "PARTIAL RECOVERY", "tone": "warning", "inside": { "base": 16.5, "range": 1.0 } },
+    { "min": 75, "label": "STABILIZING", "tone": "normal", "inside": { "base": 20.5, "range": 0.6 } },
+    { "min": 100, "label": "OPERATIONAL", "tone": "success", "inside": { "base": 24.0, "range": 0.2 } }
+  ]
+}

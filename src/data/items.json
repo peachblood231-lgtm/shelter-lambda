@@ -1,0 +1,12 @@
+[
+  { "id": "bolt", "name": "BOLT", "repair": { "temperature-control": 5 } },
+  { "id": "fuse", "name": "FUSE", "repair": { "temperature-control": 5 } },
+  { "id": "duct-tape", "name": "DUCT TAPE", "repair": { "temperature-control": 5 } },
+  { "id": "wire-bundle", "name": "WIRE BUNDLE", "repair": { "temperature-control": 5 } },
+  { "id": "repair-parts", "name": "REPAIR PARTS", "repair": { "temperature-control": 10 } },
+  { "id": "industrial-cable", "name": "INDUSTRIAL CABLE", "repair": { "temperature-control": 10 } },
+  { "id": "small-battery", "name": "SMALL BATTERY", "repair": { "temperature-control": 20 } },
+  { "id": "coolant-pipe", "name": "COOLANT PIPE", "repair": { "temperature-control": 30 } },
+  { "id": "circuit-board", "name": "CIRCUIT BOARD", "repair": { "temperature-control": 30 } },
+  { "id": "spare-cooling-core", "name": "SPARE COOLING CORE", "repair": { "temperature-control": 50 } }
+]
