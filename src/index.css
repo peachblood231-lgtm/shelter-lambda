@@ -1,0 +1,1222 @@
+/* =========================================
+   디자인 규칙 (색상·글꼴)
+   여기 값을 바꾸면 사이트 전체에 반영됩니다.
+   ========================================= */
+:root {
+  --color-shelter-blue: #0c1e7e;   /* 메인화면 카드 파란색 */
+  --color-line: #ffffff;           /* 선·글자 흰색 */
+  --color-backdrop: #8c8c8c;       /* 배경 사진이 없을 때 회색 */
+
+  --color-terminal-bg: #191919;                    /* 대시보드 배경 */
+  --color-terminal-line: rgba(255, 255, 255, 0.65); /* 대시보드 테두리 */
+  --color-terminal-track: #444444;                 /* 진행 바 빈 부분 */
+  --color-terminal-hover: #2a2a2a;                 /* 카드 호버 배경 */
+
+  --color-accessible: #55f06b;      /* 출입 가능 (초록) */
+  --color-restricted: #d41414;      /* 출입 제한 (빨강) */
+  --color-restricted-text: #ffb0b0; /* 출입 제한 위 글자 (연분홍) */
+  --color-warning: #ff7a1a;         /* 주의 상태 (주황, 예: LIMITED) */
+
+  --color-expedition: #1a3be8;       /* EXPEDITION 카드 (파랑) */
+  --color-expedition-hover: #3352f2; /* EXPEDITION 카드 호버 */
+
+  --color-light-bg: #1f2c73;        /* 조명 켜짐 버튼 배경 (남색) */
+  --color-light-bg-hover: #2b3a85;  /* 카드 호버 시 조명 버튼 배경 */
+  --color-light-border: #4a63f0;    /* 조명 버튼 테두리 (파랑) */
+  --color-button-gray: #3a3a3a;     /* SHUTDOWN 등 회색 버튼 배경 */
+  --color-button-gray-hover: #4a4a4a; /* 카드 호버 시 회색 버튼 배경 */
+
+  --color-menu-bg: #2a2a2a;         /* TODAY'S MENU 상자 배경 */
+  --color-menu-tag: #5a5a5a;        /* Breakfast 등 꼬리표 배경 */
+  --color-menu-border: #cfcfcf;     /* CHANGE MENU 버튼 외곽선 */
+
+  --color-sector: #2c2c2c;           /* SECTOR 칸 (보통) */
+  --color-sector-hover: #3a3a3a;     /* SECTOR 칸 호버 */
+  --color-sector-restricted: #5e1414; /* SECTOR 칸 (출입 제한, 어두운 빨강) */
+  --color-danger-text: #ff2b2b;      /* RESTRICTED 큰 글자, 경고 문구 (밝은 빨강) */
+
+  --font-serif: 'IBM Plex Serif', Georgia, serif;   /* 제목용 */
+  --font-sans: 'Inter', system-ui, sans-serif;      /* 본문·작은 글씨용 */
+}
+
+* {
+  box-sizing: border-box; /* 크기 계산에 테두리와 여백을 포함 */
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-backdrop);
+}
+
+/* 화면에는 안 보이지만 화면 낭독기는 읽는 글자 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* =========================================
+   메인화면 (IntroScreen)
+   ========================================= */
+
+/* 화면 전체: 배경 사진을 깔고 카드를 정중앙에 배치 */
+.intro {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  background-color: var(--color-backdrop);
+  background-size: cover;
+  background-position: center;
+}
+
+/* 파란 카드: 위에서 아래로 요소를 쌓는 세로 배치 */
+.intro-card {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  min-height: 760px;
+  padding: 8px 50px 0; /* 위 8px: 모토 위치 (값이 작을수록 위로) */
+  display: flex;
+  flex-direction: column;
+  background: var(--color-shelter-blue);
+  color: var(--color-line);
+}
+
+/* we / are / endure: 양 끝과 가운데로 벌리기 */
+.intro-motto {
+  display: flex;
+  justify-content: space-between;
+  font: 300 13px var(--font-sans);
+}
+
+/* 큰 제목 */
+.intro-title {
+  margin: 140px 0 18px;
+  font: 300 52px/0.82 var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+/* 도면 테두리 박스: 가로세로 비율을 고정 */
+.intro-emblem {
+  margin: 0;
+  padding: 44px; /* 테두리와 도면 사이 여백 (값이 클수록 도면이 작아짐) */
+  border: 1px solid var(--color-line);
+  aspect-ratio: 390 / 318;
+}
+
+/* 도면 이미지: 박스 안에 비율을 유지한 채 맞춰 넣기 */
+.intro-emblem img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 이미지가 잘리거나 늘어나지 않게 */
+}
+
+/* S - Lambda - 032: 글자 사이를 넓게 */
+.intro-code {
+  margin: 8px 0 0;
+  padding-left: 1.1em; /* 마지막 글자 뒤 간격만큼 보정해 가운데 정렬 */
+  text-align: center;
+  font: 300 13px var(--font-sans);
+  letter-spacing: 1.1em;
+}
+
+/* Enter the SHELTER 버튼: 기본 버튼 모양을 지우고 글자처럼 보이게 */
+.intro-enter {
+  margin-top: auto; /* 남는 공간을 위로 밀어 버튼을 카드 아래쪽에 붙임 */
+  margin-bottom: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  border: none;
+  background: none;
+  color: inherit;
+  font: 300 28px var(--font-serif);
+  text-align: left;
+  cursor: pointer;
+}
+
+/* 마우스를 올리면 화살표가 오른쪽으로 살짝 이동 */
+.intro-arrow {
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.intro-enter:hover .intro-arrow,
+.intro-enter:focus-visible .intro-arrow {
+  transform: translateX(8px);
+}
+
+/* 키보드(Tab)로 선택했을 때 위치가 보이도록 */
+.intro-enter:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 6px;
+}
+
+/* 카드 하단 흰 막대 */
+.intro-bar {
+  width: 63%;
+  height: 20px;
+  margin: 0 auto;
+  background: var(--color-line);
+}
+
+/* 좁은 화면(휴대폰)에서는 여백과 글자 크기를 줄임 */
+@media (max-width: 520px) {
+  .intro-card {
+    min-height: auto;
+    padding: 8px 24px 0;
+  }
+
+  .intro-title {
+    margin-top: 72px;
+    font-size: 40px;
+  }
+
+  .intro-emblem {
+    padding: 28px; /* 좁은 화면에서는 여백을 조금 줄여 도면이 너무 작아지지 않게 */
+  }
+
+  .intro-enter {
+    margin-top: 56px;
+    font-size: 22px;
+    gap: 16px;
+  }
+}
+
+/* =========================================
+   대시보드 (CENTRAL TERMINAL)
+   ========================================= */
+
+/* 화면 전체: 어두운 배경, 내용을 가운데 배치 */
+.term {
+  position: relative; /* 구석에 띄우는 요소들(상태 표시, 돌아가기)의 기준점 */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 200px 24px 48px; /* 위쪽은 상태 표시와 겹치지 않게 넉넉히 */
+  background: var(--color-terminal-bg);
+  color: var(--color-line);
+}
+
+/* 내용 최대 너비 */
+.term-inner {
+  width: 100%;
+  max-width: 1240px;
+}
+
+/* ── 오른쪽 위 구석 상태 표시 ── */
+.term-readout {
+  position: absolute; /* 화면 오른쪽 위에 고정 배치 */
+  top: 20px;
+  right: 24px;
+}
+
+.term-readout-list {
+  margin: 0;
+}
+
+/* 한 줄: 이름(왼쪽)과 값(오른쪽)을 오른쪽 정렬로 */
+.term-readout-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  font: 400 13px/1.6 var(--font-sans);
+}
+
+.term-readout-row dt {
+  margin: 0;
+}
+
+.term-readout-row dd {
+  min-width: 64px; /* 값 칸 너비를 고정해 숫자가 바뀌어도 흔들리지 않게 */
+  margin: 0;
+  text-align: right;
+  font-weight: 300;
+  opacity: 0.85;
+}
+
+/* 구역 목록 줄: 더 작고 흐린 글씨 */
+.term-readout-row--small {
+  font-size: 10px;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+/* 큰 줄 다음에 오는 첫 번째 구역 줄 위에 간격 */
+.term-readout-row:not(.term-readout-row--small) + .term-readout-row--small {
+  margin-top: 10px;
+}
+
+/* ── 헤더 ── */
+.term-header {
+  margin-bottom: 28px;
+}
+
+.term-code {
+  margin: 0;
+  font: 300 22px var(--font-serif);
+}
+
+.term-title {
+  margin: 0;
+  font: 300 50px/1.1 var(--font-serif);
+}
+
+/* ── 돌아가기 버튼 (공통) ── */
+.term-back {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: 300 13px var(--font-sans);
+  letter-spacing: 0.15em;
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+.term-back:hover,
+.term-back:focus-visible {
+  opacity: 1;
+}
+
+.term-back:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 4px;
+}
+
+/* 시설 화면의 돌아가기 버튼: 화면 왼쪽 위 구석에 띄움
+   (공간을 차지하지 않아서 메인 대시보드와 배치가 똑같이 유지됨) */
+.term-back--top {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+}
+
+/* ── 가운데: 왼쪽 내용 + 오른쪽 열(304px) ── */
+.term-body {
+  display: grid;
+  grid-template-columns: 1fr 304px;
+  gap: 32px;
+}
+
+/* 오른쪽 열이 없을 때: 가운데가 전체 너비 */
+.term-body--full {
+  grid-template-columns: 1fr;
+}
+
+.term-main {
+  min-width: 0; /* 내용이 길어도 칸을 넘치지 않게 */
+}
+
+/* 카드 4개: 2칸 × 2줄 */
+.term-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── 시설 카드 ── */
+.term-card {
+  position: relative; /* 큰 글자(ACCESSIBLE 등)를 카드 안 오른쪽 아래에 놓기 위해 */
+  height: 240px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 16px 18px 24px;
+  border: 1px solid var(--color-terminal-line);
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.term-card:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 4px;
+}
+
+.term-card-name {
+  font: 400 28px var(--font-sans);
+}
+
+/* 마우스를 올리면 화살표가 오른쪽 위로 살짝 이동 */
+.term-card-arrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.term-card:hover .term-card-arrow,
+.term-card:focus-visible .term-card-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* 오른쪽 아래 큰 글자: 평소에는 투명(숨김) */
+.term-card-access {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  font: 700 40px/1 var(--font-sans);
+  letter-spacing: -0.01em;
+  color: var(--color-terminal-bg);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+/* 호버하면 큰 글자가 아래에서 살짝 올라오며 나타남 */
+.term-card:hover .term-card-access,
+.term-card:focus-visible .term-card-access {
+  opacity: 1;
+  transform: none;
+}
+
+/* 출입 가능 카드 호버: 초록 배경, 어두운 글자 */
+.term-card--accessible:hover,
+.term-card--accessible:focus-visible {
+  background: var(--color-accessible);
+  border-color: var(--color-accessible);
+  color: var(--color-terminal-bg);
+}
+
+/* 출입 제한 카드 호버: 빨간 배경, 연분홍 글자 */
+.term-card--restricted:hover,
+.term-card--restricted:focus-visible {
+  background: var(--color-restricted);
+  border-color: var(--color-restricted);
+  color: var(--color-restricted-text);
+}
+
+/* ── 설명형 안내 패널 (구역이 없는 시설·중앙제어시스템·탐사·ARCHIVE) ── */
+.term-detail {
+  height: 100%;
+  min-height: 492px; /* 카드 2줄 높이와 맞춤 */
+  padding: 24px 28px;
+  border: 1px solid var(--color-terminal-line);
+  animation: term-fade-in 0.25s ease; /* 열릴 때 살짝 나타나는 효과 */
+}
+
+@keyframes term-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* 위쪽 줄: 왼쪽·오른쪽 양 끝 배치 */
+.term-detail-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* 출입 상태 표시 (작은 꼬리표) */
+.term-tag {
+  padding: 4px 10px;
+  font: 700 12px var(--font-sans);
+  letter-spacing: 0.1em;
+  color: var(--color-terminal-bg);
+}
+
+.term-tag--accessible {
+  background: var(--color-accessible);
+}
+
+.term-tag--restricted {
+  background: var(--color-restricted);
+  color: var(--color-restricted-text);
+}
+
+.term-detail-name {
+  margin: 32px 0 0;
+  font: 400 40px var(--font-sans);
+}
+
+/* 설명: 구분선 아래, 읽기 편한 줄 길이와 줄 간격 */
+.term-detail-desc {
+  max-width: 60ch;
+  margin: 24px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-terminal-line);
+  font: 300 17px/1.75 var(--font-sans);
+  opacity: 0.9;
+  white-space: pre-line; /* 데이터의 \n을 줄바꿈으로 표시 */
+}
+
+/* ── 재배 구역 카드 (UnitCard) ── */
+
+/* 구역 카드 목록: 화면 너비에 맞춰 칸 수 자동 조절 */
+.term-units {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  animation: term-fade-in 0.25s ease;
+}
+
+/* 카드 하나: 위에 정보, 아래에 버튼
+   높이 492px = 메인 대시보드 카드 2줄(240 + 12 + 240)과 같게 */
+.term-unit {
+  position: relative; /* 카드 전체 클릭 영역의 기준점 */
+  min-height: 492px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px 16px;
+  border: 1px solid var(--color-terminal-line);
+  transition: background 0.2s ease;
+}
+
+/* 카드 호버: 배경이 살짝 밝아짐 */
+.term-unit:hover {
+  background: var(--color-terminal-hover);
+}
+
+/* 카드 호버 시 버튼도 함께 밝아짐 */
+.term-unit:hover .term-btn--light.is-on {
+  background: var(--color-light-bg-hover);
+}
+
+.term-unit:hover .term-btn--shutdown {
+  background: var(--color-button-gray-hover);
+}
+
+/* 글자 부분은 버튼보다 살짝 안쪽으로 */
+.term-unit-info {
+  padding: 0 8px;
+  transition: opacity 0.2s ease;
+}
+
+/* 정지(OFFLINE) 상태: 정보 글자를 흐리게 */
+.term-unit.is-offline .term-unit-info {
+  opacity: 0.45;
+}
+
+/* 구역 코드 (B1 - A - 03) */
+.term-unit-code {
+  margin: 0;
+  font: 400 18px/1.2 var(--font-sans);
+}
+
+/* 목록 팝업을 여는 버튼: 글자처럼 보이게 */
+.term-unit-open {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* 버튼의 클릭 영역을 카드 전체로 넓힘 (투명한 덮개) */
+.term-unit-open::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+/* 키보드로 선택했을 때 카드 전체에 점선 표시 */
+.term-unit-open:focus-visible {
+  outline: none;
+}
+
+.term-unit-open:focus-visible::after {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 4px;
+}
+
+/* 작물 / 상태 (LEAFY GREENS / ACTIVE) */
+.term-unit-sub {
+  margin: 4px 0 0;
+  font: 300 13px var(--font-sans);
+}
+
+.term-unit-readings {
+  margin: 72px 0 0;
+}
+
+/* TEMPERATURE / HUMIDITY 줄 */
+.term-unit-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: 400 14px/1.6 var(--font-sans);
+}
+
+.term-unit-row dd {
+  margin: 0;
+  font-weight: 300;
+}
+
+/* 버튼 묶음: 카드 맨 아래로, 투명한 덮개보다 위에 놓아서 버튼이 따로 눌리게 */
+.term-unit-actions {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  padding-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── 식당 카드 (HallCard) ── */
+
+/* 식당 카드 목록: 넓으면 2칸, 좁으면 1칸 */
+.term-halls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+  animation: term-fade-in 0.25s ease;
+}
+
+/* 카드 하나: 위에서 아래로 코드 → 메뉴 → 상태 → 버튼
+   높이 492px = 메인 대시보드 카드 영역과 같게 */
+.term-hall {
+  min-height: 492px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px 24px;
+  border: 1px solid var(--color-terminal-line);
+}
+
+/* 식당 코드 (B1 - B - 01) */
+.term-hall-code {
+  margin: 0;
+  font: 400 18px/1.2 var(--font-sans);
+}
+
+/* TODAY'S MENU 상자: 회색 배경, 둥근 모서리 */
+.term-menu {
+  margin-top: 16px;
+  padding: 16px 20px;
+  border-radius: 6px;
+  background: var(--color-menu-bg);
+}
+
+/* 상자 머리: 제목(왼쪽) + 메뉴 번호(오른쪽) */
+.term-menu-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.term-menu-title {
+  margin: 0;
+  font: 400 16px var(--font-sans);
+}
+
+.term-menu-no {
+  font: 300 12px var(--font-sans);
+  opacity: 0.8;
+}
+
+/* 아침·점심·저녁 목록: 메뉴가 바뀔 때 살짝 나타나는 효과 */
+.term-menu-list {
+  margin: 14px 0 0;
+  animation: term-fade-in 0.25s ease;
+}
+
+/* 한 줄: 꼬리표(왼쪽 고정 너비) + 메뉴 이름 */
+.term-menu-row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.term-menu-row + .term-menu-row {
+  margin-top: 10px;
+}
+
+/* Breakfast / Lunch / Dinner 꼬리표 */
+.term-menu-tag {
+  justify-self: start;
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: var(--color-menu-tag);
+  font: 400 12px var(--font-sans);
+}
+
+.term-menu-row dd {
+  margin: 0;
+  font: 300 13px/1.4 var(--font-sans);
+}
+
+/* CAPACITY / POWER LOAD / TEMPERATURE */
+.term-hall-stats {
+  margin: 24px 0 0;
+  padding: 0 20px;
+}
+
+.term-hall-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: 400 14px/1.6 var(--font-sans);
+}
+
+.term-hall-row dt {
+  font-weight: 300;
+  opacity: 0.55; /* 항목 이름은 흐리게 */
+}
+
+.term-hall-row dd {
+  margin: 0;
+}
+
+/* 경고 문구 + 버튼: 카드 맨 아래로 */
+.term-hall-actions {
+  margin-top: auto;
+  padding-top: 24px;
+  text-align: center;
+}
+
+.term-hall-warning {
+  margin: 0 0 8px;
+  font: 300 12px var(--font-sans);
+  opacity: 0.75;
+}
+
+/* ── 층 카드 (ResidentialFloors / FloorCard) ── */
+
+/* 전체: 위에 가로 스크롤 영역, 아래에 넓은 조명 버튼 (합쳐서 492px) */
+.term-floors {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: term-fade-in 0.25s ease;
+}
+
+/* 가로 스크롤 영역: 카드를 한 줄로 늘어놓고 넘치면 옆으로 스크롤 */
+.term-floors-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 10px;                       /* 스크롤바 자리 */
+  scrollbar-width: thin;                      /* 얇은 스크롤바 */
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
+
+.term-floors-scroll:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 4px;
+}
+
+/* 층 카드 하나: 한 화면에 4개 + 다음 카드 일부가 보이는 너비 */
+.term-floor {
+  flex: 0 0 calc((100% - 36px) / 4.15);
+  min-width: 230px;
+  height: 378px;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 24px 24px;
+  border: 1px solid var(--color-terminal-line);
+}
+
+/* 층 번호 (B3) */
+.term-floor-code {
+  margin: 0;
+  font: 400 18px/1.2 var(--font-sans);
+}
+
+/* 층 상태 (OCCUPIED / RESTRICTED) */
+.term-floor-status {
+  margin: 4px 0 0;
+  font: 400 34px/1.1 var(--font-sans);
+}
+
+.term-floor-status.is-restricted {
+  color: var(--color-danger-text);
+}
+
+/* SECTOR A/B/C 칸 목록: 카드 아래쪽에 붙임 */
+.term-floor-sectors {
+  margin: auto 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* SECTOR 칸 (공통 모양) */
+.term-sector {
+  width: 100%;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background: var(--color-sector);
+  color: inherit;
+  font: 400 14px var(--font-sans);
+}
+
+/* 누를 수 있는 SECTOR 칸 (제한되지 않은 구역) */
+.term-sector--button {
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.term-sector--button:hover {
+  background: var(--color-sector-hover);
+}
+
+.term-sector--button:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 2px;
+}
+
+/* 눌렀을 때: 빨간 경고 문구 + 빨간 테두리 */
+.term-sector.is-denied {
+  border-color: var(--color-danger-text);
+  color: var(--color-danger-text);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+/* 출입 제한 구역: 어두운 빨강 (누를 수 없음) */
+.term-sector.is-restricted {
+  background: var(--color-sector-restricted);
+}
+
+/* ── FOOD PRODUCE 상태 (오른쪽 열 맨 위) ── */
+.term-food {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-terminal-line);
+}
+
+.term-food-label {
+  font: 400 18px var(--font-sans);
+}
+
+.term-food-state {
+  font: 400 28px/1 var(--font-sans);
+}
+
+/* LIMITED 상태: 주황색 글자와 밑줄 */
+.term-food--limited {
+  border-bottom-color: var(--color-warning);
+}
+
+.term-food--limited .term-food-state {
+  color: var(--color-warning);
+}
+
+/* ── 버튼 (공통) ── */
+.term-btn {
+  height: 60px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  color: var(--color-line);
+  font: 400 14px var(--font-sans);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.term-btn:hover:not(:disabled) {
+  filter: brightness(1.2); /* 마우스를 올리면 살짝 밝게 */
+}
+
+.term-btn:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 3px;
+}
+
+/* 비활성(누를 수 없는) 버튼 */
+.term-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* 조명 버튼 - 꺼진 상태(LIGHT ON 표시): 테두리만 */
+.term-btn--light {
+  background: transparent;
+  border-color: var(--color-light-border);
+  color: var(--color-light-border);
+}
+
+/* 조명 버튼 - 켜진 상태(LIGHT OFF 표시): 남색 배경 + 은은한 빛 */
+.term-btn--light.is-on {
+  background: var(--color-light-bg);
+  color: var(--color-line);
+  box-shadow: 0 0 14px rgba(74, 99, 240, 0.45);
+}
+
+/* 넓은 버튼 (레지덴셜 LIGHT 버튼) */
+.term-btn--wide {
+  width: 100%;
+  height: 92px;
+  font-size: 18px;
+}
+
+/* SHUTDOWN 버튼: 회색 */
+.term-btn--shutdown {
+  background: var(--color-button-gray);
+  border-color: #7a7a7a;
+}
+
+/* CHANGE MENU 버튼: 회색 배경 + 밝은 외곽선 + 둥근 모서리 + 은은한 빛 */
+.term-btn--menu {
+  width: 100%;
+  border: 1px solid var(--color-menu-border);
+  border-radius: 4px;
+  background: var(--color-button-gray);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.12);
+}
+
+/* 마우스를 올리면 외곽선이 흰색으로 */
+.term-btn--menu:hover {
+  border-color: var(--color-line);
+}
+
+/* ── 식물 목록 팝업 (PlantListDialog) ── */
+.term-plants {
+  width: min(1010px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 1px solid var(--color-terminal-line);
+  background: var(--color-terminal-bg);
+  color: var(--color-line);
+  overflow: hidden;
+  animation: term-fade-in 0.2s ease;
+}
+
+/* 팝업 뒤 배경: 아주 살짝만 어둡게 */
+.term-plants::backdrop {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* 팝업 안쪽: 제목 → 목록 순으로 세로 배치 */
+.term-plants-inner {
+  position: relative; /* 닫기 버튼 위치의 기준점 */
+  height: min(560px, calc(100vh - 34px));
+  display: flex;
+  flex-direction: column;
+  padding: 28px 28px 24px;
+}
+
+/* 제목 + 아래 가로선 (오른쪽은 닫기 버튼 자리만큼 비움) */
+.term-plants-title {
+  margin: 0 48px 0 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-line);
+  font: 400 34px var(--font-sans);
+}
+
+/* 오른쪽 위 흰 세모 닫기 버튼 */
+.term-plants-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* 세모 모양: 사각형을 대각선으로 잘라 오른쪽 위 삼각형만 남김 */
+.term-plants-close::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-line);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  transition: opacity 0.2s ease;
+}
+
+.term-plants-close:hover::before {
+  opacity: 0.7;
+}
+
+.term-plants-close:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 3px;
+}
+
+/* 목록 영역: 남은 높이를 채우고, 길면 이 안에서만 위아래 스크롤 */
+.term-plants-scroll {
+  flex: 1;
+  min-height: 0;
+  margin-top: 24px;
+  padding: 0 12px 0 16px;
+  overflow-y: auto;
+  scrollbar-width: thin;                             /* 얇은 스크롤바 */
+  scrollbar-color: var(--color-line) transparent;    /* 흰 스크롤바 */
+}
+
+/* 목록: 4단으로 나눠서 위에서 아래로 채움 */
+.term-plants-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  columns: 4;
+  column-gap: 24px;
+  font: 300 17px/1.6 var(--font-sans);
+}
+
+.term-plants-list li {
+  break-inside: avoid; /* 한 항목이 두 단에 걸쳐 잘리지 않게 */
+}
+
+/* ── 오른쪽 열 (제어시스템·탐사·로그 / FOOD PRODUCE·로그·ARCHIVE) ── */
+.term-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 흰색 링크 카드 (중앙제어시스템, ARCHIVE 공통) */
+.term-control {
+  min-height: 124px;
+  display: flex;
+  align-items: flex-start; /* 기본은 위쪽 정렬 (화살표가 오른쪽 위에 오도록) */
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--color-line);
+  background: var(--color-line);
+  color: var(--color-terminal-bg);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.term-control:hover {
+  background: #dddddd;
+}
+
+.term-control:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 4px;
+}
+
+.term-control-name {
+  align-self: flex-end; /* 이름만 카드 아래쪽으로 내림 */
+  font: 400 22px/1.05 var(--font-sans);
+}
+
+.term-control-arrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.term-control:hover .term-control-arrow,
+.term-control:focus-visible .term-control-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* 파란색 EXPEDITION 카드: 흰 카드와 모양은 같고 색만 다름 */
+.term-control--expedition {
+  border-color: var(--color-expedition);
+  background: var(--color-expedition);
+  color: var(--color-line);
+}
+
+.term-control--expedition:hover {
+  background: var(--color-expedition-hover);
+}
+
+/* CURRENT LOG 패널: 남은 높이를 모두 채움 */
+.term-log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border: 1px solid var(--color-terminal-line);
+}
+
+.term-log-title {
+  margin: 0;
+  font: 400 22px var(--font-sans);
+}
+
+.term-log-list {
+  flex: 1;
+  min-height: 0;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;  /* 기록이 많으면 이 안에서만 스크롤 */
+  contain: size;     /* 기록이 많아져도 패널 크기를 늘리지 않게 */
+  font: 300 13px/1.6 var(--font-sans);
+}
+
+.term-log-time {
+  margin-right: 8px;
+  opacity: 0.6;
+}
+
+/* ── 하단 진행 바 ── */
+.term-recovery {
+  margin: 20px 43px 0;
+}
+
+.term-progress {
+  height: 10px;
+  background: var(--color-terminal-track);
+}
+
+.term-progress-fill {
+  height: 100%;
+  background: var(--color-line);
+  transition: width 0.4s ease;
+}
+
+.term-progress-label {
+  margin: 12px 0 0;
+  font: 400 15px var(--font-sans);
+}
+
+/* ── 중간 화면(태블릿): 한 줄로 쌓기 ── */
+@media (max-width: 900px) {
+  .term {
+    align-items: flex-start;
+    padding: 32px 24px;
+  }
+
+  /* 상태 표시를 구석 고정 대신 맨 위에 일반 배치 */
+  .term-readout {
+    position: static;
+    margin-bottom: 32px;
+  }
+
+  /* 돌아가기 버튼도 구석 대신 제목 위에 일반 배치 */
+  .term-back--top {
+    position: static;
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  .term-body {
+    grid-template-columns: 1fr;
+  }
+
+  .term-log-list {
+    contain: none;
+    max-height: 220px;
+  }
+
+  .term-recovery {
+    margin: 20px 0 0;
+  }
+
+  .term-detail {
+    min-height: 320px;
+  }
+
+  /* 층 카드: 한 화면에 2개 + 다음 카드 일부 */
+  .term-floor {
+    flex-basis: calc((100% - 12px) / 2.15);
+  }
+
+  /* 팝업 목록을 2단으로 */
+  .term-plants-list {
+    columns: 2;
+  }
+}
+
+/* ── 좁은 화면(휴대폰): 카드를 한 줄에 하나씩 ── */
+@media (max-width: 600px) {
+  .term {
+    padding: 24px 16px;
+  }
+
+  .term-code {
+    font-size: 16px;
+  }
+
+  .term-title {
+    font-size: 34px;
+  }
+
+  .term-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .term-card {
+    height: 120px;
+  }
+
+  .term-card-name {
+    font-size: 22px;
+  }
+
+  .term-card-access {
+    font-size: 26px;
+  }
+
+  .term-detail {
+    padding: 20px;
+  }
+
+  .term-detail-name {
+    font-size: 28px;
+  }
+
+  .term-detail-desc {
+    font-size: 15px;
+  }
+
+  .term-unit {
+    min-height: 380px;
+  }
+
+  .term-unit-readings {
+    margin-top: 40px;
+  }
+
+  .term-hall {
+    min-height: auto;
+    padding: 20px 16px;
+  }
+
+  /* 층 카드: 한 화면에 1개 + 다음 카드 일부 */
+  .term-floor {
+    flex-basis: 80%;
+    height: 340px;
+  }
+
+  .term-btn {
+    height: 52px;
+  }
+
+  .term-btn--wide {
+    height: 64px;
+  }
+
+  .term-plants-inner {
+    padding: 20px 16px 16px;
+  }
+
+  .term-plants-title {
+    font-size: 26px;
+  }
+
+  .term-plants-list {
+    columns: 1;
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "013",
+    "breakfast": "Oat porridge with dried berries",
+    "lunch": "Lentil stew, flatbread, pickled radish",
+    "dinner": "Potato dumplings, beet salad"
+  },
+  {
+    "id": "021",
+    "breakfast": "Barley tea, rice crackers",
+    "lunch": "Sweet potato curry, steamed rice",
+    "dinner": "Mushroom broth, kale chips"
+  },
+  {
+    "id": "047",
+    "breakfast": "Grain soup",
+    "lunch": "Rye bread with apple jam, carrot soup, cabbage salad",
+    "dinner": "Synthetic protein kit"
+  },
+  {
+    "id": "058",
+    "breakfast": "Boiled eggs, rye toast",
+    "lunch": "Bean burger, root vegetable fries",
+    "dinner": "Vegetable congee"
+  },
+  {
+    "id": "066",
+    "breakfast": "Buckwheat pancakes, honey",
+    "lunch": "Tofu bibimbap with spinach",
+    "dinner": "Miso soup, seaweed rice ball"
+  },
+  {
+    "id": "079",
+    "breakfast": "Cornmeal porridge",
+    "lunch": "Cabbage rolls in tomato sauce",
+    "dinner": "Synthetic protein kit"
+  },
+  {
+    "id": "085",
+    "breakfast": "Millet porridge",
+    "lunch": "Leek and potato soup, crispbread",
+    "dinner": "Steamed buns, chive pancake"
+  },
+  {
+    "id": "093",
+    "breakfast": "Yogurt with honeycomb",
+    "lunch": "Chickpea stew, carrot salad",
+    "dinner": "Baked turnip, herb rice"
+  },
+  {
+    "id": "102",
+    "breakfast": "Corn chowder",
+    "lunch": "Soy meat sandwich, powdered wine, braised mushrooms",
+    "dinner": "Nutritional Energy Gel"
+  },
+  {
+    "id": "110",
+    "breakfast": "Nutritional Energy Gel",
+    "lunch": "Algae noodles, pickled cucumber",
+    "dinner": "Pumpkin soup, rye bread"
+  },
+  {
+    "id": "118",
+    "breakfast": "Fruit compote, toast",
+    "lunch": "Fried rice with mixed greens",
+    "dinner": "Lentil soup, potato pancake"
+  },
+  {
+    "id": "125",
+    "breakfast": "Rice porridge, pickled plum",
+    "lunch": "Mushroom risotto",
+    "dinner": "Soy meat stew, steamed greens"
+  },
+  {
+    "id": "131",
+    "breakfast": "Strawberry oat bar",
+    "lunch": "Radish kimchi, barley rice, bean sprout soup",
+    "dinner": "Roasted root vegetables"
+  },
+  {
+    "id": "140",
+    "breakfast": "Grain soup",
+    "lunch": "Spinach pasta, tomato salad",
+    "dinner": "Synthetic protein kit"
+  }
+]
