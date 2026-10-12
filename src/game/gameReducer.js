@@ -10,6 +10,7 @@ import RECIPES from '../data/recipes.json'
 import CONTROL from '../data/control-system.json'
 import RATION from '../data/emergency-ration.json'
 import SIGNALS from '../data/signals.json'
+import ACHIEVEMENTS from '../data/achievements.json'
 
 // 탐사 1회가 끝날 때 매트릭스 시도권 충전 진행도를 올립니다.
 function advanceCalibration(calibration) {
@@ -20,6 +21,24 @@ function advanceCalibration(calibration) {
     return { charges: Math.min(maxCharges, calibration.charges + 1), progress: 0 }
   }
   return { ...calibration, progress }
+}
+
+// 어떤 일이 일어났을 때(event) 조건이 맞는 업적을 새로 받습니다.
+// event 예: { type: 'expedition', locationId: 'outside' }
+// 이미 받은 업적은 다시 받지 않습니다.
+function unlockAchievements(achievements, event, time) {
+  const unlockedIds = achievements.map((entry) => entry.id)
+
+  const fresh = ACHIEVEMENTS.filter((achievement) => {
+    if (unlockedIds.includes(achievement.id)) return false
+    const { trigger } = achievement
+    if (trigger.type !== event.type) return false
+    if (trigger.locationId && trigger.locationId !== event.locationId) return false
+    return true
+  })
+
+  if (fresh.length === 0) return achievements
+  return [...achievements, ...fresh.map((achievement) => ({ id: achievement.id, time }))]
 }
 
 export function gameReducer(state, action) {
@@ -56,7 +75,7 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 탐사 완료
+    // 탐사 완료: 차감 + 획득 + 기록 + 시도권 충전 + 업적 확인
     case 'expedition/complete': {
       const { locationId, foundItemIds, earlyReturn, time } = action
 
@@ -84,6 +103,7 @@ export function gameReducer(state, action) {
         ...state,
         inventory,
         calibration: advanceCalibration(state.calibration),
+        achievements: unlockAchievements(state.achievements, { type: 'expedition', locationId }, time),
         expeditionLog: [
           ...state.expeditionLog,
           {
@@ -155,14 +175,12 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 신호 연결: 연결 기록 + 보급품 추가를 한 번에
-    // action: { sectorId, time }
+    // 신호 연결: 연결 기록 + 보급품 추가
     case 'signal/link': {
       const { sectorId, time } = action
       const sector = SIGNALS.sectors.find((candidate) => candidate.id === sectorId)
       if (!sector) return state
 
-      // 지금 시도 가능한(앞 구역이 모두 연결된) 구역만
       const status = getSectorStatus(SIGNALS.sectors, state.signals.linked, sectorId)
       if (status !== 'weak') return state
 

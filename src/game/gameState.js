@@ -16,6 +16,7 @@ export function createInitialState() {
       lastTick: new Date().toISOString(),
     },
     signals: { linked: [] },                          // 신호가 연결된 구역 ID 목록
+    achievements: [],                                 // 받은 업적 [{ id, time }]
     installLog: [],                                   // 부품 투입 내역
     expeditionLog: [],                                // 탐사 내역
     calibrationLog: [],                               // 매트릭스 퍼즐 내역

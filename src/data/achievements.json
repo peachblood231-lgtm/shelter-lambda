@@ -1,0 +1,8 @@
+[
+  {
+    "id": "pioneer",
+    "title": "개척자",
+    "description": "한 여성이 70년 만에 람다 바깥으로 발을 내디뎠습니다. 그녀의 이름은 베네티 후입니다.",
+    "trigger": { "type": "expedition", "locationId": "outside" }
+  }
+]

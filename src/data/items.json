@@ -35,6 +35,7 @@
   { "id": "cold-weather-suit", "name": "COLD-WEATHER SUIT", "category": "gear", "description": "외부 탐사용 방한복. OUTSIDE 탐사 1회에 1벌이 소모된다." },
   { "id": "patched-cold-weather-suit", "name": "PATCHED SUIT", "category": "gear", "description": "덕트 테이프로 덧댄 방한복. 바깥에서 끝까지 버텨 줄지는 장담할 수 없다.", "earlyReturn": { "chance": 0.3, "rolls": 2 } },
   { "id": "torn-cold-weather-suit", "name": "TORN COLD-WEATHER SUIT", "category": "gear", "description": "여기저기 찢어진 방한복. 잘 기우면 한 번쯤 다시 입을 수 있을 것 같다." },
+  { "id": "field-radio", "name": "FIELD RADIO", "category": "gear", "description": "수리한 무전기. 다른 셸터의 주파수를 잡을 수 있다. 신호 복구에 필요하다.", "unique": true },
   { "id": "gas-mask", "name": "GAS MASK (NO FILTER)", "category": "gear", "description": "필터가 없는 방독면. 필터만 구하면 쓸 수 있을지도.", "unique": true },
   { "id": "gas-mask-filtered", "name": "GAS MASK (WITH FILTER)", "category": "gear", "description": "필터가 끼워진 방독면.", "unique": true },
   { "id": "broken-radio", "name": "BROKEN RADIO", "category": "gear", "description": "전원이 들어오지 않는다. 안테나가 휘어 있다.", "unique": true },

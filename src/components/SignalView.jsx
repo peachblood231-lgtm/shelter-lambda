@@ -24,6 +24,9 @@ const CONTROLS = [
 // 시작할 때 내 파형 값
 const START_WAVE = { freq: 1, amp: 0.5, phase: 0 }
 
+// 무전기가 없을 때 보여 줄 잡음 크기
+const STATIC_LEVEL = 0.25
+
 // 상태 글자
 const STATUS_LABEL = { linked: 'LINKED', weak: 'WEAK', locked: '···' }
 
@@ -45,9 +48,11 @@ function toPath(values) {
 // - holdSeconds: 일치율을 몇 초 유지하면 연결되는지
 // - linkedIds: 연결된 구역 ID 목록
 // - selectedId: 선택한 구역 ID
+// - hasReceiver: 무전기(FIELD RADIO)를 가지고 있는지
+// - receiverName: 무전기 아이템 이름 (안내 문구용)
 // - onSelect: 구역 선택 (구역 ID)
 // - onLink: 연결 성공 (구역 ID)
-function SignalView({ sectors, holdSeconds, linkedIds, selectedId, onSelect, onLink }) {
+function SignalView({ sectors, holdSeconds, linkedIds, selectedId, hasReceiver, receiverName, onSelect, onLink }) {
   const sector = sectors.find((candidate) => candidate.id === selectedId)
   const status = getSectorStatus(sectors, linkedIds, selectedId)
 
@@ -77,13 +82,15 @@ function SignalView({ sectors, holdSeconds, linkedIds, selectedId, onSelect, onL
       </ul>
 
       {/* ── 가운데: 오실로스코프 ──
-          key가 바뀌면(다른 구역을 고르면) 완전히 새로 만들어져서
+          key가 바뀌면(다른 구역을 고르거나, 무전기를 얻으면) 완전히 새로 만들어져서
           슬라이더·유지 시간·노이즈가 모두 처음 상태로 시작합니다. */}
       <SignalScope
-        key={selectedId}
+        key={`${selectedId}-${hasReceiver}`}
         sector={sector}
         status={status}
         holdSeconds={holdSeconds}
+        hasReceiver={hasReceiver}
+        receiverName={receiverName}
         onLink={onLink}
       />
     </div>
@@ -91,13 +98,14 @@ function SignalView({ sectors, holdSeconds, linkedIds, selectedId, onSelect, onL
 }
 
 // 오실로스코프 + 슬라이더 + 일치율 (구역 하나 분량)
-function SignalScope({ sector, status, holdSeconds, onLink }) {
-  const isPlayable = status === 'weak'
+function SignalScope({ sector, status, holdSeconds, hasReceiver, receiverName, onLink }) {
+  // 무전기가 없으면 아직 연결 안 된 구역은 조작 불가
+  const isNoReceiver = !hasReceiver && status !== 'linked'
+  const isPlayable = status === 'weak' && hasReceiver
   const holdTarget = holdSeconds * 1000
 
-  // 내 파형 값, 목표 파형 노이즈, 일치율 유지 시간(밀리초)
   const [wave, setWave] = useState(START_WAVE)
-  const [noise, setNoise] = useState(() => makeNoise(sector.noise))
+  const [noise, setNoise] = useState(() => makeNoise(isNoReceiver ? STATIC_LEVEL : sector.noise))
   const [holdMs, setHoldMs] = useState(0)
 
   // 이 구역의 연결 신호를 이미 보냈는지 (한 번만 보내기 위한 안전장치)
@@ -106,21 +114,23 @@ function SignalScope({ sector, status, holdSeconds, onLink }) {
   // 파형과 일치율 계산
   const target = sampleWave(sector.target)
   const player = isPlayable ? sampleWave(wave) : target
-  const score = isPlayable ? matchScore(player, target) : status === 'linked' ? 1 : 0
-  const isGood = score >= sector.threshold
+  let score = 0
+  if (status === 'linked') score = 1
+  else if (isPlayable) score = matchScore(player, target)
+  const isGood = isPlayable && score >= sector.threshold
 
-  // 최신 일치 여부를 타이머 안에서 읽기 위한 손잡이
   const goodRef = useRef(isGood)
   goodRef.current = isGood
 
-  // 노이즈: 0.12초마다 새로 (연결 전에만)
+  // 노이즈: 0.12초마다 새로 (연결 전에만). 무전기가 없으면 큰 잡음
   useEffect(() => {
     if (status === 'linked') return undefined
-    const timer = setInterval(() => setNoise(makeNoise(sector.noise)), 120)
+    const level = isNoReceiver ? STATIC_LEVEL : sector.noise
+    const timer = setInterval(() => setNoise(makeNoise(level)), 120)
     return () => clearInterval(timer)
-  }, [sector.noise, status])
+  }, [sector.noise, status, isNoReceiver])
 
-  // 유지 시간: 0.1초마다 확인. 기준 이상이면 늘고, 떨어지면 0으로
+  // 유지 시간: 0.1초마다 확인
   useEffect(() => {
     if (!isPlayable) return undefined
     const timer = setInterval(() => {
@@ -137,16 +147,27 @@ function SignalScope({ sector, status, holdSeconds, onLink }) {
     }
   }, [holdMs, holdTarget, isPlayable, onLink, sector.id])
 
-  // 보여 줄 목표 파형 (연결 전에는 노이즈로 흔들림)
-  const shownTarget =
-    status === 'linked' || noise.length !== SAMPLES ? target : target.map((y, i) => y + noise[i])
+  // 보여 줄 선
+  // - 무전기 없음: 잡음만 (가운데 선 근처)
+  // - 연결됨: 깨끗한 목표 파형
+  // - 그 외: 노이즈로 흔들리는 목표 파형
+  let shownTarget = target
+  if (isNoReceiver) shownTarget = noise
+  else if (status !== 'linked' && noise.length === SAMPLES) shownTarget = target.map((y, i) => y + noise[i])
 
   // 안내 문구
   let note = `HOLD ${Math.round(sector.threshold * 100)}% FOR ${holdSeconds} SECONDS TO LINK`
-  if (status === 'linked') note = 'LINK ESTABLISHED · TRANSMISSION RECEIVED'
-  else if (isGood) note = 'SIGNAL LOCKING…'
+  let noteTone = ''
+  if (status === 'linked') {
+    note = 'LINK ESTABLISHED · TRANSMISSION RECEIVED'
+    noteTone = 'is-success'
+  } else if (isNoReceiver) {
+    note = `NO RECEIVER · REPAIR A RADIO TO GET ${receiverName}`
+    noteTone = 'is-warning'
+  } else if (isGood) {
+    note = 'SIGNAL LOCKING…'
+  }
 
-  // 막대 길이
   const holdPercent = status === 'linked' ? 100 : Math.min(100, (holdMs / holdTarget) * 100)
 
   return (
@@ -160,7 +181,7 @@ function SignalScope({ sector, status, holdSeconds, onLink }) {
         </div>
         <dl className={isGood ? 'sig-match is-good' : 'sig-match'}>
           <dt>MATCH</dt>
-          <dd>{Math.round(score * 100)}%</dd>
+          <dd>{isNoReceiver ? '--' : `${Math.round(score * 100)}%`}</dd>
         </dl>
       </div>
 
@@ -186,10 +207,10 @@ function SignalScope({ sector, status, holdSeconds, onLink }) {
             x2={(SCOPE_W / 8) * n}
           />
         ))}
-        {/* 목표 파형 (주황) */}
+        {/* 목표 파형 또는 잡음 (주황) */}
         <path className="sig-target" d={toPath(shownTarget)} />
-        {/* 내 파형 (흰색) */}
-        {status !== 'linked' && <path className="sig-player" d={toPath(player)} />}
+        {/* 내 파형 (흰색) — 조작할 수 있을 때만 */}
+        {isPlayable && <path className="sig-player" d={toPath(player)} />}
       </svg>
 
       {/* 유지 막대 */}
@@ -197,10 +218,10 @@ function SignalScope({ sector, status, holdSeconds, onLink }) {
         <div className="sig-hold-fill" style={{ width: `${holdPercent}%` }} />
       </div>
 
-      {/* 슬라이더 3개 (연결된 구역은 목표값으로 고정) */}
+      {/* 슬라이더 3개 (연결된 구역은 목표값으로 고정, 무전기 없으면 잠김) */}
       <div className="sig-controls">
         {CONTROLS.map((control) => {
-          const value = isPlayable ? wave[control.key] : sector.target[control.key]
+          const value = status === 'linked' ? sector.target[control.key] : wave[control.key]
           return (
             <label key={control.key} className="sig-control">
               <span>{control.label}</span>
@@ -219,7 +240,7 @@ function SignalScope({ sector, status, holdSeconds, onLink }) {
         })}
       </div>
 
-      <p className={status === 'linked' ? 'sig-note is-success' : 'sig-note'} role="status">
+      <p className={`sig-note ${noteTone}`} role="status">
         {note}
       </p>
     </section>

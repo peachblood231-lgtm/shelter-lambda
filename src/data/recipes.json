@@ -7,5 +7,24 @@
       { "itemId": "duct-tape", "count": 1 }
     ],
     "output": { "itemId": "patched-cold-weather-suit", "count": 1 }
+  },
+  {
+    "id": "repair-broken-radio",
+    "label": "REPAIR",
+    "inputs": [
+      { "itemId": "broken-radio", "count": 1 },
+      { "itemId": "wire-bundle", "count": 1 },
+      { "itemId": "small-battery", "count": 1 }
+    ],
+    "output": { "itemId": "field-radio", "count": 1 }
+  },
+  {
+    "id": "repair-hand-crank-radio",
+    "label": "REPAIR",
+    "inputs": [
+      { "itemId": "hand-crank-radio", "count": 1 },
+      { "itemId": "tool-bundle", "count": 1 }
+    ],
+    "output": { "itemId": "field-radio", "count": 1 }
   }
 ]

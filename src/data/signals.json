@@ -1,6 +1,7 @@
 {
   "title": "SIGNAL RECOVERY",
   "holdSeconds": 2,
+  "requiredItemId": "field-radio",
   "sectors": [
     {
       "id": "theta",

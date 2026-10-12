@@ -344,3 +344,8 @@
     text-align: left;
   }
 }
+
+.sig-note.is-warning {
+  color: var(--color-warning);
+  opacity: 1;
+}
