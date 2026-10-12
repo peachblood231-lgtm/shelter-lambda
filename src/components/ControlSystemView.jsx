@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ConfirmDialog from './ConfirmDialog'
+import HeatMatrix from './HeatMatrix'
 import { formatTemp } from '../utils/format'
 import { getStage, getRepairPercent } from '../utils/controlStage'
 
@@ -8,34 +9,60 @@ import { getStage, getRepairPercent } from '../utils/controlStage'
 // - config: control-system.json 내용
 // - system: 저장된 복구도 { repair, maxRepair }
 // - inventory: 보유 아이템 { 아이템ID: 수량 }
-// - items: items.json 아이템 목록
-// - currentTemperature: 지금 평균 온도 (오른쪽 위 INSIDE와 같은 값)
-// - onInstall: 부품을 투입할 때 실행할 함수 (아이템 ID를 넘김)
-function ControlSystemView({ config, system, inventory, items, currentTemperature, onInstall }) {
-  // 목록에서 선택한 아이템 ID
+// - items: 이 시스템에 넣을 수 있는 아이템 목록
+// - currentTemperature: 지금 평균 온도
+// - calibration: 매트릭스 시도권 { charges, progress }
+// - hasHint: 매트릭스 힌트를 쓸 수 있는지 (정비 보고서 보유)
+// - isMatrixOpen: 매트릭스 퍼즐이 열려 있는지 (닫기는 왼쪽 위 돌아가기 버튼이 담당)
+// - onOpenMatrix: 매트릭스 퍼즐을 열 때 실행
+// - onInstall: 부품 투입 (아이템 ID)
+// - onStartCalibration: 매트릭스 시작 (시도권 사용)
+// - onFinishCalibration: 매트릭스 끝 (성공 여부)
+function ControlSystemView({
+  config,
+  system,
+  inventory,
+  items,
+  currentTemperature,
+  calibration,
+  hasHint,
+  isMatrixOpen,
+  onOpenMatrix,
+  onInstall,
+  onStartCalibration,
+  onFinishCalibration,
+}) {
+  // ── 부품 투입 ──
   const [selectedId, setSelectedId] = useState(null)
-  // 확인 팝업이 열려 있는지
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
-  // 방금 투입한 결과 (안내 문구용)
   const [lastInstalled, setLastInstalled] = useState(null)
+
+  // ── 매트릭스 ──
+  const [isMatrixConfirmOpen, setIsMatrixConfirmOpen] = useState(false)
+  // 퍼즐을 열 때마다 새 문제를 만들기 위한 번호
+  const [matrixRun, setMatrixRun] = useState(0)
 
   // 복구 퍼센트와 단계
   const percent = getRepairPercent(system)
   const stage = getStage(config.stages, percent)
   const isComplete = system.repair >= system.maxRepair
 
+  // 매트릭스 난이도와 시도 가능 여부
+  const matrix = config.matrix
+  const presses = matrix.scrambleByStage[stage.label] ?? matrix.defaultScramble
+  const moveLimit = presses + matrix.extraMoves
+  const canCalibrate = calibration.charges > 0 && !isComplete
+  const isChargesFull = calibration.charges >= matrix.maxCharges
+
   // 선택한 아이템 정보
   const selectedItem = items.find((item) => item.id === selectedId)
-  const selectedPoints = selectedItem?.repair?.[config.id] // 이 시스템 복구 점수
+  const selectedPoints = selectedItem?.repair?.[config.id]
   const selectedOwned = inventory[selectedId] ?? 0
 
-  // INSERT를 누를 수 있는지: 선택함 + 이 시스템에 등록됨 + 수량 있음 + 아직 미완료
   const canInsert = Boolean(selectedItem && selectedPoints && selectedOwned > 0 && !isComplete)
-
-  // 실제로 오를 점수 (만점을 넘지 않게)
   const expectedGain = selectedPoints ? Math.min(selectedPoints, system.maxRepair - system.repair) : 0
 
-  // INSERT 위 안내 문구와 색
+  // INSERT 위 안내 문구
   let hint = 'SELECT A PART'
   let hintTone = ''
   if (isComplete) {
@@ -54,51 +81,98 @@ function ControlSystemView({ config, system, inventory, items, currentTemperatur
     hint = `${selectedItem.name} · +${selectedPoints}`
   }
 
-  // 목록에서 아이템 선택
   function handleSelect(id) {
     setSelectedId(id)
-    setLastInstalled(null) // 이전 투입 결과 문구는 지움
+    setLastInstalled(null)
   }
 
-  // 확인 팝업에서 CONFIRM
   function handleConfirm() {
     onInstall(selectedItem.id)
     setLastInstalled({ name: selectedItem.name, gained: expectedGain })
   }
 
+  // 매트릭스 시작 확인 → 시도권 사용 → 새 문제로 퍼즐 열기
+  function handleStartMatrix() {
+    onStartCalibration()
+    setMatrixRun((run) => run + 1)
+    onOpenMatrix()
+  }
+
   return (
-    // tone-xxx: 단계 색 (CONDITION 테두리, REPAIR 숫자에 사용)
     <div className={`ctcs tone-${stage.tone}`}>
-      {/* ── 왼쪽·가운데: 카드 2×2 ── */}
-      <div className="ctcs-grid">
-        {/* 지금 평균 온도 (흰 카드) */}
-        <section className="ctcs-card ctcs-card--current">
-          <h2 className="ctcs-card-title">
-            AVERAGE CURRENT
-            <br />
-            TEMPERATURE
-          </h2>
-          <p className="ctcs-card-value">{formatTemp(currentTemperature)}</p>
-        </section>
+      {/* ── 왼쪽: 카드 2×2 또는 매트릭스 퍼즐 ── */}
+      {isMatrixOpen ? (
+        <HeatMatrix
+          key={matrixRun}
+          title={matrix.title}
+          size={matrix.size}
+          presses={presses}
+          moveLimit={moveLimit}
+          reward={matrix.reward}
+          showHint={hasHint}
+          onFinish={onFinishCalibration}
+        />
+      ) : (
+        <div className="ctcs-grid">
+          {/* 지금 평균 온도 (흰 카드) */}
+          <section className="ctcs-card ctcs-card--current">
+            <h2 className="ctcs-card-title">
+              AVERAGE CURRENT
+              <br />
+              TEMPERATURE
+            </h2>
+            <p className="ctcs-card-value">{formatTemp(currentTemperature)}</p>
+          </section>
 
-        {/* 상태: 큰 글자 = 단계, 작은 글자 = 원인 */}
-        <section className="ctcs-card ctcs-condition" aria-live="polite">
-          <h2 className="ctcs-card-title">CONDITION</h2>
-          <div className="ctcs-condition-body">
-            <p className="ctcs-stage">{stage.label}</p>
-            <p className="ctcs-cause">{isComplete ? config.completeCause : config.cause}</p>
-          </div>
-        </section>
+          {/* 상태: 큰 글자 = 단계, 작은 글자 = 원인 */}
+          <section className="ctcs-card ctcs-condition" aria-live="polite">
+            <h2 className="ctcs-card-title">CONDITION</h2>
+            <div className="ctcs-condition-body">
+              <p className="ctcs-stage">{stage.label}</p>
+              <p className="ctcs-cause">{isComplete ? config.completeCause : config.cause}</p>
+            </div>
+          </section>
 
-        {/* 목표 온도 */}
-        <section className="ctcs-card">
-          <h2 className="ctcs-card-title">TARGET TEMPERATURE</h2>
-          <p className="ctcs-card-value">{config.targetTemperature} °C</p>
-        </section>
+          {/* 목표 온도 */}
+          <section className="ctcs-card">
+            <h2 className="ctcs-card-title">TARGET TEMPERATURE</h2>
+            <p className="ctcs-card-value">{config.targetTemperature} °C</p>
+          </section>
 
-        {/* 오른쪽 아래 표기 */}
-        <p className="ctcs-project">{config.projectLabel}</p>
-      </div>
+          {/* 매트릭스 시작 카드 */}
+          <button
+            type="button"
+            className={canCalibrate ? 'ctcs-matrix-card' : 'ctcs-matrix-card is-blocked'}
+            aria-disabled={canCalibrate ? undefined : 'true'}
+            onClick={() => {
+              if (canCalibrate) setIsMatrixConfirmOpen(true)
+            }}
+          >
+            <span className="ctcs-matrix-top">
+              <span className="ctcs-matrix-title">{matrix.title}</span>
+              <svg className="ctcs-matrix-arrow" width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+                <path d="M3 25L25 3M9 3h16v16" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+            </span>
+            <span className="ctcs-matrix-bottom">
+              <span className="ctcs-matrix-meta">
+                <span>
+                  CHARGES {calibration.charges} / {matrix.maxCharges}
+                </span>
+                <span>
+                  {isChargesFull
+                    ? 'CHARGES FULL'
+                    : `NEXT CHARGE IN ${matrix.expeditionsPerCharge - calibration.progress} EXPEDITIONS`}
+                </span>
+                {!canCalibrate && (
+                  <span className="ctcs-matrix-warning">{isComplete ? 'SYSTEM OPERATIONAL' : 'NO CHARGES'}</span>
+                )}
+              </span>
+              <span className="ctcs-matrix-project">{config.projectLabel}</span>
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* ── 오른쪽: REPAIR + INVENTORY ── */}
       <aside className="ctcs-side">
@@ -118,7 +192,6 @@ function ControlSystemView({ config, system, inventory, items, currentTemperatur
               const owned = inventory[item.id] ?? 0
               const isSelected = item.id === selectedId
 
-              // 클래스 조립: 선택됨 / 쓸 수 없음(미등록 또는 수량 0)
               let className = 'ctcs-inv-item'
               if (isSelected) className += ' is-selected'
               if (!points || owned < 1) className += ' is-unavailable'
@@ -140,7 +213,6 @@ function ControlSystemView({ config, system, inventory, items, currentTemperatur
             })}
           </ul>
 
-          {/* 안내 문구 (role="status": 화면 낭독기가 읽어 줌) */}
           <p className={`ctcs-hint ${hintTone}`} role="status">
             {hint}
           </p>
@@ -156,22 +228,36 @@ function ControlSystemView({ config, system, inventory, items, currentTemperatur
         </div>
       </aside>
 
-      {/* 확인 팝업 */}
+      {/* 부품 투입 확인 팝업 */}
       {isConfirmOpen && selectedItem && (
         <ConfirmDialog
           title={`INSERT ${selectedItem.name}?`}
           rows={[
             { label: 'PART', value: `${selectedItem.name} × 1` },
             { label: 'REPAIR', value: `+${expectedGain}` },
-            {
-              label: 'RESULT',
-              value: `${system.repair} → ${system.repair + expectedGain} / ${system.maxRepair}`,
-            },
+            { label: 'RESULT', value: `${system.repair} → ${system.repair + expectedGain} / ${system.maxRepair}` },
             { label: 'STOCK', value: `${selectedOwned} → ${selectedOwned - 1}` },
           ]}
           confirmLabel="CONFIRM INSERT"
           onConfirm={handleConfirm}
           onClose={() => setIsConfirmOpen(false)}
+        />
+      )}
+
+      {/* 매트릭스 시작 확인 팝업 */}
+      {isMatrixConfirmOpen && (
+        <ConfirmDialog
+          title="START CALIBRATION?"
+          rows={[
+            { label: 'CHARGES', value: `${calibration.charges} → ${calibration.charges - 1}` },
+            { label: 'DIFFICULTY', value: `${presses} DISPLACED SECTORS` },
+            { label: 'MOVE LIMIT', value: `${moveLimit}` },
+            { label: 'REWARD', value: `REPAIR +${matrix.reward}` },
+            ...(hasHint ? [{ label: 'HINT', value: 'MAINTENANCE REPORT' }] : []),
+          ]}
+          confirmLabel="START"
+          onConfirm={handleStartMatrix}
+          onClose={() => setIsMatrixConfirmOpen(false)}
         />
       )}
     </div>

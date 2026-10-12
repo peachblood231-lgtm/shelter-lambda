@@ -1,0 +1,75 @@
+/* =========================================
+   다이닝홀 비상 배급 카드 전용 스타일
+   색상·글꼴 규칙은 index.css의 :root 값을 그대로 사용합니다.
+   ========================================= */
+
+.ration-card {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 18px 16px;
+  border: 1px solid var(--color-terminal-line);
+}
+
+/* 제목(왼쪽) + 숫자(오른쪽) */
+.ration-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ration-title {
+  margin: 0;
+  font: 400 12px var(--font-sans);
+  letter-spacing: 0.1em;
+}
+
+.ration-value {
+  margin: 0;
+  font: 400 22px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.ration-value span {
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+/* 남은 시간: 숫자 폭이 일정해서 흔들리지 않게 */
+.ration-next {
+  margin: 0;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+/* COLLECT 버튼: 호버하면 흰 배경 + 검은 글씨 */
+.ration-collect {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--color-line);
+  background: none;
+  color: inherit;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ration-collect:hover:not(:disabled) {
+  background: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+.ration-collect:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 3px;
+}
+
+.ration-collect:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

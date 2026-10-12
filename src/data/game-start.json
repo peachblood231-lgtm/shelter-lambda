@@ -13,5 +13,12 @@
       "repair": 450,
       "maxRepair": 1000
     }
+  },
+  "calibration": {
+    "charges": 1,
+    "progress": 0
+  },
+  "ration": {
+    "stock": 1
   }
 }

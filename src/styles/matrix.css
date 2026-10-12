@@ -1,0 +1,286 @@
+/* =========================================
+   열 분배 매트릭스 (시작 카드 + 퍼즐) 전용 스타일
+   색상·글꼴 규칙은 index.css의 :root 값을 그대로 사용합니다.
+   ========================================= */
+
+/* ── 시작 카드 (제어시스템 화면 오른쪽 아래 칸) ── */
+.ctcs-matrix-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 16px 16px 24px;
+  border: 1px solid var(--color-terminal-line);
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* 호버: 흰 배경 + 검은 글씨 */
+.ctcs-matrix-card:hover,
+.ctcs-matrix-card:focus-visible {
+  background: var(--color-line);
+  border-color: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+.ctcs-matrix-card:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 4px;
+}
+
+/* 시작할 수 없을 때 */
+.ctcs-matrix-card.is-blocked {
+  cursor: not-allowed;
+}
+
+.ctcs-matrix-card.is-blocked .ctcs-matrix-title {
+  opacity: 0.5;
+}
+
+.ctcs-matrix-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ctcs-matrix-title {
+  font: 400 22px/1.1 var(--font-sans);
+}
+
+.ctcs-matrix-arrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.ctcs-matrix-card:hover .ctcs-matrix-arrow,
+.ctcs-matrix-card:focus-visible .ctcs-matrix-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* 아래: 시도권 정보(왼쪽) + PROJECT HELIOS(오른쪽) */
+.ctcs-matrix-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ctcs-matrix-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font: 400 11px/1.5 var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.ctcs-matrix-meta > span:not(.ctcs-matrix-warning) {
+  opacity: 0.75;
+}
+
+.ctcs-matrix-warning {
+  color: var(--color-danger-text);
+}
+
+.ctcs-matrix-project {
+  font: 400 14px/1.3 var(--font-sans);
+  text-align: right;
+  white-space: pre-line;
+}
+
+/* ── 퍼즐 화면 ── */
+.hmx {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px;
+  border: 1px solid var(--color-line);
+  animation: term-fade-in 0.25s ease;
+}
+
+/* 머리: 제목(왼쪽) + 숫자(오른쪽) */
+.hmx-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-terminal-line);
+}
+
+.hmx-code {
+  margin: 0;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.hmx-title {
+  margin: 4px 0 0;
+  font: 400 24px var(--font-sans);
+}
+
+.hmx-stats {
+  display: flex;
+  gap: 20px;
+  margin: 0;
+}
+
+.hmx-stats div {
+  text-align: right;
+}
+
+.hmx-stats dt {
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.6;
+}
+
+.hmx-stats dd {
+  margin: 0;
+  font: 400 18px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 몸통: 판(왼쪽) + 설명(오른쪽) */
+.hmx-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px;
+  padding-top: 16px;
+}
+
+.hmx-grid {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+/* 칸: COLD = 남색 */
+.hmx-cell {
+  width: 84px;
+  height: 84px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px;
+  border: 1px solid var(--color-light-border);
+  background: var(--color-light-bg);
+  color: var(--color-line);
+  text-align: left;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, filter 0.15s ease;
+}
+
+/* 칸: WARM = 흰색 */
+.hmx-cell.is-warm {
+  border-color: var(--color-line);
+  background: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+.hmx-cell:hover:not(:disabled) {
+  filter: brightness(1.25);
+}
+
+.hmx-cell:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 3px;
+}
+
+.hmx-cell:disabled {
+  cursor: default;
+}
+
+/* 힌트 칸: 주황 점선 */
+.hmx-cell.is-hint {
+  outline: 1px dashed var(--color-warning);
+  outline-offset: 3px;
+}
+
+.hmx-cell-label {
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.hmx-cell-state {
+  font: 400 12px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+/* 오른쪽 설명 */
+.hmx-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font: 300 13px/1.7 var(--font-sans);
+}
+
+.hmx-rule {
+  margin: 0;
+  opacity: 0.85;
+}
+
+.hmx-hint {
+  margin: 0;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+  color: var(--color-warning);
+}
+
+/* 결과: 성공 초록 / 실패 주황 */
+.hmx-result {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid currentColor;
+  font: 400 12px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.hmx-result.is-success {
+  color: var(--color-accessible);
+}
+
+.hmx-result.is-fail {
+  color: var(--color-warning);
+}
+
+.hmx-back {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+/* ── 태블릿·휴대폰 ── */
+@media (max-width: 900px) {
+  .hmx-body {
+    grid-template-columns: 1fr;
+  }
+
+  .hmx-cell {
+    width: 72px;
+    height: 72px;
+  }
+
+  .ctcs-matrix-card {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hmx-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hmx-cell {
+    width: 64px;
+    height: 64px;
+  }
+}

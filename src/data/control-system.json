@@ -4,7 +4,6 @@
   "targetTemperature": 24,
   "cause": "FACILITY AGING",
   "completeCause": "ALL SUBSYSTEMS NOMINAL",
-  "projectLabel": "PROJECT\nHELIOS",
   "completeMessage": "SYSTEM RECOVERY COMPLETE",
   "recoveryLabel": "TEMPERATURE SYSTEM RECOVERY IN PROGRESS",
   "operationalLabel": "TEMPERATURE SYSTEM OPERATIONAL",
@@ -14,5 +13,21 @@
     { "min": 50, "label": "PARTIAL RECOVERY", "tone": "warning", "inside": { "base": 16.5, "range": 1.0 } },
     { "min": 75, "label": "STABILIZING", "tone": "normal", "inside": { "base": 20.5, "range": 0.6 } },
     { "min": 100, "label": "OPERATIONAL", "tone": "success", "inside": { "base": 24.0, "range": 0.2 } }
-  ]
+  ],
+  "matrix": {
+    "title": "HEAT DISTRIBUTION MATRIX",
+    "size": 4,
+    "reward": 20,
+    "maxCharges": 2,
+    "expeditionsPerCharge": 3,
+    "extraMoves": 4,
+    "defaultScramble": 4,
+    "scrambleByStage": {
+      "OFFLINE": 4,
+      "INITIALIZING": 4,
+      "PARTIAL RECOVERY": 5,
+      "STABILIZING": 6
+    },
+    "hintItemId": "maintenance-report"
+  }
 }

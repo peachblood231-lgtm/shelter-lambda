@@ -1,0 +1,21 @@
+/* =========================================
+   CURRENT LOG 전용 스타일
+   (index.css의 .term-log-list 위에 덧붙여 적용됩니다)
+   ========================================= */
+
+.term-log-list {
+  padding-top: 12px;
+
+  /* 스크롤바 숨기기 (스크롤 기능은 그대로) */
+  scrollbar-width: none;   /* Firefox */
+  -ms-overflow-style: none; /* 예전 Edge */
+
+  /* 위쪽 12px을 점점 투명하게: 위로 기록이 더 있다는 느낌 */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 12px);
+}
+
+/* 스크롤바 숨기기 (Chrome, Safari, Edge) */
+.term-log-list::-webkit-scrollbar {
+  display: none;
+}

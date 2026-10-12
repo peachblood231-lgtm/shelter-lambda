@@ -1,0 +1,346 @@
+/* =========================================
+   신호 복구 (오른쪽 위 구역 버튼 + SIGNAL 화면) 전용 스타일
+   색상·글꼴 규칙은 index.css의 :root 값을 그대로 사용합니다.
+   ========================================= */
+
+/* ── 오른쪽 위 구역 목록 버튼 ── */
+.term-signal {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  color: inherit;
+  text-align: right;
+  cursor: pointer;
+}
+
+.term-signal-row {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  font: 400 10px/1.6 var(--font-sans);
+  letter-spacing: 0.04em;
+}
+
+.term-signal-row > span {
+  text-align: right;
+}
+
+.term-signal-row .is-linked {
+  color: var(--color-accessible);
+}
+
+/* 마우스를 올리면 "SIGNAL ↗" 표시 */
+.term-signal-cta {
+  margin-top: 4px;
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.term-signal:hover .term-signal-cta,
+.term-signal:focus-visible .term-signal-cta {
+  opacity: 1;
+}
+
+.term-signal:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 4px;
+}
+
+/* ── SIGNAL 화면: 구역 목록(200px) + 오실로스코프 ── */
+.sig {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  height: 492px;
+  animation: term-fade-in 0.25s ease;
+}
+
+.sig-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 구역 버튼: 호버·선택하면 흰 배경 + 검은 글씨 */
+.sig-sector {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border: 1px solid var(--color-terminal-line);
+  background: none;
+  color: inherit;
+  font: 400 16px var(--font-sans);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.sig-sector:hover:not(:disabled),
+.sig-sector.is-selected {
+  background: var(--color-line);
+  border-color: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+.sig-sector:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 3px;
+}
+
+.sig-sector:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sig-sector-status {
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.1em;
+}
+
+.sig-sector.is-linked .sig-sector-status {
+  color: var(--color-accessible);
+}
+
+.sig-sector.is-weak .sig-sector-status {
+  color: var(--color-warning);
+}
+
+/* 선택된(흰 배경) 상태에서는 글자색 대비를 위해 검정 */
+.sig-sector.is-selected .sig-sector-status {
+  color: var(--color-terminal-bg);
+}
+
+/* 가운데 */
+.sig-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 1px solid var(--color-terminal-line);
+}
+
+.sig-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sig-code {
+  margin: 0;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.sig-name {
+  margin: 2px 0 0;
+  font: 400 24px var(--font-sans);
+}
+
+.sig-match {
+  margin: 0;
+  text-align: right;
+}
+
+.sig-match dt {
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.6;
+}
+
+.sig-match dd {
+  margin: 0;
+  font: 400 28px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.sig-match.is-good dd {
+  color: var(--color-accessible);
+}
+
+/* 오실로스코프 */
+.sig-scope {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-terminal-faint);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.sig-grid-line {
+  stroke: var(--color-terminal-faint);
+  stroke-width: 1;
+}
+
+.sig-target {
+  fill: none;
+  stroke: var(--color-warning);
+  stroke-width: 1.5;
+  opacity: 0.8;
+}
+
+.sig-player {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: 2;
+}
+
+/* 유지 막대 */
+.sig-hold {
+  height: 3px;
+  background: var(--color-terminal-faint);
+}
+
+.sig-hold-fill {
+  height: 100%;
+  background: var(--color-accessible);
+  transition: width 0.1s linear;
+}
+
+/* 슬라이더 */
+.sig-controls {
+  display: grid;
+  gap: 8px;
+}
+
+.sig-control {
+  display: grid;
+  grid-template-columns: 96px 1fr 72px;
+  align-items: center;
+  gap: 12px;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.sig-control input[type='range'] {
+  width: 100%;
+  accent-color: var(--color-line);
+  cursor: pointer;
+}
+
+.sig-control input[type='range']:disabled {
+  cursor: default;
+}
+
+.sig-control output {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.sig-note {
+  margin: 0;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.sig-note.is-success {
+  color: var(--color-accessible);
+  opacity: 1;
+}
+
+/* ── 오른쪽 열: TRANSMISSION ── */
+.sig-tx {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid var(--color-terminal-line);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.sig-tx::-webkit-scrollbar {
+  display: none;
+}
+
+.sig-tx-title {
+  margin: 0;
+  font: 400 18px var(--font-sans);
+}
+
+.sig-tx-from {
+  margin: 0;
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}
+
+.sig-tx-body p {
+  margin: 0 0 8px;
+  font: 300 13px/1.7 var(--font-sans);
+}
+
+.sig-tx-supply {
+  padding-top: 10px;
+  border-top: 1px solid var(--color-terminal-faint);
+}
+
+.sig-tx-supply h3 {
+  margin: 0 0 6px;
+  font: 400 10px var(--font-sans);
+  letter-spacing: 0.12em;
+  opacity: 0.6;
+}
+
+.sig-tx-supply ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sig-tx-supply li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: 400 12px/1.8 var(--font-sans);
+}
+
+.sig-tx-empty {
+  margin: 0;
+  font: 400 12px var(--font-sans);
+  letter-spacing: 0.06em;
+  opacity: 0.5;
+}
+
+/* ── 태블릿·휴대폰 ── */
+@media (max-width: 900px) {
+  .sig {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .sig-list {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .sig-sector {
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sig-control {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .sig-control output {
+    text-align: left;
+  }
+}

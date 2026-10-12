@@ -1,11 +1,26 @@
 // 게임 상태를 바꾸는 "명령"을 처리하는 곳입니다.
 // 화면에서는 상태를 직접 고치지 않고, 항상 여기로 명령을 보냅니다.
-// 이렇게 한곳에서만 바꾸면, 여러 값을 동시에 바꿔야 할 때도 "한 번에" 처리할 수 있습니다.
 import { createInitialState } from './gameState'
 import { planRationUse, hasRequirements, resolveRequirements, canCraft } from './expedition'
+import { collectRation } from './ration'
+import { getSectorStatus } from './signal'
 import ITEMS from '../data/items.json'
 import EXPEDITION from '../data/expedition.json'
 import RECIPES from '../data/recipes.json'
+import CONTROL from '../data/control-system.json'
+import RATION from '../data/emergency-ration.json'
+import SIGNALS from '../data/signals.json'
+
+// 탐사 1회가 끝날 때 매트릭스 시도권 충전 진행도를 올립니다.
+function advanceCalibration(calibration) {
+  const { expeditionsPerCharge, maxCharges } = CONTROL.matrix
+  const progress = calibration.progress + 1
+
+  if (progress >= expeditionsPerCharge) {
+    return { charges: Math.min(maxCharges, calibration.charges + 1), progress: 0 }
+  }
+  return { ...calibration, progress }
+}
 
 export function gameReducer(state, action) {
   switch (action.type) {
@@ -15,8 +30,7 @@ export function gameReducer(state, action) {
       return { ...state, archiveReadIds: [...state.archiveReadIds, action.id] }
     }
 
-    // 시스템에 부품 1개 투입: 인벤토리 차감 + 복구도 증가 + 투입 내역 기록
-    // action: { systemId, itemId, time }
+    // 시스템에 부품 1개 투입
     case 'system/installPart': {
       const { systemId, itemId, time } = action
 
@@ -25,9 +39,7 @@ export function gameReducer(state, action) {
       const system = state.systems[systemId]
       const owned = state.inventory[itemId] ?? 0
 
-      if (!item) return state
-      if (!points) return state
-      if (!system) return state
+      if (!item || !points || !system) return state
       if (owned < 1) return state
       if (system.repair >= system.maxRepair) return state
 
@@ -44,8 +56,7 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 탐사 완료: 장비·식량 차감 + 얻은 아이템 추가 + 기록
-    // action: { locationId, foundItemIds(미리 굴린 결과), earlyReturn, time }
+    // 탐사 완료
     case 'expedition/complete': {
       const { locationId, foundItemIds, earlyReturn, time } = action
 
@@ -58,17 +69,12 @@ export function gameReducer(state, action) {
 
       const inventory = { ...state.inventory }
 
-      // ① 장비 소모 (방한복이 있으면 방한복, 없으면 덧댄 방한복)
       for (const gear of resolveRequirements(location, state.inventory)) {
         inventory[gear.itemId] -= gear.count
       }
-
-      // ② 식량 소모
       for (const [foodId, count] of Object.entries(plan.use)) {
         inventory[foodId] -= count
       }
-
-      // ③ 얻은 아이템 추가 (등록되지 않은 아이템은 무시)
       for (const itemId of foundItemIds) {
         if (!ITEMS.some((item) => item.id === itemId)) continue
         inventory[itemId] = (inventory[itemId] ?? 0) + 1
@@ -77,6 +83,7 @@ export function gameReducer(state, action) {
       return {
         ...state,
         inventory,
+        calibration: advanceCalibration(state.calibration),
         expeditionLog: [
           ...state.expeditionLog,
           {
@@ -91,12 +98,11 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 조합: 재료 차감 + 결과물 추가를 한 번에
-    // action: { recipeId }
+    // 조합
     case 'craft/make': {
       const recipe = RECIPES.find((candidate) => candidate.id === action.recipeId)
       if (!recipe) return state
-      if (!canCraft(recipe, state.inventory)) return state // 재료 부족
+      if (!canCraft(recipe, state.inventory)) return state
 
       const inventory = { ...state.inventory }
       for (const input of recipe.inputs) {
@@ -105,6 +111,73 @@ export function gameReducer(state, action) {
       inventory[recipe.output.itemId] = (inventory[recipe.output.itemId] ?? 0) + recipe.output.count
 
       return { ...state, inventory }
+    }
+
+    // 매트릭스 시작: 시도권 1개 사용
+    case 'calibration/start': {
+      const system = state.systems[CONTROL.id]
+      if (state.calibration.charges < 1) return state
+      if (system && system.repair >= system.maxRepair) return state
+      return { ...state, calibration: { ...state.calibration, charges: state.calibration.charges - 1 } }
+    }
+
+    // 매트릭스 끝
+    case 'calibration/complete': {
+      const { success, time } = action
+      const system = state.systems[CONTROL.id]
+      if (!system) return state
+
+      const repairAfter = success
+        ? Math.min(system.maxRepair, system.repair + CONTROL.matrix.reward)
+        : system.repair
+
+      return {
+        ...state,
+        systems: { ...state.systems, [CONTROL.id]: { ...system, repair: repairAfter } },
+        calibrationLog: [
+          ...state.calibrationLog,
+          { time, success: Boolean(success), gained: repairAfter - system.repair },
+        ],
+      }
+    }
+
+    // 비상 배급 받기
+    case 'ration/collect': {
+      const result = collectRation(state.ration, RATION, Date.parse(action.time))
+      if (!result) return state
+
+      const owned = state.inventory[RATION.itemId] ?? 0
+      return {
+        ...state,
+        inventory: { ...state.inventory, [RATION.itemId]: owned + result.units },
+        ration: result.next,
+        rationLog: [...state.rationLog, { time: action.time, units: result.units }],
+      }
+    }
+
+    // 신호 연결: 연결 기록 + 보급품 추가를 한 번에
+    // action: { sectorId, time }
+    case 'signal/link': {
+      const { sectorId, time } = action
+      const sector = SIGNALS.sectors.find((candidate) => candidate.id === sectorId)
+      if (!sector) return state
+
+      // 지금 시도 가능한(앞 구역이 모두 연결된) 구역만
+      const status = getSectorStatus(SIGNALS.sectors, state.signals.linked, sectorId)
+      if (status !== 'weak') return state
+
+      const inventory = { ...state.inventory }
+      for (const reward of sector.rewards) {
+        if (!ITEMS.some((item) => item.id === reward.itemId)) continue
+        inventory[reward.itemId] = (inventory[reward.itemId] ?? 0) + reward.count
+      }
+
+      return {
+        ...state,
+        inventory,
+        signals: { ...state.signals, linked: [...state.signals.linked, sectorId] },
+        signalLog: [...state.signalLog, { time, sectorId }],
+      }
     }
 
     // 모든 진행 기록을 처음 상태로 되돌림

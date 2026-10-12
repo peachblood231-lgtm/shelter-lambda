@@ -6,20 +6,23 @@ import ControlCard from '../components/ControlCard'
 import ExpeditionCard from '../components/ExpeditionCard'
 import LogPanel from '../components/LogPanel'
 import FoodStatus from '../components/FoodStatus'
+import RationCard from '../components/RationCard'
 import ArchiveCard from '../components/ArchiveCard'
 import ArchiveView from '../components/ArchiveView'
 import ArchiveProgress from '../components/ArchiveProgress'
 import ControlSystemView from '../components/ControlSystemView'
 import ExpeditionView from '../components/ExpeditionView'
+import SignalView, { SignalTransmission } from '../components/SignalView'
 import useFluctuatingValue from '../hooks/useFluctuatingValue'
+import useNow from '../hooks/useNow'
 import { getArchiveStats } from '../utils/archiveStats'
 import { formatClock } from '../utils/format'
 import { getStage, getRepairPercent } from '../utils/controlStage'
-import { prepareExpedition } from '../game/expedition'
+import { prepareExpedition, getRations } from '../game/expedition'
+import { getRationStatus } from '../game/ration'
 
 // ─────────────────────────────────────────────
 // 화면에 보여 줄 내용은 JSON 파일에서 불러옵니다.
-// 내용을 바꾸려면 src/data 폴더의 JSON 파일을 고치세요.
 // ─────────────────────────────────────────────
 import FACILITIES from '../data/facilities.json'
 import DASHBOARD from '../data/dashboard.json'
@@ -28,16 +31,21 @@ import ITEMS from '../data/items.json'
 import CONTROL from '../data/control-system.json'
 import EXPEDITION from '../data/expedition.json'
 import RECIPES from '../data/recipes.json'
+import RATION from '../data/emergency-ration.json'
+import SIGNALS from '../data/signals.json'
 
-const STATUS = DASHBOARD.status // 오른쪽 위 상태 표시
-const LOGS = DASHBOARD.logs     // 메인 대시보드 CURRENT LOG 기본 기록
+const STATUS = DASHBOARD.status
+const LOGS = DASHBOARD.logs
 
 // 온도제어시스템에 넣을 수 있는 아이템만 (수리 부품)
 const CONTROL_ITEMS = ITEMS.filter((item) => item.repair?.[CONTROL.id])
 
-// 시설이 아닌 화면을 열었을 때 openId에 넣을 특별한 값
-const CONTROL_ID = 'control'       // 중앙온도제어시스템
-const EXPEDITION_ID = 'expedition' // 탐사
+// 배급으로 받는 아이템 (단백질 바)
+const RATION_ITEM = ITEMS.find((item) => item.id === RATION.itemId)
+
+const CONTROL_ID = 'control'
+const EXPEDITION_ID = 'expedition'
+const SIGNAL_ID = 'signal'
 
 function findItemName(itemId) {
   return ITEMS.find((item) => item.id === itemId)?.name ?? itemId
@@ -47,15 +55,21 @@ function findLocationName(locationId) {
   return EXPEDITION.locations.find((location) => location.id === locationId)?.name ?? locationId
 }
 
-// 대시보드 화면
-// - game: 게임 진행 상태 (App에서 받음, 브라우저에 자동 저장됨)
-// - dispatch: 게임 상태를 바꾸는 명령을 보내는 함수
-function DashboardScreen({ game, dispatch }) {
-  // 지금 열려 있는 화면 (null / 시설 id / 'control' / 'expedition')
-  const [openId, setOpenId] = useState(null)
+function findSectorName(sectorId) {
+  return SIGNALS.sectors.find((sector) => sector.id === sectorId)?.name ?? sectorId
+}
 
-  // 시설 안에서 ARCHIVE를 열었는지
+// 대시보드 화면
+// - game: 게임 진행 상태 / dispatch: 상태를 바꾸는 명령을 보내는 함수
+function DashboardScreen({ game, dispatch }) {
+  const [openId, setOpenId] = useState(null)
   const [isArchiveOpen, setIsArchiveOpen] = useState(false)
+  const [isMatrixOpen, setIsMatrixOpen] = useState(false)
+  // 신호 화면에서 선택한 구역 ID (null이면 자동으로 다음 연결할 구역)
+  const [signalSectorId, setSignalSectorId] = useState(null)
+
+  // 1초마다 갱신되는 현재 시각 (배급 남은 시간 표시용)
+  const now = useNow(1000)
 
   // ── 온도제어시스템 복구도와 단계 ──
   const controlSystem = game.systems[CONTROL.id] ?? { repair: 0, maxRepair: 1000 }
@@ -63,24 +77,47 @@ function DashboardScreen({ game, dispatch }) {
   const controlStage = getStage(CONTROL.stages, repairPercent)
   const isOperational = controlSystem.repair >= controlSystem.maxRepair
 
-  // ── 온도 (실내 온도는 복구 단계를 따름) ──
+  // ── 온도 ──
   const insideSetting = controlStage.inside ?? STATUS.inside
   const inside = useFluctuatingValue(insideSetting.base, insideSetting.range, STATUS.tempUpdateMs)
   const outside = useFluctuatingValue(STATUS.outside.base, STATUS.outside.range, STATUS.tempUpdateMs)
 
-  // ── 하단 진행 바 = 복구도 ──
+  // ── 식량 ──
+  const rations = getRations(game.inventory, ITEMS)
+  const rationStatus = getRationStatus(game.ration, RATION, now)
+  const unitRation = RATION_ITEM?.food ?? 0
+
+  // ── 신호 ──
+  const linkedIds = game.signals.linked
+  const linkedSectors = linkedIds.map(findSectorName) // 오른쪽 위 목록용 (이름)
+  // 선택한 구역이 없으면: 아직 연결 안 된 첫 구역, 다 연결했으면 마지막 구역
+  const nextSector = SIGNALS.sectors.find((sector) => !linkedIds.includes(sector.id))
+  const selectedSectorId = signalSectorId ?? (nextSector ?? SIGNALS.sectors.at(-1)).id
+
   const recovery = {
     label: isOperational ? CONTROL.operationalLabel : CONTROL.recoveryLabel,
     percent: repairPercent,
   }
 
+  // 화면을 바꿀 때는 ARCHIVE·매트릭스·신호 선택도 함께 처음으로
+  function openScreen(id) {
+    setOpenId(id)
+    setIsArchiveOpen(false)
+    setIsMatrixOpen(false)
+    setSignalSectorId(null)
+  }
+
+  // 모든 화면의 틀에 공통으로 넘겨줄 값
   const layoutBase = {
     status: STATUS,
     temperatures: { inside, outside },
+    rations,
+    linkedSectors,
+    onOpenSignal: () => openScreen(SIGNAL_ID),
     recovery,
   }
 
-  // ── 메인 CURRENT LOG = 기본 기록 + (부품 투입 + 탐사) 기록을 시간순으로 ──
+  // ── 메인 CURRENT LOG ──
   const eventLogs = [
     ...game.installLog.map((entry) => ({
       time: entry.time,
@@ -92,19 +129,29 @@ function DashboardScreen({ game, dispatch }) {
         entry.earlyReturn ? 'RETURNED EARLY' : 'RETURNED'
       } · ${entry.found.length} ITEMS`,
     })),
+    ...game.calibrationLog.map((entry) => ({
+      time: entry.time,
+      text: entry.success ? `HEAT MATRIX CALIBRATED +${entry.gained}` : 'HEAT MATRIX CALIBRATION FAILED',
+    })),
+    ...game.rationLog.map((entry) => ({
+      time: entry.time,
+      text: `EMERGENCY RATION COLLECTED +${entry.units * unitRation}`,
+    })),
+    ...game.signalLog.map((entry) => ({
+      time: entry.time,
+      text: `${findSectorName(entry.sectorId)} SIGNAL LINKED`,
+    })),
   ]
     .sort((a, b) => a.time.localeCompare(b.time))
     .map((entry) => ({ time: formatClock(entry.time), text: entry.text }))
   const mainLogs = [...LOGS, ...eventLogs]
 
-  // ── 아카이브 읽음 기록 ──
   const archiveReadIds = game.archiveReadIds
 
   function markRecordRead(id) {
     dispatch({ type: 'archive/markRead', id })
   }
 
-  // ── 부품 투입 ──
   function installPart(itemId) {
     dispatch({
       type: 'system/installPart',
@@ -114,9 +161,24 @@ function DashboardScreen({ game, dispatch }) {
     })
   }
 
-  // ── 탐사 보내기 ──
-  // 주사위·조기 귀환 판정은 여기서 미리 하고, 명령으로 차감 + 획득을 한 번에 처리합니다.
-  // 돌려주는 값: 화면에 보여 줄 결과 보고 (출발할 수 없으면 null)
+  function startCalibration() {
+    dispatch({ type: 'calibration/start' })
+  }
+
+  function finishCalibration(success) {
+    dispatch({ type: 'calibration/complete', success, time: new Date().toISOString() })
+  }
+
+  function collectRation() {
+    dispatch({ type: 'ration/collect', time: new Date().toISOString() })
+  }
+
+  // ── 신호 연결 ──
+  function linkSignal(sectorId) {
+    dispatch({ type: 'signal/link', sectorId, time: new Date().toISOString() })
+    setSignalSectorId(sectorId) // 연결한 구역의 무전 기록을 계속 보여 줌
+  }
+
   function launchExpedition(locationId) {
     const location = EXPEDITION.locations.find((candidate) => candidate.id === locationId)
     if (!location) return null
@@ -142,14 +204,36 @@ function DashboardScreen({ game, dispatch }) {
     }
   }
 
-  // ── 조합 (예: 찢어진 방한복 수선) ──
   function craftItem(recipeId) {
     dispatch({ type: 'craft/make', recipeId })
   }
 
-  function openScreen(id) {
-    setOpenId(id)
-    setIsArchiveOpen(false)
+  // ── 신호 복구 화면 ──
+  if (openId === SIGNAL_ID) {
+    const selectedSector = SIGNALS.sectors.find((sector) => sector.id === selectedSectorId)
+    return (
+      <DashboardLayout
+        {...layoutBase}
+        title={SIGNALS.title}
+        onBack={() => openScreen(null)}
+        side={
+          <SignalTransmission
+            sector={selectedSector}
+            isLinked={linkedIds.includes(selectedSectorId)}
+            itemName={findItemName}
+          />
+        }
+      >
+        <SignalView
+          sectors={SIGNALS.sectors}
+          holdSeconds={SIGNALS.holdSeconds}
+          linkedIds={linkedIds}
+          selectedId={selectedSectorId}
+          onSelect={setSignalSectorId}
+          onLink={linkSignal}
+        />
+      </DashboardLayout>
+    )
   }
 
   // ── 중앙온도제어시스템 화면 ──
@@ -162,7 +246,13 @@ function DashboardScreen({ game, dispatch }) {
           inventory={game.inventory}
           items={CONTROL_ITEMS}
           currentTemperature={inside}
+          calibration={game.calibration}
+          hasHint={(game.inventory[CONTROL.matrix.hintItemId] ?? 0) > 0}
+          isMatrixOpen={isMatrixOpen}
+          onOpenMatrix={() => setIsMatrixOpen(true)}
           onInstall={installPart}
+          onStartCalibration={startCalibration}
+          onFinishCalibration={finishCalibration}
         />
       </DashboardLayout>
     )
@@ -226,6 +316,16 @@ function DashboardScreen({ game, dispatch }) {
       side = (
         <>
           <FoodStatus state={openFacility.foodProduce} />
+          <RationCard
+            title={RATION.title}
+            units={rationStatus.units}
+            maxUnits={RATION.maxUnits}
+            unitRation={unitRation}
+            itemName={RATION_ITEM?.name ?? RATION.itemId}
+            isFull={rationStatus.isFull}
+            nextInMs={rationStatus.nextInMs}
+            onCollect={collectRation}
+          />
           <LogPanel logs={openFacility.logs} />
           <ArchiveCard onOpen={() => setIsArchiveOpen(true)} />
         </>

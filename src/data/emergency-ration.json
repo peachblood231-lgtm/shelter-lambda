@@ -1,0 +1,7 @@
+{
+  "title": "EMERGENCY RATION",
+  "itemId": "protein-bar",
+  "intervalMinutes": 3,
+  "unitsPerInterval": 1,
+  "maxUnits": 3
+}
