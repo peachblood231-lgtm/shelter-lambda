@@ -4,5 +4,11 @@
     "title": "개척자",
     "description": "한 여성이 70년 만에 람다 바깥으로 발을 내디뎠습니다. 그녀의 이름은 베네티 후입니다.",
     "trigger": { "type": "expedition", "locationId": "outside" }
+  },
+  {
+    "id": "first-fruit",
+    "title": "첫 열매",
+    "description": "람다의 온실에서 70년 만에 나무가 열매를 맺었습니다.",
+    "trigger": { "type": "harvest", "seedId": "sapling-capsule" }
   }
 ]

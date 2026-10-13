@@ -4,6 +4,7 @@ import { createInitialState } from './gameState'
 import { planRationUse, hasRequirements, resolveRequirements, canCraft } from './expedition'
 import { collectRation } from './ration'
 import { getSectorStatus } from './signal'
+import { findCrop, getGrowthSpeed, getPlotProgress, settleUnit } from './greenhouse'
 import ITEMS from '../data/items.json'
 import EXPEDITION from '../data/expedition.json'
 import RECIPES from '../data/recipes.json'
@@ -24,21 +25,24 @@ function advanceCalibration(calibration) {
 }
 
 // 어떤 일이 일어났을 때(event) 조건이 맞는 업적을 새로 받습니다.
-// event 예: { type: 'expedition', locationId: 'outside' }
-// 이미 받은 업적은 다시 받지 않습니다.
+// 업적의 trigger에 적힌 값이 event와 "모두" 같아야 합니다.
+// 예: trigger { type: 'harvest', seedId: 'sapling-capsule' }
 function unlockAchievements(achievements, event, time) {
   const unlockedIds = achievements.map((entry) => entry.id)
 
-  const fresh = ACHIEVEMENTS.filter((achievement) => {
-    if (unlockedIds.includes(achievement.id)) return false
-    const { trigger } = achievement
-    if (trigger.type !== event.type) return false
-    if (trigger.locationId && trigger.locationId !== event.locationId) return false
-    return true
-  })
+  const fresh = ACHIEVEMENTS.filter(
+    (achievement) =>
+      !unlockedIds.includes(achievement.id) &&
+      Object.entries(achievement.trigger).every(([key, value]) => event[key] === value),
+  )
 
   if (fresh.length === 0) return achievements
   return [...achievements, ...fresh.map((achievement) => ({ id: achievement.id, time }))]
+}
+
+// 온실 구역 하나를 바꾼 새 상태 (다른 구역은 그대로)
+function withUnit(state, unitId, unit) {
+  return { ...state, greenhouse: { ...state.greenhouse, [unitId]: unit } }
 }
 
 export function gameReducer(state, action) {
@@ -75,7 +79,7 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 탐사 완료: 차감 + 획득 + 기록 + 시도권 충전 + 업적 확인
+    // 탐사 완료
     case 'expedition/complete': {
       const { locationId, foundItemIds, earlyReturn, time } = action
 
@@ -133,7 +137,7 @@ export function gameReducer(state, action) {
       return { ...state, inventory }
     }
 
-    // 매트릭스 시작: 시도권 1개 사용
+    // 매트릭스 시작
     case 'calibration/start': {
       const system = state.systems[CONTROL.id]
       if (state.calibration.charges < 1) return state
@@ -175,7 +179,7 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 신호 연결: 연결 기록 + 보급품 추가
+    // 신호 연결
     case 'signal/link': {
       const { sectorId, time } = action
       const sector = SIGNALS.sectors.find((candidate) => candidate.id === sectorId)
@@ -195,6 +199,71 @@ export function gameReducer(state, action) {
         inventory,
         signals: { ...state.signals, linked: [...state.signals.linked, sectorId] },
         signalLog: [...state.signalLog, { time, sectorId }],
+      }
+    }
+
+    // ── 온실 ──
+
+    // 조명 켜기/끄기 (바꾸기 전에 지금까지 자란 양을 확정)
+    // action: { unitId, time }
+    case 'greenhouse/toggleLight': {
+      const { unitId, time } = action
+      const unit = state.greenhouse[unitId]
+      if (!unit || unit.isShutdown) return state
+
+      const settled = settleUnit(unit, getGrowthSpeed(state.systems), Date.parse(time))
+      return withUnit(state, unitId, { ...settled, lightOn: !unit.lightOn })
+    }
+
+    // 구역 정지/재가동. 정지하면 조명도 꺼지고 심은 작물은 사라짐
+    // action: { unitId }
+    case 'greenhouse/toggleShutdown': {
+      const unit = state.greenhouse[action.unitId]
+      if (!unit) return state
+
+      if (unit.isShutdown) {
+        return withUnit(state, action.unitId, { ...unit, isShutdown: false })
+      }
+      return withUnit(state, action.unitId, { ...unit, isShutdown: true, lightOn: false, plot: null })
+    }
+
+    // 심기: 씨앗 1개 사용
+    // action: { unitId, seedId, time }
+    case 'greenhouse/plant': {
+      const { unitId, seedId, time } = action
+      const unit = state.greenhouse[unitId]
+      const owned = state.inventory[seedId] ?? 0
+
+      if (!unit || unit.isShutdown || unit.plot) return state // 정지 중이거나 이미 심음
+      if (!findCrop(seedId) || owned < 1) return state         // 심을 수 없는 아이템 또는 수량 부족
+
+      return {
+        ...withUnit(state, unitId, { ...unit, plot: { seedId, progressMs: 0, updatedAt: time } }),
+        inventory: { ...state.inventory, [seedId]: owned - 1 },
+      }
+    }
+
+    // 수확: 다 자랐으면 수확물 추가 + 구역 비우기 + 기록 + 업적 확인
+    // action: { unitId, time }
+    case 'greenhouse/harvest': {
+      const { unitId, time } = action
+      const unit = state.greenhouse[unitId]
+      if (!unit?.plot) return state
+
+      const progress = getPlotProgress(unit, getGrowthSpeed(state.systems), Date.parse(time))
+      if (!progress.isReady || !progress.crop) return state
+
+      const inventory = { ...state.inventory }
+      for (const item of progress.crop.harvest) {
+        inventory[item.itemId] = (inventory[item.itemId] ?? 0) + item.count
+      }
+
+      const seedId = unit.plot.seedId
+      return {
+        ...withUnit(state, unitId, { ...unit, plot: null }),
+        inventory,
+        harvestLog: [...state.harvestLog, { time, unitId, seedId, harvest: progress.crop.harvest }],
+        achievements: unlockAchievements(state.achievements, { type: 'harvest', seedId }, time),
       }
     }
 

@@ -1,0 +1,34 @@
+{
+  "speedByStage": {
+    "OFFLINE": 1,
+    "INITIALIZING": 1,
+    "PARTIAL RECOVERY": 1.1,
+    "STABILIZING": 1.2,
+    "OPERATIONAL": 1.3
+  },
+  "crops": [
+    {
+      "seedId": "frozen-seeds",
+      "minutes": 4,
+      "harvest": [{ "itemId": "fresh-greens", "count": 2 }]
+    },
+    {
+      "seedId": "grain-culture-kit",
+      "minutes": 5,
+      "harvest": [{ "itemId": "grain-sack", "count": 1 }]
+    },
+    {
+      "seedId": "algae-culture",
+      "minutes": 4,
+      "harvest": [
+        { "itemId": "algae-paste", "count": 2 },
+        { "itemId": "algae-culture", "count": 1 }
+      ]
+    },
+    {
+      "seedId": "sapling-capsule",
+      "minutes": 10,
+      "harvest": [{ "itemId": "fresh-fruit", "count": 3 }]
+    }
+  ]
+}

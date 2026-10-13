@@ -21,6 +21,7 @@ import { formatClock } from '../utils/format'
 import { getStage, getRepairPercent } from '../utils/controlStage'
 import { prepareExpedition, getRations } from '../game/expedition'
 import { getRationStatus } from '../game/ration'
+import { getGrowthSpeed, getPlotProgress } from '../game/greenhouse'
 
 // ─────────────────────────────────────────────
 // 화면에 보여 줄 내용은 JSON 파일에서 불러옵니다.
@@ -35,14 +36,12 @@ import RECIPES from '../data/recipes.json'
 import RATION from '../data/emergency-ration.json'
 import SIGNALS from '../data/signals.json'
 import ACHIEVEMENTS from '../data/achievements.json'
+import CROPS from '../data/greenhouse-crops.json'
 
 const STATUS = DASHBOARD.status
 const LOGS = DASHBOARD.logs
 
-// 온도제어시스템에 넣을 수 있는 아이템만 (수리 부품)
 const CONTROL_ITEMS = ITEMS.filter((item) => item.repair?.[CONTROL.id])
-
-// 배급으로 받는 아이템 (단백질 바)
 const RATION_ITEM = ITEMS.find((item) => item.id === RATION.itemId)
 
 const CONTROL_ID = 'control'
@@ -61,6 +60,11 @@ function findSectorName(sectorId) {
   return SIGNALS.sectors.find((sector) => sector.id === sectorId)?.name ?? sectorId
 }
 
+// 지금 시각 (저장용 글자)
+function nowIso() {
+  return new Date().toISOString()
+}
+
 // 대시보드 화면
 // - game: 게임 진행 상태 / dispatch: 상태를 바꾸는 명령을 보내는 함수
 function DashboardScreen({ game, dispatch }) {
@@ -69,19 +73,15 @@ function DashboardScreen({ game, dispatch }) {
   const [isMatrixOpen, setIsMatrixOpen] = useState(false)
   const [signalSectorId, setSignalSectorId] = useState(null)
 
-  // 1초마다 갱신되는 현재 시각 (배급 남은 시간 표시용)
+  // 1초마다 갱신되는 현재 시각 (배급·재배 남은 시간 표시용)
   const now = useNow(1000)
 
   // ── 업적 안내창 ──
-  // 화면을 처음 열 때 이미 받은 업적은 "본 것"으로 처리 (새로고침해도 다시 뜨지 않게)
   const seenAchievementsRef = useRef(game.achievements.map((entry) => entry.id))
-  // 보여 줄 안내창 순서 (업적 ID 목록, 맨 앞부터 하나씩)
   const [toastQueue, setToastQueue] = useState([])
 
-  // 받은 업적 목록이 바뀌면, 처음 보는 업적만 안내창 줄에 추가
   useEffect(() => {
     const currentIds = game.achievements.map((entry) => entry.id)
-    // 처음부터 다시 시작한 경우 등: 이제 없는 업적은 "본 것"에서도 지움
     const seen = seenAchievementsRef.current.filter((id) => currentIds.includes(id))
     const fresh = currentIds.filter((id) => !seen.includes(id))
     seenAchievementsRef.current = [...seen, ...fresh]
@@ -92,7 +92,7 @@ function DashboardScreen({ game, dispatch }) {
 
   const currentToast = ACHIEVEMENTS.find((achievement) => achievement.id === toastQueue[0])
 
-  // ── 온도제어시스템 복구도와 단계 ──
+  // ── 온도제어시스템 ──
   const controlSystem = game.systems[CONTROL.id] ?? { repair: 0, maxRepair: 1000 }
   const repairPercent = getRepairPercent(controlSystem)
   const controlStage = getStage(CONTROL.stages, repairPercent)
@@ -115,12 +115,47 @@ function DashboardScreen({ game, dispatch }) {
   const selectedSectorId = signalSectorId ?? (nextSector ?? SIGNALS.sectors.at(-1)).id
   const hasReceiver = (game.inventory[SIGNALS.requiredItemId] ?? 0) > 0
 
+  // ── 온실 ──
+  const growthSpeed = getGrowthSpeed(game.systems)
+  const greenhouseSeeds = CROPS.crops
+    .filter((crop) => (game.inventory[crop.seedId] ?? 0) > 0)
+    .map((crop) => ({
+      seedId: crop.seedId,
+      name: findItemName(crop.seedId),
+      owned: game.inventory[crop.seedId],
+      minutes: crop.minutes,
+      harvest: crop.harvest.map((item) => ({ name: findItemName(item.itemId), count: item.count })),
+    }))
+
+  function getUnitProps(unit) {
+    const unitState = game.greenhouse[unit.id] ?? { lightOn: unit.lightOn, isShutdown: false, plot: null }
+    return {
+      state: unitState,
+      progress: getPlotProgress(unitState, growthSpeed, now),
+      seeds: greenhouseSeeds,
+      speed: growthSpeed,
+      itemName: findItemName,
+      onToggleLight: () => dispatch({ type: 'greenhouse/toggleLight', unitId: unit.id, time: nowIso() }),
+      onToggleShutdown: () => dispatch({ type: 'greenhouse/toggleShutdown', unitId: unit.id }),
+      onPlant: (seedId) => dispatch({ type: 'greenhouse/plant', unitId: unit.id, seedId, time: nowIso() }),
+      onHarvest: () => dispatch({ type: 'greenhouse/harvest', unitId: unit.id, time: nowIso() }),
+    }
+  }
+
+  // ── 다이닝홀 로그: 비상 배급 기록 ──
+  // 다이닝홀 CURRENT LOG에서 기존 기록 아래에 붙습니다.
+  const rationDistributionLogs = game.rationLog.map((entry) => ({
+    time: formatClock(entry.time),
+    text: `EMERGENCY RATION DISTRIBUTED · ${RATION_ITEM?.name ?? RATION.itemId} ×${entry.units} (+${
+      entry.units * unitRation
+    })`,
+  }))
+
   const recovery = {
     label: isOperational ? CONTROL.operationalLabel : CONTROL.recoveryLabel,
     percent: repairPercent,
   }
 
-  // 화면을 바꿀 때는 ARCHIVE·매트릭스·신호 선택도 함께 처음으로
   function openScreen(id) {
     setOpenId(id)
     setIsArchiveOpen(false)
@@ -128,7 +163,6 @@ function DashboardScreen({ game, dispatch }) {
     setSignalSectorId(null)
   }
 
-  // 모든 화면의 틀에 공통으로 넘겨줄 값
   const layoutBase = {
     status: STATUS,
     temperatures: { inside, outside },
@@ -162,6 +196,12 @@ function DashboardScreen({ game, dispatch }) {
       time: entry.time,
       text: `${findSectorName(entry.sectorId)} SIGNAL LINKED`,
     })),
+    ...game.harvestLog.map((entry) => ({
+      time: entry.time,
+      text: `GREENHOUSE HARVEST · ${entry.harvest
+        .map((item) => `${findItemName(item.itemId)} ×${item.count}`)
+        .join(', ')}`,
+    })),
   ]
     .sort((a, b) => a.time.localeCompare(b.time))
     .map((entry) => ({ time: formatClock(entry.time), text: entry.text }))
@@ -174,12 +214,7 @@ function DashboardScreen({ game, dispatch }) {
   }
 
   function installPart(itemId) {
-    dispatch({
-      type: 'system/installPart',
-      systemId: CONTROL.id,
-      itemId,
-      time: new Date().toISOString(),
-    })
+    dispatch({ type: 'system/installPart', systemId: CONTROL.id, itemId, time: nowIso() })
   }
 
   function startCalibration() {
@@ -187,15 +222,15 @@ function DashboardScreen({ game, dispatch }) {
   }
 
   function finishCalibration(success) {
-    dispatch({ type: 'calibration/complete', success, time: new Date().toISOString() })
+    dispatch({ type: 'calibration/complete', success, time: nowIso() })
   }
 
   function collectRation() {
-    dispatch({ type: 'ration/collect', time: new Date().toISOString() })
+    dispatch({ type: 'ration/collect', time: nowIso() })
   }
 
   function linkSignal(sectorId) {
-    dispatch({ type: 'signal/link', sectorId, time: new Date().toISOString() })
+    dispatch({ type: 'signal/link', sectorId, time: nowIso() })
     setSignalSectorId(sectorId)
   }
 
@@ -211,7 +246,7 @@ function DashboardScreen({ game, dispatch }) {
       locationId,
       foundItemIds: prepared.found,
       earlyReturn: prepared.earlyReturn,
-      time: new Date().toISOString(),
+      time: nowIso(),
     })
 
     return {
@@ -230,7 +265,6 @@ function DashboardScreen({ game, dispatch }) {
 
   // ── 지금 열린 화면 그리기 ──
   function renderScreen() {
-    // 신호 복구 화면
     if (openId === SIGNAL_ID) {
       const selectedSector = SIGNALS.sectors.find((sector) => sector.id === selectedSectorId)
       return (
@@ -260,7 +294,6 @@ function DashboardScreen({ game, dispatch }) {
       )
     }
 
-    // 중앙온도제어시스템 화면
     if (openId === CONTROL_ID) {
       return (
         <DashboardLayout {...layoutBase} title={CONTROL.title} onBack={() => openScreen(null)}>
@@ -282,7 +315,6 @@ function DashboardScreen({ game, dispatch }) {
       )
     }
 
-    // 탐사 화면
     if (openId === EXPEDITION_ID) {
       return (
         <DashboardLayout {...layoutBase} title={EXPEDITION.title} onBack={() => openScreen(null)}>
@@ -300,7 +332,6 @@ function DashboardScreen({ game, dispatch }) {
 
     const openFacility = FACILITIES.find((facility) => facility.id === openId)
 
-    // 시설을 열었을 때
     if (openFacility) {
       if (isArchiveOpen) {
         const records = ARCHIVE.records.filter((record) => record.facility === openFacility.id)
@@ -335,6 +366,7 @@ function DashboardScreen({ game, dispatch }) {
         )
       }
 
+      // 다이닝홀(식당이 있는 시설): FOOD PRODUCE → 비상 배급 → 로그(기존 + 배급 기록) → 아카이브
       let side = null
       if (openFacility.halls) {
         side = (
@@ -350,7 +382,7 @@ function DashboardScreen({ game, dispatch }) {
               nextInMs={rationStatus.nextInMs}
               onCollect={collectRation}
             />
-            <LogPanel logs={openFacility.logs} />
+            <LogPanel logs={[...(openFacility.logs ?? []), ...rationDistributionLogs]} />
             <ArchiveCard onOpen={() => setIsArchiveOpen(true)} />
           </>
         )
@@ -358,12 +390,11 @@ function DashboardScreen({ game, dispatch }) {
 
       return (
         <DashboardLayout {...layoutBase} title={openFacility.name} side={side} onBack={() => openScreen(null)}>
-          <FacilityDetail facility={openFacility} />
+          <FacilityDetail facility={openFacility} getUnitProps={getUnitProps} />
         </DashboardLayout>
       )
     }
 
-    // 중앙 터미널
     const sidePanels = (
       <>
         <ControlCard onOpen={() => openScreen(CONTROL_ID)} />
@@ -392,7 +423,6 @@ function DashboardScreen({ game, dispatch }) {
     <>
       {renderScreen()}
 
-      {/* 업적 안내창: 어느 화면에서든 오른쪽 아래에 하나씩 */}
       {currentToast && (
         <AchievementToast
           key={currentToast.id}

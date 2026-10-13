@@ -1,8 +1,17 @@
 // 게임 진행 상태를 "만들고, 저장하고, 불러오는" 함수를 모아 둔 파일입니다.
 import START from '../data/game-start.json'
+import FACILITIES from '../data/facilities.json'
 
 const STORAGE_KEY = 'shelter-lambda-save'
 const SAVE_VERSION = 1
+
+// 온실 재배 구역의 처음 상태 { 구역ID: { lightOn, isShutdown, plot } }
+function createGreenhouseState() {
+  const units = FACILITIES.flatMap((facility) => facility.units ?? [])
+  return Object.fromEntries(
+    units.map((unit) => [unit.id, { lightOn: Boolean(unit.lightOn), isShutdown: false, plot: null }]),
+  )
+}
 
 // 처음 시작할 때의 상태를 새로 만듭니다.
 export function createInitialState() {
@@ -15,6 +24,7 @@ export function createInitialState() {
       stock: START.ration.stock,
       lastTick: new Date().toISOString(),
     },
+    greenhouse: createGreenhouseState(),              // 온실 구역별 조명·정지·작물
     signals: { linked: [] },                          // 신호가 연결된 구역 ID 목록
     achievements: [],                                 // 받은 업적 [{ id, time }]
     installLog: [],                                   // 부품 투입 내역
@@ -22,6 +32,7 @@ export function createInitialState() {
     calibrationLog: [],                               // 매트릭스 퍼즐 내역
     rationLog: [],                                    // 배급 받은 내역
     signalLog: [],                                    // 신호 연결 내역
+    harvestLog: [],                                   // 온실 수확 내역
     archiveReadIds: [],                               // 읽은 아카이브 기록 ID
   }
 }

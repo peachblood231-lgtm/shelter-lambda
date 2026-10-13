@@ -1,0 +1,155 @@
+/* =========================================
+   온실 재배 칸 + 심기 팝업 전용 스타일
+   색상·글꼴 규칙은 index.css의 :root 값을 그대로 사용합니다.
+   ========================================= */
+
+/* 재배 칸 공통: 카드 클릭 영역보다 위에 놓아서 눌러도 식물 목록이 열리지 않게 */
+.gh-plot {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 88px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-terminal-line);
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: 400 13px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.gh-plot:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 3px;
+}
+
+/* 비어 있음: 점선 칸, 호버하면 흰 배경 + 검은 글씨 */
+.gh-plot.is-empty {
+  align-items: center;
+  border-style: dashed;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.gh-plot.is-empty:hover {
+  border-style: solid;
+  border-color: var(--color-line);
+  background: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+/* 수확 가능: 초록 */
+.gh-plot.is-ready {
+  align-items: center;
+  border-color: var(--color-accessible);
+  color: var(--color-accessible);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.gh-plot.is-ready:hover {
+  background: var(--color-accessible);
+  color: var(--color-terminal-bg);
+}
+
+/* 정지 중: 흐린 점선 */
+.gh-plot.is-offline {
+  align-items: center;
+  border-style: dashed;
+  opacity: 0.4;
+}
+
+/* 자라는 중 */
+.gh-plot-name {
+  margin: 0;
+  font: 400 12px var(--font-sans);
+}
+
+.gh-plot-bar {
+  height: 3px;
+  background: var(--color-terminal-faint);
+}
+
+.gh-plot-fill {
+  height: 100%;
+  background: var(--color-line);
+  transition: width 1s linear;
+}
+
+.gh-plot-time {
+  margin: 0;
+  font: 400 11px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+/* 조명 꺼져서 멈춤: 주황 */
+.gh-plot-time.is-paused {
+  color: var(--color-warning);
+  opacity: 1;
+}
+
+/* ── 심기 팝업 ── */
+.gh-plant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  margin: 12px 0 16px;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.gh-plant-option {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-terminal-line);
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: 400 13px var(--font-sans);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.gh-plant-option:hover,
+.gh-plant-option.is-selected {
+  background: var(--color-line);
+  color: var(--color-terminal-bg);
+}
+
+.gh-plant-option:focus-visible {
+  outline: 1px dashed var(--color-line);
+  outline-offset: 2px;
+}
+
+.gh-plant-owned {
+  opacity: 0.6;
+}
+
+.gh-plant-meta {
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+.gh-plant-empty {
+  margin: 12px 0 16px;
+  font: 400 12px var(--font-sans);
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+}
+
+.gh-plant-dialog .term-confirm-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

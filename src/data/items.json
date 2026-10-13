@@ -31,6 +31,10 @@
   { "id": "meat-substitute-box", "name": "BOX OF MEAT SUBSTITUTE", "category": "food", "description": "대체육 통조림 한 상자.", "food": 18 },
   { "id": "frozen-honey", "name": "FROZEN HONEY", "category": "food", "description": "얼어붙은 꿀 한 병.", "food": 8 },
   { "id": "protein-cubes", "name": "PROTEIN CUBES", "category": "food", "description": "인공 단백질 큐브 한 봉.", "food": 5 },
+  { "id": "fresh-greens", "name": "FRESH GREENS", "category": "food", "description": "온실에서 막 수확한 잎채소. 람다에서 가장 귀한 초록색.", "food": 6 },
+  { "id": "grain-sack", "name": "GRAIN SACK", "category": "food", "description": "배양 키트로 키운 곡물 한 자루.", "food": 20 },
+  { "id": "algae-paste", "name": "ALGAE PASTE", "category": "food", "description": "식용 조류를 갈아 만든 페이스트. 맛은 묻지 않는 게 좋다.", "food": 4 },
+  { "id": "fresh-fruit", "name": "FRESH FRUIT", "category": "food", "description": "온실의 어린 나무에서 딴 과일.", "food": 10 },
 
   { "id": "cold-weather-suit", "name": "COLD-WEATHER SUIT", "category": "gear", "description": "외부 탐사용 방한복. OUTSIDE 탐사 1회에 1벌이 소모된다." },
   { "id": "patched-cold-weather-suit", "name": "PATCHED SUIT", "category": "gear", "description": "덕트 테이프로 덧댄 방한복. 바깥에서 끝까지 버텨 줄지는 장담할 수 없다.", "earlyReturn": { "chance": 0.3, "rolls": 2 } },
