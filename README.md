@@ -42,7 +42,11 @@ For seventy years, no one has stepped outside.
 | **거주구역 · Residential** | 복구가 진행되면 잠겨 있던 구역이 열립니다. |
 | **기록 · Archive** | 다이닝홀의 배급 기록 속 숨겨진 이야기를 읽어 보세요. |
 
-![그린하우스](docs/screenshots/greenhouse.mp4)
+
+
+https://github.com/user-attachments/assets/b6fd21f4-4f3a-42fe-ba12-12206ebcfaf8
+
+
 
 ---
 
