@@ -26,5 +26,14 @@
       { "itemId": "tool-bundle", "count": 1 }
     ],
     "output": { "itemId": "field-radio", "count": 1 }
+  },
+  {
+    "id": "open-locked-box",
+    "label": "OPEN",
+    "inputs": [
+      { "itemId": "locked-box", "count": 1 },
+      { "itemId": "old-key", "count": 1 }
+    ],
+    "output": { "itemId": "red-pendant-necklace", "count": 1 }
   }
 ]

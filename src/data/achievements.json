@@ -20,7 +20,13 @@
   {
     "id": "under-one-roof",
     "title": "한 지붕 아래",
-    "description": "뭉치면 살 수 있습니다. 추위는 함께일 때 덜 춥습니다.",
+    "description": "흩어져 있던 방들이 세 채의 집으로 모였습니다. 추위는 함께일 때 덜 춥습니다.",
     "trigger": { "type": "sector-consolidated" }
+  },
+  {
+    "id": "troubleshooter",
+    "title": "해결사",
+    "description": "카를로스 나바로, 그는 여전히 스승을 추억한다.",
+    "trigger": { "type": "craft", "recipeId": "open-locked-box" }
   }
 ]

@@ -25,6 +25,7 @@ function advanceCalibration(calibration) {
 }
 
 // 어떤 일이 일어났을 때(event) 조건이 맞는 업적을 새로 받습니다.
+// 업적의 trigger에 적힌 값이 event와 "모두" 같아야 합니다.
 function unlockAchievements(achievements, event, time) {
   const unlockedIds = achievements.map((entry) => entry.id)
 
@@ -130,6 +131,8 @@ export function gameReducer(state, action) {
       }
     }
 
+    // 조합: 재료 차감 + 결과물 추가 + 업적 확인
+    // action: { recipeId, time? }
     case 'craft/make': {
       const recipe = RECIPES.find((candidate) => candidate.id === action.recipeId)
       if (!recipe) return state
@@ -141,7 +144,15 @@ export function gameReducer(state, action) {
       }
       inventory[recipe.output.itemId] = (inventory[recipe.output.itemId] ?? 0) + recipe.output.count
 
-      return { ...state, inventory }
+      return {
+        ...state,
+        inventory,
+        achievements: unlockAchievements(
+          state.achievements,
+          { type: 'craft', recipeId: recipe.id },
+          action.time ?? null,
+        ),
+      }
     }
 
     case 'calibration/start': {
@@ -269,8 +280,6 @@ export function gameReducer(state, action) {
 
     // ── 레지덴셜 ──
 
-    // SECTOR 방 배치 저장. 방이 3개 이하로 모이면 업적
-    // action: { key, blocks, time? }
     case 'sector/saveLayout': {
       if (!action.key || !Array.isArray(action.blocks)) return state
       const next = { ...state, sectorRooms: { ...state.sectorRooms, [action.key]: action.blocks } }

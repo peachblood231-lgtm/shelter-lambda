@@ -107,5 +107,6 @@
   { "id": "bandaged-bible", "name": "BANDAGED BIBLE", "category": "collectible", "description": "붕대에 싸인 성경.", "unique": true },
   { "id": "rusty-fork", "name": "RUSTY FORK", "category": "collectible", "description": "녹슨 포크.", "unique": true },
   { "id": "torn-us-flag", "name": "TORN US FLAG", "category": "collectible", "description": "찢어진 성조기.", "unique": true },
-  { "id": "snowboard", "name": "SNOWBOARD", "category": "collectible", "description": "스노보드. 바인딩 한쪽이 부러져 있다.", "unique": true }
+  { "id": "snowboard", "name": "SNOWBOARD", "category": "collectible", "description": "스노보드. 바인딩 한쪽이 부러져 있다.", "unique": true },
+  { "id": "red-pendant-necklace", "name": "RED PENDANT NECKLACE", "category": "collectible", "description": "자물쇠 상자 안에 고이 놓여 있던 목걸이. 붉은 펜던트가 빛을 받으면 희미하게 반짝인다.", "unique": true }
 ]
