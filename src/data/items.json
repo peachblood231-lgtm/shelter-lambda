@@ -47,7 +47,7 @@
   { "id": "locked-box", "name": "LOCKED METAL BOX", "category": "gear", "description": "자물쇠가 달린 금속 상자. 흔들면 안에서 무언가 구른다.", "unique": true },
   { "id": "old-key", "name": "OLD KEY", "category": "gear", "description": "손잡이가 닳은 낡은 열쇠. 어디에 맞는 걸까.", "unique": true },
   { "id": "dead-flashlight", "name": "DEAD FLASHLIGHT", "category": "gear", "description": "방전된 손전등.", "unique": true },
-  { "id": "broken-rifle", "name": "BROKEN RIFLE", "category": "gear", "description": "수리 로그 업로드 혹은 총기를 다룰 수 있는 자에게 수리를 맡긴다면 사용 가능.", "unique": true },
+  { "id": "broken-rifle", "name": "BROKEN RIFLE", "category": "gear", "description": "총기를 다룰 수 있는 자에게 수리를 맡긴다면 사용 가능.", "unique": true },
   { "id": "empty-rifles", "name": "EMPTY RIFLES ×2", "category": "gear", "description": "탄약이 빈 소총 두 정.", "unique": true },
   { "id": "torn-body-armor", "name": "TORN BODY ARMOR", "category": "gear", "description": "구멍이 뚫리고 헤진 방탄 조끼.", "unique": true },
 
