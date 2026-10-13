@@ -26,7 +26,8 @@ jobs:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      # Linux에 맞는 부품을 받도록 npm ci 대신 npm install
+      - run: npm install
       - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
