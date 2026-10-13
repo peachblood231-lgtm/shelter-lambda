@@ -25,8 +25,6 @@ function advanceCalibration(calibration) {
 }
 
 // 어떤 일이 일어났을 때(event) 조건이 맞는 업적을 새로 받습니다.
-// 업적의 trigger에 적힌 값이 event와 "모두" 같아야 합니다.
-// 예: trigger { type: 'harvest', seedId: 'sapling-capsule' }
 function unlockAchievements(achievements, event, time) {
   const unlockedIds = achievements.map((entry) => entry.id)
 
@@ -40,20 +38,31 @@ function unlockAchievements(achievements, event, time) {
   return [...achievements, ...fresh.map((achievement) => ({ id: achievement.id, time }))]
 }
 
-// 온실 구역 하나를 바꾼 새 상태 (다른 구역은 그대로)
+// 온실 구역 하나를 바꾼 새 상태
 function withUnit(state, unitId, unit) {
   return { ...state, greenhouse: { ...state.greenhouse, [unitId]: unit } }
 }
 
+// 온실 구역을 바꾼 뒤, 모든 구역의 조명이 꺼졌으면 업적 확인
+function withUnitAndCheckDark(state, unitId, unit, time) {
+  const next = withUnit(state, unitId, unit)
+  const units = Object.values(next.greenhouse)
+  const isAllDark = units.length > 0 && units.every((item) => !item.lightOn)
+
+  if (!isAllDark) return next
+  return {
+    ...next,
+    achievements: unlockAchievements(next.achievements, { type: 'greenhouse-dark' }, time ?? null),
+  }
+}
+
 export function gameReducer(state, action) {
   switch (action.type) {
-    // 아카이브 기록을 읽음으로 표시
     case 'archive/markRead': {
       if (state.archiveReadIds.includes(action.id)) return state
       return { ...state, archiveReadIds: [...state.archiveReadIds, action.id] }
     }
 
-    // 시스템에 부품 1개 투입
     case 'system/installPart': {
       const { systemId, itemId, time } = action
 
@@ -79,7 +88,6 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 탐사 완료
     case 'expedition/complete': {
       const { locationId, foundItemIds, earlyReturn, time } = action
 
@@ -122,7 +130,6 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 조합
     case 'craft/make': {
       const recipe = RECIPES.find((candidate) => candidate.id === action.recipeId)
       if (!recipe) return state
@@ -137,7 +144,6 @@ export function gameReducer(state, action) {
       return { ...state, inventory }
     }
 
-    // 매트릭스 시작
     case 'calibration/start': {
       const system = state.systems[CONTROL.id]
       if (state.calibration.charges < 1) return state
@@ -145,7 +151,6 @@ export function gameReducer(state, action) {
       return { ...state, calibration: { ...state.calibration, charges: state.calibration.charges - 1 } }
     }
 
-    // 매트릭스 끝
     case 'calibration/complete': {
       const { success, time } = action
       const system = state.systems[CONTROL.id]
@@ -165,7 +170,6 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 비상 배급 받기
     case 'ration/collect': {
       const result = collectRation(state.ration, RATION, Date.parse(action.time))
       if (!result) return state
@@ -179,7 +183,6 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 신호 연결
     case 'signal/link': {
       const { sectorId, time } = action
       const sector = SIGNALS.sectors.find((candidate) => candidate.id === sectorId)
@@ -204,19 +207,15 @@ export function gameReducer(state, action) {
 
     // ── 온실 ──
 
-    // 조명 켜기/끄기 (바꾸기 전에 지금까지 자란 양을 확정)
-    // action: { unitId, time }
     case 'greenhouse/toggleLight': {
       const { unitId, time } = action
       const unit = state.greenhouse[unitId]
       if (!unit || unit.isShutdown) return state
 
       const settled = settleUnit(unit, getGrowthSpeed(state.systems), Date.parse(time))
-      return withUnit(state, unitId, { ...settled, lightOn: !unit.lightOn })
+      return withUnitAndCheckDark(state, unitId, { ...settled, lightOn: !unit.lightOn }, time)
     }
 
-    // 구역 정지/재가동. 정지하면 조명도 꺼지고 심은 작물은 사라짐
-    // action: { unitId }
     case 'greenhouse/toggleShutdown': {
       const unit = state.greenhouse[action.unitId]
       if (!unit) return state
@@ -224,18 +223,21 @@ export function gameReducer(state, action) {
       if (unit.isShutdown) {
         return withUnit(state, action.unitId, { ...unit, isShutdown: false })
       }
-      return withUnit(state, action.unitId, { ...unit, isShutdown: true, lightOn: false, plot: null })
+      return withUnitAndCheckDark(
+        state,
+        action.unitId,
+        { ...unit, isShutdown: true, lightOn: false, plot: null },
+        action.time,
+      )
     }
 
-    // 심기: 씨앗 1개 사용
-    // action: { unitId, seedId, time }
     case 'greenhouse/plant': {
       const { unitId, seedId, time } = action
       const unit = state.greenhouse[unitId]
       const owned = state.inventory[seedId] ?? 0
 
-      if (!unit || unit.isShutdown || unit.plot) return state // 정지 중이거나 이미 심음
-      if (!findCrop(seedId) || owned < 1) return state         // 심을 수 없는 아이템 또는 수량 부족
+      if (!unit || unit.isShutdown || unit.plot) return state
+      if (!findCrop(seedId) || owned < 1) return state
 
       return {
         ...withUnit(state, unitId, { ...unit, plot: { seedId, progressMs: 0, updatedAt: time } }),
@@ -243,8 +245,6 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 수확: 다 자랐으면 수확물 추가 + 구역 비우기 + 기록 + 업적 확인
-    // action: { unitId, time }
     case 'greenhouse/harvest': {
       const { unitId, time } = action
       const unit = state.greenhouse[unitId]
@@ -267,7 +267,23 @@ export function gameReducer(state, action) {
       }
     }
 
-    // 모든 진행 기록을 처음 상태로 되돌림
+    // ── 레지덴셜 ──
+
+    // SECTOR 방 배치 저장. 방이 3개 이하로 모이면 업적
+    // action: { key, blocks, time? }
+    case 'sector/saveLayout': {
+      if (!action.key || !Array.isArray(action.blocks)) return state
+      const next = { ...state, sectorRooms: { ...state.sectorRooms, [action.key]: action.blocks } }
+
+      if (action.blocks.length > 0 && action.blocks.length <= 3) {
+        return {
+          ...next,
+          achievements: unlockAchievements(next.achievements, { type: 'sector-consolidated' }, action.time ?? null),
+        }
+      }
+      return next
+    }
+
     case 'game/reset':
       return createInitialState()
 

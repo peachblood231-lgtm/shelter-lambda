@@ -1,0 +1,35 @@
+/* =========================================
+   레지덴셜 조명 OFF — 어두워지는 화면
+   ========================================= */
+
+/* 화면 전체를 덮는 어둠.
+   pointer-events: none → 보이기만 하고 클릭은 그대로 아래로 통과 */
+.res-dark {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(0, 0, 0, 0.46);
+  pointer-events: none;
+  animation: res-dark-in 0.8s ease;
+}
+
+@keyframes res-dark-in {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.46);
+  }
+}
+
+/* 조명이 꺼졌을 때 원래 조명 버튼을 어둠보다 위로 */
+.res-light-raised {
+  position: relative;
+  z-index: 901;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .res-dark {
+    animation: none;
+  }
+}

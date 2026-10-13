@@ -1,35 +1,49 @@
 import { useEffect, useRef, useState } from 'react'
+import SectorRoomsDialog from './SectorRoomsDialog'
+import { createLayout } from '../game/rooms'
+import RESIDENTIAL from '../data/residential.json'
+import '../styles/sector-rooms.css'
 
-// SECTOR 칸을 눌렀을 때 보여 줄 문구와 표시 시간
+// 잠긴 SECTOR 칸을 눌렀을 때 보여 줄 문구와 표시 시간
 const DENIED_MESSAGE = 'INSUFFICIENT APPROACH LEVEL'
-const MESSAGE_DURATION_MS = 2000 // 2000 = 2초 동안 표시
+const MESSAGE_DURATION_MS = 2000
 
 // 레지덴셜의 층 카드 하나입니다.
 // 받는 값:
-// - floor: 층 정보 (code: 'B3', restricted: 출입 제한된 구역 목록 예: ['B'])
+// - floor: 층 정보 (id, code: 'B3', restricted: 출입 제한된 구역 목록 예: ['B'])
 // - sectors: 모든 구역 이름 목록 (예: ['A', 'B', 'C'])
-function FloorCard({ floor, sectors }) {
-  // 모든 구역이 제한되어 있으면 층 전체가 RESTRICTED
-  // every: 배열의 "모든" 항목이 조건을 만족하면 true
+// - repairPercent: 온도 시스템 복구도(%) — SECTOR 해금 기준
+// - layouts: 저장된 방 배치
+// - onSaveLayout: 방 배치 저장 (키, 방 목록)
+function FloorCard({ floor, sectors, repairPercent = 0, layouts = {}, onSaveLayout = () => {} }) {
   const isRestricted = sectors.every((sector) => floor.restricted.includes(sector))
 
-  // 지금 경고 문구를 보여 주고 있는 구역 (없으면 null)
   const [deniedSector, setDeniedSector] = useState(null)
+  const [openSector, setOpenSector] = useState(null)
 
-  // 2초 뒤 문구를 지우는 타이머를 기억해 두는 곳
   const timerRef = useRef(null)
 
-  // 카드가 화면에서 사라질 때 남아 있는 타이머를 정리
   useEffect(() => {
     return () => clearTimeout(timerRef.current)
   }, [])
 
-  // SECTOR 칸을 눌렀을 때: 문구를 보여 주고, 2초 뒤 원래대로
+  // 이 SECTOR를 여는 데 필요한 복구도
+  function getRequirement(sector) {
+    return RESIDENTIAL.unlockPercent[sector] ?? 100
+  }
+
   function handleSectorClick(sector) {
+    if (repairPercent >= getRequirement(sector)) {
+      setOpenSector(sector)
+      return
+    }
     setDeniedSector(sector)
-    clearTimeout(timerRef.current) // 이전 타이머가 있으면 취소 (연속으로 눌렀을 때)
+    clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => setDeniedSector(null), MESSAGE_DURATION_MS)
   }
+
+  // 저장 키 (예: 'b5-A-v2'). 규칙이 바뀌면 버전을 올려 새 배치로 시작
+  const layoutKey = (sector) => `${floor.id}-${sector}-v${RESIDENTIAL.layoutVersion ?? 1}`
 
   return (
     <article className="term-floor">
@@ -38,42 +52,58 @@ function FloorCard({ floor, sectors }) {
         {isRestricted ? 'RESTRICTED' : 'OCCUPIED'}
       </p>
 
-      {/* 구역 목록 */}
       <ul className="term-floor-sectors">
         {sectors.map((sector) => {
-          const isSectorRestricted = floor.restricted.includes(sector)
-
-          // 제한된 구역(빨간 칸): 누를 수 없는 표시만
-          if (isSectorRestricted) {
+          if (floor.restricted.includes(sector)) {
             return (
               <li key={sector} className="term-sector is-restricted">
                 SECTOR {sector}
-                {/* 색을 볼 수 없는 사용자(화면 낭독기)를 위한 설명. 화면에는 안 보임 */}
                 <span className="sr-only"> (출입 제한)</span>
               </li>
             )
           }
 
-          // 제한되지 않은 구역: 누르면 경고 문구 표시
+          const isUnlocked = repairPercent >= getRequirement(sector)
           const isDenied = deniedSector === sector
+
           return (
             <li key={sector}>
               <button
                 type="button"
                 className={isDenied ? 'term-sector term-sector--button is-denied' : 'term-sector term-sector--button'}
+                aria-haspopup={isUnlocked ? 'dialog' : undefined}
                 onClick={() => handleSectorClick(sector)}
               >
-                {isDenied ? DENIED_MESSAGE : `SECTOR ${sector}`}
+                {isDenied ? (
+                  <>
+                    {DENIED_MESSAGE}
+                    <span className="sector-req">REQUIRES {getRequirement(sector)}% RECOVERY</span>
+                  </>
+                ) : (
+                  `SECTOR ${sector}${isUnlocked ? ' ↗' : ''}`
+                )}
               </button>
             </li>
           )
         })}
       </ul>
 
-      {/* 화면 낭독기가 경고 문구를 읽어 주도록 하는 숨은 영역 */}
       <p className="sr-only" aria-live="polite">
-        {deniedSector ? `${floor.code} SECTOR ${deniedSector}: ${DENIED_MESSAGE}` : ''}
+        {deniedSector
+          ? `${floor.code} SECTOR ${deniedSector}: ${DENIED_MESSAGE}, REQUIRES ${getRequirement(deniedSector)}% RECOVERY`
+          : ''}
       </p>
+
+      {openSector && (
+        <SectorRoomsDialog
+          key={openSector}
+          title={`${floor.code} · SECTOR ${openSector}`}
+          grid={RESIDENTIAL.grid}
+          initialBlocks={layouts[layoutKey(openSector)] ?? createLayout(RESIDENTIAL.grid)}
+          onChange={(blocks) => onSaveLayout(layoutKey(openSector), blocks)}
+          onClose={() => setOpenSector(null)}
+        />
+      )}
     </article>
   )
 }

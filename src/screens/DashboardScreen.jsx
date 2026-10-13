@@ -136,14 +136,20 @@ function DashboardScreen({ game, dispatch }) {
       speed: growthSpeed,
       itemName: findItemName,
       onToggleLight: () => dispatch({ type: 'greenhouse/toggleLight', unitId: unit.id, time: nowIso() }),
-      onToggleShutdown: () => dispatch({ type: 'greenhouse/toggleShutdown', unitId: unit.id }),
+      onToggleShutdown: () => dispatch({ type: 'greenhouse/toggleShutdown', unitId: unit.id, time: nowIso() }),
       onPlant: (seedId) => dispatch({ type: 'greenhouse/plant', unitId: unit.id, seedId, time: nowIso() }),
       onHarvest: () => dispatch({ type: 'greenhouse/harvest', unitId: unit.id, time: nowIso() }),
     }
   }
 
+  // ── 레지덴셜: SECTOR 해금 기준(복구도)과 방 배치 저장 ──
+  const residentialProps = {
+    repairPercent,
+    layouts: game.sectorRooms ?? {},
+    onSaveLayout: (key, blocks) => dispatch({ type: 'sector/saveLayout', key, blocks }),
+  }
+
   // ── 다이닝홀 로그: 비상 배급 기록 ──
-  // 다이닝홀 CURRENT LOG에서 기존 기록 아래에 붙습니다.
   const rationDistributionLogs = game.rationLog.map((entry) => ({
     time: formatClock(entry.time),
     text: `EMERGENCY RATION DISTRIBUTED · ${RATION_ITEM?.name ?? RATION.itemId} ×${entry.units} (+${
@@ -366,7 +372,6 @@ function DashboardScreen({ game, dispatch }) {
         )
       }
 
-      // 다이닝홀(식당이 있는 시설): FOOD PRODUCE → 비상 배급 → 로그(기존 + 배급 기록) → 아카이브
       let side = null
       if (openFacility.halls) {
         side = (
@@ -390,7 +395,11 @@ function DashboardScreen({ game, dispatch }) {
 
       return (
         <DashboardLayout {...layoutBase} title={openFacility.name} side={side} onBack={() => openScreen(null)}>
-          <FacilityDetail facility={openFacility} getUnitProps={getUnitProps} />
+          <FacilityDetail
+            facility={openFacility}
+            getUnitProps={getUnitProps}
+            residentialProps={residentialProps}
+          />
         </DashboardLayout>
       )
     }

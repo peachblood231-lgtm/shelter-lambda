@@ -25,6 +25,7 @@ export function createInitialState() {
       lastTick: new Date().toISOString(),
     },
     greenhouse: createGreenhouseState(),              // 온실 구역별 조명·정지·작물
+    sectorRooms: {},                                  // 레지덴셜 SECTOR별 방 배치 { 'B5-A': [방...] }
     signals: { linked: [] },                          // 신호가 연결된 구역 ID 목록
     achievements: [],                                 // 받은 업적 [{ id, time }]
     installLog: [],                                   // 부품 투입 내역

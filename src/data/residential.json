@@ -1,0 +1,5 @@
+{
+  "layoutVersion": 2,
+  "grid": { "cols": 8, "rows": 6, "counts": [8, 8, 6] },
+  "unlockPercent": { "A": 50, "B": 75, "C": 100 }
+}

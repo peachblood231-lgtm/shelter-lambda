@@ -10,5 +10,17 @@
     "title": "첫 열매",
     "description": "람다의 온실에서 70년 만에 나무가 열매를 맺었습니다.",
     "trigger": { "type": "harvest", "seedId": "sapling-capsule" }
+  },
+  {
+    "id": "green-house",
+    "title": "그린 하우스",
+    "description": "불이 꺼지자, 온실은 비로소 이름 그대로의 집이 되었습니다.",
+    "trigger": { "type": "greenhouse-dark" }
+  },
+  {
+    "id": "under-one-roof",
+    "title": "한 지붕 아래",
+    "description": "뭉치면 살 수 있습니다. 추위는 함께일 때 덜 춥습니다.",
+    "trigger": { "type": "sector-consolidated" }
   }
 ]
