@@ -10,12 +10,20 @@
       "target": { "freq": 2.0, "amp": 0.6, "phase": 40 },
       "noise": 0.03,
       "threshold": 0.85,
-      "transmission": [
-        "…여기는 쉘터 세타. 람다, 들립니까?",
-        "지도상 가장 가까운 셸터가 당신들이라, 매일 같은 주파수로 호출해 왔습니다.",
-        "너무 오래 소식을 듣지 못했습니다. 무사해서 다행입니다. 혹시 몰라 여유분 식량을 보냅니다.",
-        "정기 교신을 재개합시다. 세타, 이상."
-      ],
+      "transmission": {
+        "en": [
+          "…This is Shelter Theta. Lambda, do you read?",
+          "You're the nearest shelter on the map, so we've called on the same frequency every day.",
+          "We hadn't heard from you in too long. Glad you're safe. We're sending surplus rations, just in case.",
+          "Let's resume scheduled contact. Theta, over."
+        ],
+        "ko": [
+          "…여기는 쉘터 세타. 람다, 들립니까?",
+          "지도상 가장 가까운 셸터가 당신들이라, 매일 같은 주파수로 호출해 왔습니다.",
+          "너무 오래 소식을 듣지 못했습니다. 무사해서 다행입니다. 혹시 몰라 여유분 식량을 보냅니다.",
+          "정기 교신을 재개합시다. 세타, 이상."
+        ]
+      },
       "rewards": [
         { "itemId": "canned-food-box", "count": 1 },
         { "itemId": "small-battery", "count": 1 }
@@ -28,12 +36,20 @@
       "target": { "freq": 3.2, "amp": 0.45, "phase": 200 },
       "noise": 0.06,
       "threshold": 0.87,
-      "transmission": [
-        "[자동 송신] 쉘터 이오타 관리 시스템.",
-        "거주 인원 0. 마지막 입력 기록: 2431.11.02.",
-        "창고 C의 잔여 물자를 수신 가능한 모든 셸터에 공개합니다.",
-        "[반복 송신 중]"
-      ],
+      "transmission": {
+        "en": [
+          "[AUTOMATED TRANSMISSION] Shelter Iota management system.",
+          "Residents: 0. Last input logged: 2431.11.02.",
+          "Remaining supplies in Storage C are released to all shelters within range.",
+          "[REPEATING]"
+        ],
+        "ko": [
+          "[자동 송신] 쉘터 이오타 관리 시스템.",
+          "거주 인원 0. 마지막 입력 기록: 2431.11.02.",
+          "창고 C의 잔여 물자를 수신 가능한 모든 셸터에 공개합니다.",
+          "[반복 송신 중]"
+        ]
+      },
       "rewards": [
         { "itemId": "tool-bundle", "count": 1 },
         { "itemId": "medium-battery", "count": 1 }
@@ -46,12 +62,20 @@
       "target": { "freq": 1.5, "amp": 0.85, "phase": 300 },
       "noise": 0.1,
       "threshold": 0.89,
-      "transmission": [
-        "카파 통제실. 람다의 신호를 확인했다.",
-        "반복한다. 람다의 생존을 확인했다.",
-        "우리는 견뎌야한다. 예비 코어 하나를 보낸다.",
-        "다음 교신은 이쪽에서 연락한다. 카파, 교신 끝."
-      ],
+      "transmission": {
+        "en": [
+          "Kappa control room. Lambda's signal confirmed.",
+          "Repeat. Lambda's survival confirmed.",
+          "We must endure. Sending one spare core.",
+          "We will make the next contact. Kappa, out."
+        ],
+        "ko": [
+          "카파 통제실. 람다의 신호를 확인했다.",
+          "반복한다. 람다의 생존을 확인했다.",
+          "우리는 견뎌야한다. 예비 코어 하나를 보낸다.",
+          "다음 교신은 이쪽에서 연락한다. 카파, 교신 끝."
+        ]
+      },
       "rewards": [{ "itemId": "spare-cooling-core", "count": 1 }]
     },
     {
@@ -61,12 +85,20 @@
       "target": { "freq": 4.1, "amp": 0.35, "phase": 120 },
       "noise": 0.14,
       "threshold": 0.9,
-      "transmission": [
-        "안녕하세요, 뮤 쉘터 B3 교실이에요.",
-        "오늘 아이들이 바다를 그렸어요. 본 적은 없지만 사진은 남아 있거든요.",
-        "바깥에 나가는 분들 춥지 않게, 남는 방한복을 보내요.",
-        "답장해 주세요. 아이들이 기다려요."
-      ],
+      "transmission": {
+        "en": [
+          "Hello, this is the B3 classroom at Shelter Mu.",
+          "The children drew the sea today. They've never seen it, but we still have photos.",
+          "We're sending our spare cold-weather suits so the people who go outside stay warm.",
+          "Please write back. The children are waiting."
+        ],
+        "ko": [
+          "안녕하세요, 뮤 쉘터 B3 교실이에요.",
+          "오늘 아이들이 바다를 그렸어요. 본 적은 없지만 사진은 남아 있거든요.",
+          "바깥에 나가는 분들 춥지 않게, 남는 방한복을 보내요.",
+          "답장해 주세요. 아이들이 기다려요."
+        ]
+      },
       "rewards": [{ "itemId": "cold-weather-suit", "count": 2 }]
     },
     {
@@ -76,12 +108,20 @@
       "target": { "freq": 2.7, "amp": 0.7, "phase": 75 },
       "noise": 0.18,
       "threshold": 0.92,
-      "transmission": [
-        "누. 누 쉘터. 들리면 응답 바람.",
-        "배급 축소 17일째. 온실 B구역 전멸.",
-        "종자와 배양 키트만은 지켰다. 살릴 수 있는 곳에 보내는 게 맞다고 판단했다.",
-        "람다. 우리 몫까지 키워 줘."
-      ],
+      "transmission": {
+        "en": [
+          "Nu. Shelter Nu. If you read, respond.",
+          "Day 17 of reduced rations. Greenhouse Sector B lost.",
+          "We saved the seeds and the culture kits. We judged they should go where they can still grow.",
+          "Lambda. Grow our share too."
+        ],
+        "ko": [
+          "누. 누 쉘터. 들리면 응답 바람.",
+          "배급 축소 17일째. 온실 B구역 전멸.",
+          "종자와 배양 키트만은 지켰다. 살릴 수 있는 곳에 보내는 게 맞다고 판단했다.",
+          "람다. 우리 몫까지 키워 줘."
+        ]
+      },
       "rewards": [
         { "itemId": "grain-culture-kit", "count": 1 },
         { "itemId": "frozen-seeds", "count": 2 }
@@ -94,11 +134,18 @@
       "target": { "freq": 4.6, "amp": 0.9, "phase": 250 },
       "noise": 0.24,
       "threshold": 0.94,
-      "transmission": [
-        "이쪽은 크시. 이쪽은 크시",
-        "람다의 무사를 확인했다.",
-        "우리는 생존한다. 인류는 건재하다."
-      ],
+      "transmission": {
+        "en": [
+          "This is Xi. This is Xi.",
+          "Lambda's safety confirmed.",
+          "We survive. Humanity endures."
+        ],
+        "ko": [
+          "이쪽은 크시. 이쪽은 크시",
+          "람다의 무사를 확인했다.",
+          "우리는 생존한다. 인류는 건재하다."
+        ]
+      },
       "rewards": [
         { "itemId": "spare-cooling-core", "count": 1 },
         { "itemId": "circuit-board", "count": 2 }

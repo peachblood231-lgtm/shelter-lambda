@@ -1,32 +1,47 @@
 [
   {
     "id": "pioneer",
-    "title": "개척자",
-    "description": "한 여성이 70년 만에 람다 바깥으로 발을 내디뎠습니다. 그녀의 이름은 베네티 후입니다.",
+    "title": { "en": "PIONEER", "ko": "개척자" },
+    "description": {
+      "en": "For the first time in 70 years, a woman has set foot outside Lambda. Her name is Benetti Hu.",
+      "ko": "한 여성이 70년 만에 람다 바깥으로 발을 내디뎠습니다. 그녀의 이름은 베네티 후입니다."
+    },
     "trigger": { "type": "expedition", "locationId": "outside" }
   },
   {
     "id": "first-fruit",
-    "title": "첫 열매",
-    "description": "람다의 온실에서 70년 만에 나무가 열매를 맺었습니다.",
+    "title": { "en": "FIRST FRUIT", "ko": "첫 열매" },
+    "description": {
+      "en": "For the first time in 70 years, a tree in Lambda's greenhouse has borne fruit.",
+      "ko": "람다의 온실에서 70년 만에 나무가 열매를 맺었습니다."
+    },
     "trigger": { "type": "harvest", "seedId": "sapling-capsule" }
   },
   {
     "id": "green-house",
-    "title": "그린 하우스",
-    "description": "불이 꺼지자, 온실은 비로소 이름 그대로의 집이 되었습니다.",
+    "title": { "en": "GREEN HOUSE", "ko": "그린 하우스" },
+    "description": {
+      "en": "When the lights went out, the greenhouse finally became what its name says: a house.",
+      "ko": "불이 꺼지자, 온실은 비로소 이름 그대로의 집이 되었습니다."
+    },
     "trigger": { "type": "greenhouse-dark" }
   },
   {
     "id": "under-one-roof",
-    "title": "한 지붕 아래",
-    "description": "흩어져 있던 방들이 세 채의 집으로 모였습니다. 추위는 함께일 때 덜 춥습니다.",
+    "title": { "en": "UNDER ONE ROOF", "ko": "한 지붕 아래" },
+    "description": {
+      "en": "The scattered rooms have gathered into three homes. The cold is less cold together.",
+      "ko": "흩어져 있던 방들이 세 채의 집으로 모였습니다. 추위는 함께일 때 덜 춥습니다."
+    },
     "trigger": { "type": "sector-consolidated" }
   },
   {
     "id": "troubleshooter",
-    "title": "해결사",
-    "description": "카를로스 나바로, 그는 여전히 스승을 추억한다.",
+    "title": { "en": "TROUBLESHOOTER", "ko": "해결사" },
+    "description": {
+      "en": "Carlos Navarro. He still remembers his mentor.",
+      "ko": "카를로스 나바로, 그는 여전히 스승을 추억한다."
+    },
     "trigger": { "type": "craft", "recipeId": "open-locked-box" }
   }
 ]

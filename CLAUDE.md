@@ -56,8 +56,9 @@
   - L3-A: `items.json`(103개 이름·설명), `dining-menus.json`, `facilities.json`(시설 설명·다이닝홀 로그)
     - 아이템은 DashboardScreen의 `localizeItems(lang)`에서 지금 언어로 바꿔 각 화면에 넘김
     - `recipes.json`(label은 craft.* 키), `greenhouse-crops.json`은 화면 글자가 없어 그대로
+  - L3-B: `signals.json`(무전 기록, transmission이 `{ en: [...], ko: [...] }`), `achievements.json` — 사용자 승인 초안 반영
+    - 업적 인물 영어 표기: 베네티 후 = Benetti Hu (임시, 사용자 확인 전)
 - 남은 것
-  - L3-B: `signals.json`(무전 기록), `achievements.json` — 영어 초안을 사용자에게 보여 준 상태, 승인 후 반영
   - 보류: `greenhouse-plants.json`(식물 이름 318개, 영어 그대로), 재배 구역 작물 분류(LEAFY GREENS 등, 카드 이름으로 보고 영어 유지)
   - L4: `archive-records.json`(아카이브 기록, 가장 긴 글)과 아카이브 화면(ArchiveView, RecordDetail, RecordBody, ArchiveProgress)
   - 마지막: 전체 점검 → GitHub push(사용자 결정) → itch.io용 다시 빌드

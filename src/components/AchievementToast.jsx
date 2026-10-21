@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useT } from '../i18n/strings'
+import { useLanguage } from '../i18n/language'
+import { useT, pick } from '../i18n/strings'
 import '../styles/achievement.css'
 
 // 안내창이 떠 있는 시간 (밀리초)
@@ -13,6 +14,7 @@ const LEAVE_MS = 300
 // - onClose: 안내창이 완전히 사라진 뒤 실행
 function AchievementToast({ achievement, onClose }) {
   const t = useT()
+  const lang = useLanguage()
   const [isLeaving, setIsLeaving] = useState(false)
 
   // onClose는 화면이 다시 그려질 때마다 새로 만들어지므로 최신 것만 기억
@@ -46,8 +48,8 @@ function AchievementToast({ achievement, onClose }) {
 
       <div className="ach-text">
         <p className="ach-label">{t('achievement.unlocked')}</p>
-        <p className="ach-title">{achievement.title}</p>
-        <p className="ach-body">{achievement.description}</p>
+        <p className="ach-title">{pick(achievement.title, lang)}</p>
+        <p className="ach-body">{pick(achievement.description, lang)}</p>
       </div>
 
       <button

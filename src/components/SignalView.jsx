@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { SAMPLES, sampleWave, matchScore, makeNoise, getSectorStatus } from '../game/signal'
-import { useT } from '../i18n/strings'
+import { useLanguage } from '../i18n/language'
+import { useT, pick } from '../i18n/strings'
 // 신호 화면 전용 스타일
 import '../styles/signal.css'
 
@@ -254,6 +255,9 @@ function SignalScope({ sector, status, holdSeconds, hasReceiver, receiverName, o
 // 받는 값: sector(선택한 구역), isLinked(연결 여부), itemName(아이템 ID → 이름 함수)
 export function SignalTransmission({ sector, isLinked, itemName }) {
   const t = useT()
+  const lang = useLanguage()
+  // 무전 기록 줄 목록 (지금 언어 것)
+  const lines = pick(sector.transmission, lang) || []
   return (
     <section className="sig-tx" aria-labelledby="sig-tx-title">
       <h2 id="sig-tx-title" className="sig-tx-title">
@@ -264,7 +268,7 @@ export function SignalTransmission({ sector, isLinked, itemName }) {
       {isLinked ? (
         <>
           <div className="sig-tx-body">
-            {sector.transmission.map((line, index) => (
+            {lines.map((line, index) => (
               <p key={index}>{line}</p>
             ))}
           </div>
