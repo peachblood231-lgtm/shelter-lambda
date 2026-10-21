@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useT } from '../i18n/strings'
+import { useLanguage } from '../i18n/language'
+import { useT, pick, hasString } from '../i18n/strings'
 // 메뉴 목록 (JSON 파일에서 불러오기)
 import MENUS from '../data/dining-menus.json'
 
@@ -24,6 +25,7 @@ function randomInt(min, max) {
 // 받는 값: hall (code, capacityRange, maxCapacity, powerLoad, temperature, menuId)
 function HallCard({ hall }) {
   const t = useT()
+  const lang = useLanguage()
 
   // 지금 보여 주는 메뉴
   const [menu, setMenu] = useState(() => findMenu(hall.menuId))
@@ -40,10 +42,14 @@ function HallCard({ hall }) {
 
   // 아침·점심·저녁 (key는 고정, 화면 글자만 번역)
   const meals = [
-    { key: 'breakfast', label: t('hall.breakfast'), text: menu.breakfast },
-    { key: 'lunch', label: t('hall.lunch'), text: menu.lunch },
-    { key: 'dinner', label: t('hall.dinner'), text: menu.dinner },
+    { key: 'breakfast', label: t('hall.breakfast'), text: pick(menu.breakfast, lang) },
+    { key: 'lunch', label: t('hall.lunch'), text: pick(menu.lunch, lang) },
+    { key: 'dinner', label: t('hall.dinner'), text: pick(menu.dinner, lang) },
   ]
+
+  // 전력 부하 글자 (사전에 있으면 번역, 없으면 데이터 글자 그대로)
+  const powerLoadKey = `hall.load.${hall.powerLoad}`
+  const powerLoad = hasString(powerLoadKey) ? t(powerLoadKey) : hall.powerLoad
 
   return (
     <article className="term-hall">
@@ -76,7 +82,7 @@ function HallCard({ hall }) {
         </div>
         <div className="term-hall-row">
           <dt>{t('hall.powerLoad')}</dt>
-          <dd>{hall.powerLoad}</dd>
+          <dd>{powerLoad}</dd>
         </div>
         <div className="term-hall-row">
           <dt>{t('hall.temperature')}</dt>

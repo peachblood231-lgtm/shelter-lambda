@@ -43,15 +43,17 @@ import CROPS from '../data/greenhouse-crops.json'
 const STATUS = DASHBOARD.status
 const LOGS = DASHBOARD.logs
 
-const CONTROL_ITEMS = ITEMS.filter((item) => item.repair?.[CONTROL.id])
-const RATION_ITEM = ITEMS.find((item) => item.id === RATION.itemId)
-
 const CONTROL_ID = 'control'
 const EXPEDITION_ID = 'expedition'
 const SIGNAL_ID = 'signal'
 
-function findItemName(itemId) {
-  return ITEMS.find((item) => item.id === itemId)?.name ?? itemId
+// 아이템 이름·설명을 지금 언어로 꺼낸 목록 (나머지 값은 그대로)
+function localizeItems(lang) {
+  return ITEMS.map((item) => ({
+    ...item,
+    name: pick(item.name, lang),
+    description: pick(item.description, lang),
+  }))
 }
 
 function findLocationName(locationId) {
@@ -78,6 +80,12 @@ function DashboardScreen({ game, dispatch }) {
   // 지금 언어와 번역 함수 (언어가 바뀌면 화면이 다시 그려짐)
   const lang = useLanguage()
   const t = (key, vars) => translate(lang, key, vars)
+
+  // 지금 언어의 아이템 목록 (화면에 넘기는 이름·설명은 모두 여기서)
+  const items = localizeItems(lang)
+  const controlItems = items.filter((item) => item.repair?.[CONTROL.id])
+  const rationItem = items.find((item) => item.id === RATION.itemId)
+  const findItemName = (itemId) => items.find((item) => item.id === itemId)?.name ?? itemId
 
   // 1초마다 갱신되는 현재 시각 (배급·재배 남은 시간 표시용)
   const now = useNow(1000)
@@ -112,7 +120,7 @@ function DashboardScreen({ game, dispatch }) {
   // ── 식량 ──
   const rations = getRations(game.inventory, ITEMS)
   const rationStatus = getRationStatus(game.ration, RATION, now)
-  const unitRation = RATION_ITEM?.food ?? 0
+  const unitRation = rationItem?.food ?? 0
 
   // ── 신호 ──
   const linkedIds = game.signals.linked
@@ -159,7 +167,7 @@ function DashboardScreen({ game, dispatch }) {
   const rationDistributionLogs = game.rationLog.map((entry) => ({
     time: formatClock(entry.time),
     text: t('log.rationDistributed', {
-      item: RATION_ITEM?.name ?? RATION.itemId,
+      item: rationItem?.name ?? RATION.itemId,
       count: entry.units,
       amount: entry.units * unitRation,
     }),
@@ -319,7 +327,7 @@ function DashboardScreen({ game, dispatch }) {
             config={CONTROL}
             system={controlSystem}
             inventory={game.inventory}
-            items={CONTROL_ITEMS}
+            items={controlItems}
             currentTemperature={inside}
             calibration={game.calibration}
             hasHint={(game.inventory[CONTROL.matrix.hintItemId] ?? 0) > 0}
@@ -339,7 +347,7 @@ function DashboardScreen({ game, dispatch }) {
           <ExpeditionView
             config={EXPEDITION}
             inventory={game.inventory}
-            items={ITEMS}
+            items={items}
             recipes={RECIPES}
             onLaunch={launchExpedition}
             onCraft={craftItem}
@@ -394,12 +402,17 @@ function DashboardScreen({ game, dispatch }) {
               units={rationStatus.units}
               maxUnits={RATION.maxUnits}
               unitRation={unitRation}
-              itemName={RATION_ITEM?.name ?? RATION.itemId}
+              itemName={rationItem?.name ?? RATION.itemId}
               isFull={rationStatus.isFull}
               nextInMs={rationStatus.nextInMs}
               onCollect={collectRation}
             />
-            <LogPanel logs={[...(openFacility.logs ?? []), ...rationDistributionLogs]} />
+            <LogPanel
+              logs={[
+                ...(openFacility.logs ?? []).map((log) => ({ time: log.time, text: pick(log.text, lang) })),
+                ...rationDistributionLogs,
+              ]}
+            />
             <ArchiveCard onOpen={() => setIsArchiveOpen(true)} />
           </>
         )

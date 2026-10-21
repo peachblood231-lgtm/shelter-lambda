@@ -157,6 +157,7 @@ export const STRINGS = {
   // ── 시설 카드 ──
   'facility.accessible': { en: 'ACCESSIBLE', ko: '출입 가능' },
   'facility.restricted': { en: 'RESTRICTED', ko: '출입 제한' },
+  'facility.info': { en: '{name} information', ko: '{name} 정보' },
 
   // ── 다이닝홀 ──
   'food.label': { en: 'FOOD PRODUCE', ko: '식량 생산' },
@@ -170,6 +171,7 @@ export const STRINGS = {
   'hall.dinner': { en: 'Dinner', ko: '저녁' },
   'hall.capacity': { en: 'CAPACITY', ko: '수용 인원' },
   'hall.powerLoad': { en: 'POWER LOAD', ko: '전력 부하' },
+  'hall.load.STABLE': { en: 'STABLE', ko: '안정' },
   'hall.temperature': { en: 'TEMPERATURE', ko: '온도' },
   'hall.warning': { en: 'Do not press indiscriminately.', ko: '함부로 누르지 마세요.' },
   'hall.changeMenu': { en: 'CHANGE MENU', ko: '메뉴 변경' },
@@ -223,7 +225,7 @@ export const STRINGS = {
   'signal.locking': { en: 'SIGNAL LOCKING…', ko: '신호 고정 중…' },
   'signal.noReceiver': {
     en: 'NO RECEIVER · REPAIR A RADIO TO GET {item}',
-    ko: '수신기 없음 · 무전기를 수리해 {item}을 확보하세요',
+    ko: '수신기 없음 · 무전기를 수리하세요 ({item} 필요)',
   },
   'signal.scopeLabel': { en: 'Target and current waveform', ko: '목표 파형과 내 파형' },
   'signal.supply': { en: 'SUPPLY RECEIVED', ko: '받은 보급품' },

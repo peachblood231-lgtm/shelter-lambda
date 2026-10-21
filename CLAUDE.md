@@ -52,9 +52,12 @@
   - L1: 기반·인트로·중앙 터미널·로그
   - L2-A: 제어시스템·매트릭스·탐사·확인 팝업·업적 안내창
   - L2-B1: 시설 카드·다이닝홀·그린하우스·0과 1 화면
-  - L2-B2: SignalView, FloorCard, ResidentialFloors, SectorRoomsDialog (커밋 0e329d8, 브라우저 화면 확인은 아직)
+  - L2-B2: SignalView, FloorCard, ResidentialFloors, SectorRoomsDialog
+  - L3-A: `items.json`(103개 이름·설명), `dining-menus.json`, `facilities.json`(시설 설명·다이닝홀 로그)
+    - 아이템은 DashboardScreen의 `localizeItems(lang)`에서 지금 언어로 바꿔 각 화면에 넘김
+    - `recipes.json`(label은 craft.* 키), `greenhouse-crops.json`은 화면 글자가 없어 그대로
 - 남은 것
-  - L3: 데이터 번역 — `items.json`(아이템 약 100개 이름·설명), `achievements.json`, `signals.json`(무전 기록), `recipes.json`, `greenhouse-crops.json`, `dining-menus.json` 등.
-    아이템 이름은 영어 버전에선 지금 영어 이름, 한국어 버전에선 한국어 이름.
+  - L3-B: `signals.json`(무전 기록), `achievements.json` — 영어 초안을 사용자에게 보여 준 상태, 승인 후 반영
+  - 보류: `greenhouse-plants.json`(식물 이름 318개, 영어 그대로), 재배 구역 작물 분류(LEAFY GREENS 등, 카드 이름으로 보고 영어 유지)
   - L4: `archive-records.json`(아카이브 기록, 가장 긴 글)과 아카이브 화면(ArchiveView, RecordDetail, RecordBody, ArchiveProgress)
   - 마지막: 전체 점검 → GitHub push(사용자 결정) → itch.io용 다시 빌드

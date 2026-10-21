@@ -3,7 +3,10 @@
     "id": "greenhouse",
     "name": "GREENHOUSE",
     "access": "accessible",
-    "description": "셸터 식량의 대부분을 생산하는 수경 재배 구역.\n온도 시스템 장애 이후 일부 재배 선반의 가동이 중단되었다.",
+    "description": {
+      "en": "Hydroponic cultivation zone producing most of the shelter's food.\nSince the temperature system failure, some growing racks have been shut down.",
+      "ko": "셸터 식량의 대부분을 생산하는 수경 재배 구역.\n온도 시스템 장애 이후 일부 재배 선반의 가동이 중단되었다."
+    },
     "units": [
       {
         "id": "b1-a-03",
@@ -47,12 +50,15 @@
     "id": "dining-hall",
     "name": "DINING HALL",
     "access": "accessible",
-    "description": "주민 전원이 교대로 식사하는 공용 식당.\n하루 세 번의 배식 시간은 셸터에서 가장 붐비는 순간이다.",
+    "description": {
+      "en": "Communal dining hall where all residents eat in shifts.\nThe three daily meal services are the busiest hours in the shelter.",
+      "ko": "주민 전원이 교대로 식사하는 공용 식당.\n하루 세 번의 배식 시간은 셸터에서 가장 붐비는 순간이다."
+    },
     "foodProduce": "LIMITED",
     "logs": [
-      { "time": "06:00", "text": "B1-B-01 BREAKFAST SERVICE STARTED" },
-      { "time": "06:05", "text": "B2-B-01 BREAKFAST SERVICE STARTED" },
-      { "time": "06:40", "text": "FOOD PRODUCE LEVEL: LIMITED" }
+      { "time": "06:00", "text": { "en": "B1-B-01 BREAKFAST SERVICE STARTED", "ko": "B1-B-01 아침 배식 시작" } },
+      { "time": "06:05", "text": { "en": "B2-B-01 BREAKFAST SERVICE STARTED", "ko": "B2-B-01 아침 배식 시작" } },
+      { "time": "06:40", "text": { "en": "FOOD PRODUCE LEVEL: LIMITED", "ko": "식량 생산 수준: 제한" } }
     ],
     "halls": [
       {
@@ -79,7 +85,10 @@
     "id": "residential",
     "name": "RESIDENTIAL",
     "access": "accessible",
-    "description": "주민들이 머무는 거주 구역. 각 세대는 번호로만 구분된다.\n야간에는 조도가 자동으로 낮아진다.",
+    "description": {
+      "en": "Living quarters for the residents. Each household is identified by number only.\nLighting dims automatically at night.",
+      "ko": "주민들이 머무는 거주 구역. 각 세대는 번호로만 구분된다.\n야간에는 조도가 자동으로 낮아진다."
+    },
     "sectors": ["A", "B", "C"],
     "lightOn": true,
     "floors": [
@@ -101,6 +110,9 @@
     "id": "laboratory",
     "name": "LABORATORY",
     "access": "restricted",
-    "description": "출입이 제한된 연구 구역.\n허가된 인원 외에는 출입 기록조차 열람할 수 없다."
+    "description": {
+      "en": "Restricted research zone.\nEven its access records are closed to all but authorized personnel.",
+      "ko": "출입이 제한된 연구 구역.\n허가된 인원 외에는 출입 기록조차 열람할 수 없다."
+    }
   }
 ]

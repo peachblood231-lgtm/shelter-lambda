@@ -1,86 +1,86 @@
 [
   {
     "id": "013",
-    "breakfast": "Oat porridge with dried berries",
-    "lunch": "Lentil stew, flatbread, pickled radish",
-    "dinner": "Potato dumplings, beet salad"
+    "breakfast": { "en": "Oat porridge with dried berries", "ko": "말린 베리를 넣은 귀리죽" },
+    "lunch": { "en": "Lentil stew, flatbread, pickled radish", "ko": "렌틸콩 스튜, 납작빵, 무 피클" },
+    "dinner": { "en": "Potato dumplings, beet salad", "ko": "감자 만두, 비트 샐러드" }
   },
   {
     "id": "021",
-    "breakfast": "Barley tea, rice crackers",
-    "lunch": "Sweet potato curry, steamed rice",
-    "dinner": "Mushroom broth, kale chips"
+    "breakfast": { "en": "Barley tea, rice crackers", "ko": "보리차, 쌀과자" },
+    "lunch": { "en": "Sweet potato curry, steamed rice", "ko": "고구마 카레, 쌀밥" },
+    "dinner": { "en": "Mushroom broth, kale chips", "ko": "버섯 맑은국, 케일 칩" }
   },
   {
     "id": "047",
-    "breakfast": "Grain soup",
-    "lunch": "Rye bread with apple jam, carrot soup, cabbage salad",
-    "dinner": "Synthetic protein kit"
+    "breakfast": { "en": "Grain soup", "ko": "곡물 수프" },
+    "lunch": { "en": "Rye bread with apple jam, carrot soup, cabbage salad", "ko": "사과잼 호밀빵, 당근 수프, 양배추 샐러드" },
+    "dinner": { "en": "Synthetic protein kit", "ko": "합성 단백질 키트" }
   },
   {
     "id": "058",
-    "breakfast": "Boiled eggs, rye toast",
-    "lunch": "Bean burger, root vegetable fries",
-    "dinner": "Vegetable congee"
+    "breakfast": { "en": "Boiled eggs, rye toast", "ko": "삶은 달걀, 호밀 토스트" },
+    "lunch": { "en": "Bean burger, root vegetable fries", "ko": "콩 버거, 뿌리채소 튀김" },
+    "dinner": { "en": "Vegetable congee", "ko": "채소죽" }
   },
   {
     "id": "066",
-    "breakfast": "Buckwheat pancakes, honey",
-    "lunch": "Tofu bibimbap with spinach",
-    "dinner": "Miso soup, seaweed rice ball"
+    "breakfast": { "en": "Buckwheat pancakes, honey", "ko": "메밀 팬케이크, 꿀" },
+    "lunch": { "en": "Tofu bibimbap with spinach", "ko": "시금치 두부 비빔밥" },
+    "dinner": { "en": "Miso soup, seaweed rice ball", "ko": "미소된장국, 김 주먹밥" }
   },
   {
     "id": "079",
-    "breakfast": "Cornmeal porridge",
-    "lunch": "Cabbage rolls in tomato sauce",
-    "dinner": "Synthetic protein kit"
+    "breakfast": { "en": "Cornmeal porridge", "ko": "옥수수죽" },
+    "lunch": { "en": "Cabbage rolls in tomato sauce", "ko": "토마토소스 양배추롤" },
+    "dinner": { "en": "Synthetic protein kit", "ko": "합성 단백질 키트" }
   },
   {
     "id": "085",
-    "breakfast": "Millet porridge",
-    "lunch": "Leek and potato soup, crispbread",
-    "dinner": "Steamed buns, chive pancake"
+    "breakfast": { "en": "Millet porridge", "ko": "기장죽" },
+    "lunch": { "en": "Leek and potato soup, crispbread", "ko": "대파 감자 수프, 크리스프브레드" },
+    "dinner": { "en": "Steamed buns, chive pancake", "ko": "찐빵, 부추전" }
   },
   {
     "id": "093",
-    "breakfast": "Yogurt with honeycomb",
-    "lunch": "Chickpea stew, carrot salad",
-    "dinner": "Baked turnip, herb rice"
+    "breakfast": { "en": "Yogurt with honeycomb", "ko": "벌집꿀 요거트" },
+    "lunch": { "en": "Chickpea stew, carrot salad", "ko": "병아리콩 스튜, 당근 샐러드" },
+    "dinner": { "en": "Baked turnip, herb rice", "ko": "순무 구이, 허브 라이스" }
   },
   {
     "id": "102",
-    "breakfast": "Corn chowder",
-    "lunch": "Soy meat sandwich, powdered wine, braised mushrooms",
-    "dinner": "Nutritional Energy Gel"
+    "breakfast": { "en": "Corn chowder", "ko": "옥수수 차우더" },
+    "lunch": { "en": "Soy meat sandwich, powdered wine, braised mushrooms", "ko": "콩고기 샌드위치, 분말 와인, 버섯 조림" },
+    "dinner": { "en": "Nutritional Energy Gel", "ko": "영양 에너지 겔" }
   },
   {
     "id": "110",
-    "breakfast": "Nutritional Energy Gel",
-    "lunch": "Algae noodles, pickled cucumber",
-    "dinner": "Pumpkin soup, rye bread"
+    "breakfast": { "en": "Nutritional Energy Gel", "ko": "영양 에너지 겔" },
+    "lunch": { "en": "Algae noodles, pickled cucumber", "ko": "해조 국수, 오이 피클" },
+    "dinner": { "en": "Pumpkin soup, rye bread", "ko": "호박 수프, 호밀빵" }
   },
   {
     "id": "118",
-    "breakfast": "Fruit compote, toast",
-    "lunch": "Fried rice with mixed greens",
-    "dinner": "Lentil soup, potato pancake"
+    "breakfast": { "en": "Fruit compote, toast", "ko": "과일 콤포트, 토스트" },
+    "lunch": { "en": "Fried rice with mixed greens", "ko": "모둠 채소 볶음밥" },
+    "dinner": { "en": "Lentil soup, potato pancake", "ko": "렌틸콩 수프, 감자전" }
   },
   {
     "id": "125",
-    "breakfast": "Rice porridge, pickled plum",
-    "lunch": "Mushroom risotto",
-    "dinner": "Soy meat stew, steamed greens"
+    "breakfast": { "en": "Rice porridge, pickled plum", "ko": "쌀죽, 매실 장아찌" },
+    "lunch": { "en": "Mushroom risotto", "ko": "버섯 리소토" },
+    "dinner": { "en": "Soy meat stew, steamed greens", "ko": "콩고기 스튜, 채소찜" }
   },
   {
     "id": "131",
-    "breakfast": "Strawberry oat bar",
-    "lunch": "Radish kimchi, barley rice, bean sprout soup",
-    "dinner": "Roasted root vegetables"
+    "breakfast": { "en": "Strawberry oat bar", "ko": "딸기 오트바" },
+    "lunch": { "en": "Radish kimchi, barley rice, bean sprout soup", "ko": "깍두기, 보리밥, 콩나물국" },
+    "dinner": { "en": "Roasted root vegetables", "ko": "뿌리채소 구이" }
   },
   {
     "id": "140",
-    "breakfast": "Grain soup",
-    "lunch": "Spinach pasta, tomato salad",
-    "dinner": "Synthetic protein kit"
+    "breakfast": { "en": "Grain soup", "ko": "곡물 수프" },
+    "lunch": { "en": "Spinach pasta, tomato salad", "ko": "시금치 파스타, 토마토 샐러드" },
+    "dinner": { "en": "Synthetic protein kit", "ko": "합성 단백질 키트" }
   }
 ]
