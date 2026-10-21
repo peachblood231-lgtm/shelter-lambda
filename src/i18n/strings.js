@@ -153,6 +153,92 @@ export const STRINGS = {
   'craft.OPEN': { en: 'OPEN', ko: '열기' },
   'craft.title': { en: '{action} {item}?', ko: '{item} — {action}?' },
   'craft.rowResult': { en: 'RESULT', ko: '결과' },
+
+  // ── 시설 카드 ──
+  'facility.accessible': { en: 'ACCESSIBLE', ko: '출입 가능' },
+  'facility.restricted': { en: 'RESTRICTED', ko: '출입 제한' },
+
+  // ── 다이닝홀 ──
+  'food.label': { en: 'FOOD PRODUCE', ko: '식량 생산' },
+  'food.state.LIMITED': { en: 'LIMITED', ko: '제한' },
+  'food.state.STABLE': { en: 'STABLE', ko: '안정' },
+  'food.state.NORMAL': { en: 'NORMAL', ko: '정상' },
+  'food.state.CRITICAL': { en: 'CRITICAL', ko: '위험' },
+  'hall.menuLabel': { en: "{code} today's menu", ko: '{code} 오늘의 메뉴' },
+  'hall.breakfast': { en: 'Breakfast', ko: '아침' },
+  'hall.lunch': { en: 'Lunch', ko: '점심' },
+  'hall.dinner': { en: 'Dinner', ko: '저녁' },
+  'hall.capacity': { en: 'CAPACITY', ko: '수용 인원' },
+  'hall.powerLoad': { en: 'POWER LOAD', ko: '전력 부하' },
+  'hall.temperature': { en: 'TEMPERATURE', ko: '온도' },
+  'hall.warning': { en: 'Do not press indiscriminately.', ko: '함부로 누르지 마세요.' },
+  'hall.changeMenu': { en: 'CHANGE MENU', ko: '메뉴 변경' },
+  'ration.next': { en: 'NEXT +{amount} IN {time}', ko: '다음 +{amount}까지 {time}' },
+  'ration.full': { en: 'STOCK FULL', ko: '가득 참' },
+  'ration.collect': { en: 'COLLECT · {item} ×{count}', ko: '받기 · {item} ×{count}' },
+  'ration.nothing': { en: 'NOTHING TO COLLECT', ko: '받을 배급 없음' },
+
+  // ── 그린하우스 ──
+  'unit.active': { en: 'ACTIVE', ko: '가동' },
+  'unit.offline': { en: 'OFFLINE', ko: '정지' },
+  'unit.temperature': { en: 'TEMPERATURE', ko: '온도' },
+  'unit.humidity': { en: 'HUMIDITY', ko: '습도' },
+  'unit.lightOff': { en: 'LIGHT OFF', ko: '조명 끄기' },
+  'unit.lightOn': { en: 'LIGHT ON', ko: '조명 켜기' },
+  'unit.shutdown': { en: 'SHUTDOWN', ko: '가동 중지' },
+  'unit.restart': { en: 'RESTART', ko: '재가동' },
+  'unit.shutdownTitle': { en: 'SHUTDOWN {code}?', ko: '{code} 가동 중지?' },
+  'unit.rowCrop': { en: 'CROP', ko: '작물' },
+  'unit.rowWarning': { en: 'WARNING', ko: '경고' },
+  'unit.cropLost': { en: 'CROP WILL BE LOST', ko: '작물이 사라집니다' },
+  'plot.offline': { en: 'ZONE OFFLINE', ko: '구역 정지' },
+  'plot.plant': { en: '+ PLANT', ko: '+ 심기' },
+  'plot.harvest': { en: 'READY · HARVEST ↗', ko: '수확 가능 ↗' },
+  'plot.left': { en: '{time} LEFT', ko: '{time} 남음' },
+  'plot.paused': { en: 'PAUSED · LIGHT OFF', ko: '일시 정지 · 조명 꺼짐' },
+  'plot.progress': { en: 'Growth progress', ko: '성장 진행도' },
+  'plant.title': { en: 'PLANT · {code}', ko: '심기 · {code}' },
+  'plant.empty': {
+    en: 'NO GREENHOUSE SUPPLIES · FIND SEEDS ON EXPEDITIONS',
+    ko: '심을 자원 없음 · 탐사에서 씨앗을 찾으세요',
+  },
+  'plant.confirm': { en: 'PLANT', ko: '심기' },
+  'dark.aria': { en: 'All greenhouse lights are off', ko: '온실 조명이 모두 꺼졌습니다' },
+  'dark.label': { en: 'ALL GREENHOUSE LIGHTS OFF', ko: '온실 조명 모두 꺼짐' },
+  'dark.lightOn': { en: 'LIGHT ON', ko: '조명 켜기' },
+  'dark.restart': { en: 'RESTART', ko: '재가동' },
+
+  // ── 신호 복구 (L2-B2에서 사용) ──
+  'signal.match': { en: 'MATCH', ko: '일치율' },
+  'signal.freq': { en: 'FREQUENCY', ko: '주파수' },
+  'signal.amp': { en: 'AMPLITUDE', ko: '진폭' },
+  'signal.phase': { en: 'PHASE', ko: '위상' },
+  'signal.linked': { en: 'LINKED', ko: '연결됨' },
+  'signal.weak': { en: 'WEAK', ko: '약함' },
+  'signal.hold': {
+    en: 'HOLD {percent}% FOR {seconds} SECONDS TO LINK',
+    ko: '{percent}% 이상을 {seconds}초 유지하면 연결됩니다',
+  },
+  'signal.established': { en: 'LINK ESTABLISHED · TRANSMISSION RECEIVED', ko: '연결 성공 · 교신 수신' },
+  'signal.locking': { en: 'SIGNAL LOCKING…', ko: '신호 고정 중…' },
+  'signal.noReceiver': {
+    en: 'NO RECEIVER · REPAIR A RADIO TO GET {item}',
+    ko: '수신기 없음 · 무전기를 수리해 {item}을 확보하세요',
+  },
+  'signal.scopeLabel': { en: 'Target and current waveform', ko: '목표 파형과 내 파형' },
+  'signal.supply': { en: 'SUPPLY RECEIVED', ko: '받은 보급품' },
+  'signal.noTransmission': { en: 'NO TRANSMISSION · ESTABLISH LINK', ko: '교신 없음 · 신호를 연결하세요' },
+
+  // ── 레지덴셜 (L2-B2에서 사용) ──
+  'floor.occupied': { en: 'OCCUPIED', ko: '거주 중' },
+  'floor.restricted': { en: 'RESTRICTED', ko: '출입 제한' },
+  'floor.denied': { en: 'INSUFFICIENT APPROACH LEVEL', ko: '접근 권한 부족' },
+  'floor.requires': { en: 'REQUIRES {percent}% RECOVERY', ko: '복구율 {percent}% 필요' },
+  'floor.restrictedSr': { en: '(restricted)', ko: '(출입 제한)' },
+  'floor.scroll': { en: 'Floors (scroll sideways)', ko: '층별 거주 현황 (좌우로 스크롤)' },
+  'rooms.label': { en: 'Room layout', ko: '방 배치' },
+  'rooms.room': { en: 'ROOM {number}', ko: '{number}번 방' },
+  'rooms.selected': { en: 'SELECTED', ko: '선택됨' },
 }
 
 // 글자 속 {이름} 자리를 값으로 채우기
@@ -165,6 +251,11 @@ export function translate(lang, key, vars) {
   const entry = STRINGS[key]
   const text = entry ? (entry[lang] ?? entry.en) : key
   return format(text, vars)
+}
+
+// 사전에 있는 키인지 (없을 때 원래 글자를 그대로 쓰기 위해)
+export function hasString(key) {
+  return key in STRINGS
 }
 
 // 데이터 파일 속 글자 고르기

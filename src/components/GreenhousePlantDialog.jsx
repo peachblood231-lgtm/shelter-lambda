@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { formatCountdown } from '../utils/format'
+import { useT } from '../i18n/strings'
 
-// 온실 "심기" 팝업입니다. (ConfirmDialog와 같은 방식: 브라우저 기본 <dialog>)
+// 온실 "심기" 팝업입니다.
 // 받는 값:
 // - title: 구역 이름 (예: B1 - A - 03)
 // - seeds: 심을 수 있는 자원 목록 [{ seedId, name, owned, minutes, harvest: [{ name, count }] }]
@@ -9,6 +10,7 @@ import { formatCountdown } from '../utils/format'
 // - onPlant: 심기 (씨앗 ID)
 // - onClose: 팝업이 닫혔을 때
 function GreenhousePlantDialog({ title, seeds, speed, onPlant, onClose }) {
+  const t = useT()
   const dialogRef = useRef(null)
   const [selectedId, setSelectedId] = useState(seeds[0]?.seedId ?? null)
 
@@ -27,7 +29,6 @@ function GreenhousePlantDialog({ title, seeds, speed, onPlant, onClose }) {
     closeDialog()
   }
 
-  // 팝업 바깥(배경)을 누르면 닫기
   function handleClick(event) {
     if (event.target === dialogRef.current) closeDialog()
   }
@@ -42,12 +43,12 @@ function GreenhousePlantDialog({ title, seeds, speed, onPlant, onClose }) {
     >
       <div className="term-confirm-inner">
         <h2 id="gh-plant-title" className="term-confirm-title">
-          PLANT · {title}
+          {t('plant.title', { code: title })}
         </h2>
-        <button type="button" className="term-plants-close" aria-label="닫기" onClick={closeDialog} />
+        <button type="button" className="term-plants-close" aria-label={t('common.close')} onClick={closeDialog} />
 
         {seeds.length === 0 ? (
-          <p className="gh-plant-empty">NO GREENHOUSE SUPPLIES · FIND SEEDS ON EXPEDITIONS</p>
+          <p className="gh-plant-empty">{t('plant.empty')}</p>
         ) : (
           <ul className="gh-plant-list">
             {seeds.map((seed) => {
@@ -76,7 +77,7 @@ function GreenhousePlantDialog({ title, seeds, speed, onPlant, onClose }) {
 
         <div className="term-confirm-actions">
           <button type="button" className="term-confirm-btn" onClick={closeDialog}>
-            CANCEL
+            {t('common.cancel')}
           </button>
           <button
             type="button"
@@ -84,7 +85,7 @@ function GreenhousePlantDialog({ title, seeds, speed, onPlant, onClose }) {
             disabled={!selectedId}
             onClick={handlePlant}
           >
-            PLANT
+            {t('plant.confirm')}
           </button>
         </div>
       </div>
