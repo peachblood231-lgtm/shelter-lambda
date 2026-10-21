@@ -3,6 +3,7 @@ import ConfirmDialog from './ConfirmDialog'
 import HeatMatrix from './HeatMatrix'
 import { formatTemp } from '../utils/format'
 import { getStage, getRepairPercent } from '../utils/controlStage'
+import { useT } from '../i18n/strings'
 
 // 중앙온도제어시스템 화면의 가운데 내용입니다.
 // 받는 값:
@@ -13,7 +14,7 @@ import { getStage, getRepairPercent } from '../utils/controlStage'
 // - currentTemperature: 지금 평균 온도
 // - calibration: 매트릭스 시도권 { charges, progress }
 // - hasHint: 매트릭스 힌트를 쓸 수 있는지 (정비 보고서 보유)
-// - isMatrixOpen: 매트릭스 퍼즐이 열려 있는지 (닫기는 왼쪽 위 돌아가기 버튼이 담당)
+// - isMatrixOpen: 매트릭스 퍼즐이 열려 있는지
 // - onOpenMatrix: 매트릭스 퍼즐을 열 때 실행
 // - onInstall: 부품 투입 (아이템 ID)
 // - onStartCalibration: 매트릭스 시작 (시도권 사용)
@@ -32,6 +33,8 @@ function ControlSystemView({
   onStartCalibration,
   onFinishCalibration,
 }) {
+  const t = useT()
+
   // ── 부품 투입 ──
   const [selectedId, setSelectedId] = useState(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
@@ -39,7 +42,6 @@ function ControlSystemView({
 
   // ── 매트릭스 ──
   const [isMatrixConfirmOpen, setIsMatrixConfirmOpen] = useState(false)
-  // 퍼즐을 열 때마다 새 문제를 만들기 위한 번호
   const [matrixRun, setMatrixRun] = useState(0)
 
   // 복구 퍼센트와 단계
@@ -63,19 +65,19 @@ function ControlSystemView({
   const expectedGain = selectedPoints ? Math.min(selectedPoints, system.maxRepair - system.repair) : 0
 
   // INSERT 위 안내 문구
-  let hint = 'SELECT A PART'
+  let hint = t('control.selectPart')
   let hintTone = ''
   if (isComplete) {
-    hint = config.completeMessage
+    hint = t('control.complete')
     hintTone = 'is-success'
   } else if (lastInstalled) {
-    hint = `${lastInstalled.name} INSTALLED · +${lastInstalled.gained}`
+    hint = t('control.installed', { item: lastInstalled.name, points: lastInstalled.gained })
     hintTone = 'is-success'
   } else if (selectedItem && !selectedPoints) {
-    hint = 'NOT COMPATIBLE WITH THIS SYSTEM'
+    hint = t('control.notCompatible')
     hintTone = 'is-error'
   } else if (selectedItem && selectedOwned < 1) {
-    hint = 'OUT OF STOCK'
+    hint = t('control.outOfStock')
     hintTone = 'is-error'
   } else if (selectedItem) {
     hint = `${selectedItem.name} · +${selectedPoints}`
@@ -91,7 +93,6 @@ function ControlSystemView({
     setLastInstalled({ name: selectedItem.name, gained: expectedGain })
   }
 
-  // 매트릭스 시작 확인 → 시도권 사용 → 새 문제로 퍼즐 열기
   function handleStartMatrix() {
     onStartCalibration()
     setMatrixRun((run) => run + 1)
@@ -114,7 +115,7 @@ function ControlSystemView({
         />
       ) : (
         <div className="ctcs-grid">
-          {/* 지금 평균 온도 (흰 카드) */}
+          {/* 지금 평균 온도 (제목은 영어 그대로) */}
           <section className="ctcs-card ctcs-card--current">
             <h2 className="ctcs-card-title">
               AVERAGE CURRENT
@@ -128,8 +129,8 @@ function ControlSystemView({
           <section className="ctcs-card ctcs-condition" aria-live="polite">
             <h2 className="ctcs-card-title">CONDITION</h2>
             <div className="ctcs-condition-body">
-              <p className="ctcs-stage">{stage.label}</p>
-              <p className="ctcs-cause">{isComplete ? config.completeCause : config.cause}</p>
+              <p className="ctcs-stage">{t(`stage.${stage.label}`)}</p>
+              <p className="ctcs-cause">{isComplete ? t('control.completeCause') : t('control.cause')}</p>
             </div>
           </section>
 
@@ -156,16 +157,16 @@ function ControlSystemView({
             </span>
             <span className="ctcs-matrix-bottom">
               <span className="ctcs-matrix-meta">
-                <span>
-                  CHARGES {calibration.charges} / {matrix.maxCharges}
-                </span>
+                <span>{t('matrix.charges', { count: calibration.charges, max: matrix.maxCharges })}</span>
                 <span>
                   {isChargesFull
-                    ? 'CHARGES FULL'
-                    : `NEXT CHARGE IN ${matrix.expeditionsPerCharge - calibration.progress} EXPEDITIONS`}
+                    ? t('matrix.chargesFull')
+                    : t('matrix.nextCharge', { count: matrix.expeditionsPerCharge - calibration.progress })}
                 </span>
                 {!canCalibrate && (
-                  <span className="ctcs-matrix-warning">{isComplete ? 'SYSTEM OPERATIONAL' : 'NO CHARGES'}</span>
+                  <span className="ctcs-matrix-warning">
+                    {isComplete ? t('matrix.operational') : t('matrix.noCharges')}
+                  </span>
                 )}
               </span>
               <span className="ctcs-matrix-project">{config.projectLabel}</span>
@@ -177,7 +178,7 @@ function ControlSystemView({
       {/* ── 오른쪽: REPAIR + INVENTORY ── */}
       <aside className="ctcs-side">
         <div className="ctcs-repair">
-          <span className="ctcs-repair-label">REPAIR</span>
+          <span className="ctcs-repair-label">{t('control.repair')}</span>
           <span>
             <span className="ctcs-repair-value">{system.repair}</span>
             <span className="ctcs-repair-max"> / {system.maxRepair}</span>
@@ -223,7 +224,7 @@ function ControlSystemView({
             disabled={!canInsert}
             onClick={() => setIsConfirmOpen(true)}
           >
-            INSERT
+            {t('control.insert')}
           </button>
         </div>
       </aside>
@@ -231,14 +232,17 @@ function ControlSystemView({
       {/* 부품 투입 확인 팝업 */}
       {isConfirmOpen && selectedItem && (
         <ConfirmDialog
-          title={`INSERT ${selectedItem.name}?`}
+          title={t('control.insertTitle', { item: selectedItem.name })}
           rows={[
-            { label: 'PART', value: `${selectedItem.name} × 1` },
-            { label: 'REPAIR', value: `+${expectedGain}` },
-            { label: 'RESULT', value: `${system.repair} → ${system.repair + expectedGain} / ${system.maxRepair}` },
-            { label: 'STOCK', value: `${selectedOwned} → ${selectedOwned - 1}` },
+            { label: t('control.rowPart'), value: `${selectedItem.name} × 1` },
+            { label: t('control.rowRepair'), value: `+${expectedGain}` },
+            {
+              label: t('control.rowResult'),
+              value: `${system.repair} → ${system.repair + expectedGain} / ${system.maxRepair}`,
+            },
+            { label: t('control.rowStock'), value: `${selectedOwned} → ${selectedOwned - 1}` },
           ]}
-          confirmLabel="CONFIRM INSERT"
+          confirmLabel={t('control.confirmInsert')}
           onConfirm={handleConfirm}
           onClose={() => setIsConfirmOpen(false)}
         />
@@ -247,15 +251,18 @@ function ControlSystemView({
       {/* 매트릭스 시작 확인 팝업 */}
       {isMatrixConfirmOpen && (
         <ConfirmDialog
-          title="START CALIBRATION?"
+          title={t('matrix.startTitle')}
           rows={[
-            { label: 'CHARGES', value: `${calibration.charges} → ${calibration.charges - 1}` },
-            { label: 'DIFFICULTY', value: `${presses} DISPLACED SECTORS` },
-            { label: 'MOVE LIMIT', value: `${moveLimit}` },
-            { label: 'REWARD', value: `REPAIR +${matrix.reward}` },
-            ...(hasHint ? [{ label: 'HINT', value: 'MAINTENANCE REPORT' }] : []),
+            {
+              label: t('matrix.rowCharges'),
+              value: `${calibration.charges} → ${calibration.charges - 1}`,
+            },
+            { label: t('matrix.rowDifficulty'), value: t('matrix.difficultyValue', { count: presses }) },
+            { label: t('matrix.rowMoveLimit'), value: `${moveLimit}` },
+            { label: t('matrix.rowReward'), value: t('matrix.rewardValue', { points: matrix.reward }) },
+            ...(hasHint ? [{ label: t('matrix.rowHint'), value: t('matrix.hintValue') }] : []),
           ]}
-          confirmLabel="START"
+          confirmLabel={t('matrix.start')}
           onConfirm={handleStartMatrix}
           onClose={() => setIsMatrixConfirmOpen(false)}
         />

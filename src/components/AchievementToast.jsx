@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-// 업적 안내창 전용 스타일
+import { useT } from '../i18n/strings'
 import '../styles/achievement.css'
 
 // 안내창이 떠 있는 시간 (밀리초)
@@ -10,22 +10,20 @@ const LEAVE_MS = 300
 // 오른쪽 아래에서 올라오는 업적 안내창입니다.
 // 받는 값:
 // - achievement: { title, description }
-// - onClose: 안내창이 완전히 사라진 뒤 실행 (다음 안내창으로 넘어가기 등)
+// - onClose: 안내창이 완전히 사라진 뒤 실행
 function AchievementToast({ achievement, onClose }) {
-  // 사라지는 중인지 (애니메이션용)
+  const t = useT()
   const [isLeaving, setIsLeaving] = useState(false)
 
-  // onClose는 화면이 다시 그려질 때마다 새로 만들어지므로 손잡이(ref)로 최신 것만 기억
+  // onClose는 화면이 다시 그려질 때마다 새로 만들어지므로 최신 것만 기억
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
 
-  // DURATION이 지나면 사라지기 시작
   useEffect(() => {
     const timer = setTimeout(() => setIsLeaving(true), DURATION)
     return () => clearTimeout(timer)
   }, [])
 
-  // 사라지기 시작하면 애니메이션이 끝난 뒤 onClose
   useEffect(() => {
     if (!isLeaving) return undefined
     const timer = setTimeout(() => onCloseRef.current(), LEAVE_MS)
@@ -34,7 +32,6 @@ function AchievementToast({ achievement, onClose }) {
 
   return (
     <div className={isLeaving ? 'ach-toast is-leaving' : 'ach-toast'} role="status" aria-live="polite">
-      {/* 왼쪽 아이콘 (별) */}
       <div className="ach-icon" aria-hidden="true">
         <svg width="26" height="26" viewBox="0 0 24 24">
           <path
@@ -47,19 +44,21 @@ function AchievementToast({ achievement, onClose }) {
         </svg>
       </div>
 
-      {/* 글 */}
       <div className="ach-text">
-        <p className="ach-label">ACHIEVEMENT UNLOCKED</p>
+        <p className="ach-label">{t('achievement.unlocked')}</p>
         <p className="ach-title">{achievement.title}</p>
         <p className="ach-body">{achievement.description}</p>
       </div>
 
-      {/* 닫기 */}
-      <button type="button" className="ach-close" aria-label="업적 안내 닫기" onClick={() => setIsLeaving(true)}>
+      <button
+        type="button"
+        className="ach-close"
+        aria-label={t('achievement.close')}
+        onClick={() => setIsLeaving(true)}
+      >
         ×
       </button>
 
-      {/* 남은 시간 막대 */}
       <span className="ach-timer" style={{ animationDuration: `${DURATION}ms` }} aria-hidden="true" />
     </div>
   )

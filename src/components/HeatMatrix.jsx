@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { createPuzzle, toggleCell, isSolved, countWarm, getCellLabel } from '../game/heatMatrix'
-// 매트릭스 퍼즐·시작 카드 전용 스타일
+import { useT } from '../i18n/strings'
 import '../styles/matrix.css'
 
 // 열 분배 매트릭스 퍼즐 화면입니다.
-// (나가기는 화면 왼쪽 위 돌아가기 버튼이 담당합니다)
 // 받는 값:
 // - title: 제목
 // - size: 한 줄 칸 수 (4 → 4×4)
@@ -14,18 +13,16 @@ import '../styles/matrix.css'
 // - showHint: 첫 수 힌트를 보여 줄지 (정비 보고서 보유)
 // - onFinish: 끝났을 때 실행 (성공이면 true, 실패면 false)
 function HeatMatrix({ title, size, presses, moveLimit, reward, showHint, onFinish }) {
-  // 문제는 화면이 처음 열릴 때 한 번만 만듦
+  const t = useT()
+
   const [puzzle] = useState(() => createPuzzle(size, presses))
-  // 지금 판 상태, 이동 횟수, 결과('playing' / 'success' / 'fail')
   const [grid, setGrid] = useState(puzzle.grid)
   const [moves, setMoves] = useState(0)
   const [result, setResult] = useState('playing')
 
-  // 힌트: 아직 한 번도 안 눌렀을 때만, 정답 중 한 칸을 주황 점선으로 표시
   const hintIndex = showHint && moves === 0 ? puzzle.solution[0] : null
   const total = size * size
 
-  // 칸 누르기
   function handleCell(index) {
     if (result !== 'playing') return
 
@@ -45,23 +42,22 @@ function HeatMatrix({ title, size, presses, moveLimit, reward, showHint, onFinis
 
   return (
     <section className="hmx" aria-labelledby="hmx-title">
-      {/* 머리: 제목 + 이동 횟수·WARM 개수 */}
       <div className="hmx-head">
         <div>
-          <p className="hmx-code">CALIBRATION</p>
+          <p className="hmx-code">{t('matrix.code')}</p>
           <h2 id="hmx-title" className="hmx-title">
             {title}
           </h2>
         </div>
         <dl className="hmx-stats">
           <div>
-            <dt>MOVES</dt>
+            <dt>{t('matrix.moves')}</dt>
             <dd>
               {moves} / {moveLimit}
             </dd>
           </div>
           <div>
-            <dt>WARM</dt>
+            <dt>{t('matrix.warmCount')}</dt>
             <dd>
               {countWarm(grid)} / {total}
             </dd>
@@ -70,16 +66,15 @@ function HeatMatrix({ title, size, presses, moveLimit, reward, showHint, onFinis
       </div>
 
       <div className="hmx-body">
-        {/* 4×4 판 */}
         <div
           className="hmx-grid"
           style={{ gridTemplateColumns: `repeat(${size}, auto)` }}
           role="group"
-          aria-label="열 분배 구역"
+          aria-label={t('matrix.gridLabel')}
         >
           {grid.map((isWarm, index) => {
-            // 구역 이름 (예: R1-A) — 화면에는 안 보이고 화면 낭독기만 읽음
             const label = getCellLabel(size, index)
+            const stateText = isWarm ? t('matrix.warm') : t('matrix.cold')
             let className = isWarm ? 'hmx-cell is-warm' : 'hmx-cell'
             if (index === hintIndex) className += ' is-hint'
 
@@ -88,33 +83,29 @@ function HeatMatrix({ title, size, presses, moveLimit, reward, showHint, onFinis
                 key={label}
                 type="button"
                 className={className}
-                aria-label={`${label} ${isWarm ? 'WARM' : 'COLD'}`}
+                aria-label={`${label} ${stateText}`}
                 disabled={result !== 'playing'}
                 onClick={() => handleCell(index)}
               >
-                <span className="hmx-cell-state">{isWarm ? 'WARM' : 'COLD'}</span>
+                <span className="hmx-cell-state">{stateText}</span>
               </button>
             )
           })}
         </div>
 
-        {/* 오른쪽: 규칙, 힌트, 결과 */}
         <div className="hmx-side">
-          <p className="hmx-rule">
-            누른 구역과 위·아래·왼쪽·오른쪽 구역의 상태가 함께 바뀝니다. 이동 제한 안에 모든 구역을
-            WARM으로 만드세요.
-          </p>
+          <p className="hmx-rule">{t('matrix.rule')}</p>
 
-          {hintIndex !== null && <p className="hmx-hint">MAINTENANCE REPORT: START AT THE MARKED SECTOR</p>}
+          {hintIndex !== null && <p className="hmx-hint">{t('matrix.hint')}</p>}
 
           {result === 'success' && (
             <p className="hmx-result is-success" role="status">
-              CALIBRATION COMPLETE · REPAIR +{reward}
+              {t('matrix.success', { points: reward })}
             </p>
           )}
           {result === 'fail' && (
             <p className="hmx-result is-fail" role="status">
-              CALIBRATION FAILED · MOVE LIMIT EXCEEDED
+              {t('matrix.fail')}
             </p>
           )}
         </div>
