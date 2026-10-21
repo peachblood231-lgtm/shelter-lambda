@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { getSlide, slideBlock, toggleLit } from '../game/rooms'
+import { useT } from '../i18n/strings'
 import '../styles/sector-rooms.css'
 
 // 방향키 → 방향 이름
@@ -34,6 +35,7 @@ function roomNumber(block) {
 // - onChange: 배치가 바뀔 때마다 실행 (저장용)
 // - onClose: 팝업이 닫혔을 때
 function SectorRoomsDialog({ title, grid, initialBlocks, onChange, onClose }) {
+  const t = useT()
   const dialogRef = useRef(null)
   const gridRef = useRef(null)
   const [blocks, setBlocks] = useState(initialBlocks)
@@ -264,8 +266,8 @@ function SectorRoomsDialog({ title, grid, initialBlocks, onChange, onClose }) {
       style.transform = 'translate(' + drag.dx + 'px, ' + drag.dy + 'px)'
     }
 
-    let label = 'ROOM ' + roomNumber(block)
-    if (block.lit) label += ', SELECTED'
+    let label = t('rooms.room', { number: roomNumber(block) })
+    if (block.lit) label += ', ' + t('rooms.selected')
 
     return {
       ref: (element) => {
@@ -302,9 +304,9 @@ function SectorRoomsDialog({ title, grid, initialBlocks, onChange, onClose }) {
         <h2 id="sector-dialog-title" className="sector-title">
           {title}
         </h2>
-        <button type="button" className="term-plants-close" aria-label="닫기" onClick={closeDialog} />
+        <button type="button" className="term-plants-close" aria-label={t('common.close')} onClick={closeDialog} />
 
-        <div ref={gridRef} className="sector-grid" style={gridStyle} role="group" aria-label="방 배치">
+        <div ref={gridRef} className="sector-grid" style={gridStyle} role="group" aria-label={t('rooms.label')}>
           {blocks.map((block) => (
             <button key={block.id} type="button" {...getRoomProps(block)}>
               <span className="room-number" aria-hidden="true">

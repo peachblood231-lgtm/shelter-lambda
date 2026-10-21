@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { SAMPLES, sampleWave, matchScore, makeNoise, getSectorStatus } from '../game/signal'
+import { useT } from '../i18n/strings'
 // 신호 화면 전용 스타일
 import '../styles/signal.css'
 
@@ -14,11 +15,11 @@ const RANGES = {
   phase: { min: 0, max: 360, step: 1 },
 }
 
-// 슬라이더 목록 (이름, 표시 형식)
+// 슬라이더 목록 (번역 키, 표시 형식)
 const CONTROLS = [
-  { key: 'freq', label: 'FREQUENCY', format: (v) => `${v.toFixed(2)} Hz` },
-  { key: 'amp', label: 'AMPLITUDE', format: (v) => v.toFixed(2) },
-  { key: 'phase', label: 'PHASE', format: (v) => `${Math.round(v)}°` },
+  { key: 'freq', labelKey: 'signal.freq', format: (v) => `${v.toFixed(2)} Hz` },
+  { key: 'amp', labelKey: 'signal.amp', format: (v) => v.toFixed(2) },
+  { key: 'phase', labelKey: 'signal.phase', format: (v) => `${Math.round(v)}°` },
 ]
 
 // 시작할 때 내 파형 값
@@ -27,8 +28,8 @@ const START_WAVE = { freq: 1, amp: 0.5, phase: 0 }
 // 무전기가 없을 때 보여 줄 잡음 크기
 const STATIC_LEVEL = 0.25
 
-// 상태 글자
-const STATUS_LABEL = { linked: 'LINKED', weak: 'WEAK', locked: '···' }
+// 상태 글자 (번역 키. 잠긴 구역은 번역 없이 '···')
+const STATUS_KEY = { linked: 'signal.linked', weak: 'signal.weak' }
 
 // y값 목록 → SVG 선 경로
 function toPath(values) {
@@ -53,6 +54,7 @@ function toPath(values) {
 // - onSelect: 구역 선택 (구역 ID)
 // - onLink: 연결 성공 (구역 ID)
 function SignalView({ sectors, holdSeconds, linkedIds, selectedId, hasReceiver, receiverName, onSelect, onLink }) {
+  const t = useT()
   const sector = sectors.find((candidate) => candidate.id === selectedId)
   const status = getSectorStatus(sectors, linkedIds, selectedId)
 
@@ -74,7 +76,7 @@ function SignalView({ sectors, holdSeconds, linkedIds, selectedId, hasReceiver, 
                 onClick={() => onSelect(item.id)}
               >
                 <span>{item.name}</span>
-                <span className="sig-sector-status">{STATUS_LABEL[itemStatus]}</span>
+                <span className="sig-sector-status">{STATUS_KEY[itemStatus] ? t(STATUS_KEY[itemStatus]) : '···'}</span>
               </button>
             </li>
           )
@@ -99,6 +101,7 @@ function SignalView({ sectors, holdSeconds, linkedIds, selectedId, hasReceiver, 
 
 // 오실로스코프 + 슬라이더 + 일치율 (구역 하나 분량)
 function SignalScope({ sector, status, holdSeconds, hasReceiver, receiverName, onLink }) {
+  const t = useT()
   // 무전기가 없으면 아직 연결 안 된 구역은 조작 불가
   const isNoReceiver = !hasReceiver && status !== 'linked'
   const isPlayable = status === 'weak' && hasReceiver
@@ -156,16 +159,16 @@ function SignalScope({ sector, status, holdSeconds, hasReceiver, receiverName, o
   else if (status !== 'linked' && noise.length === SAMPLES) shownTarget = target.map((y, i) => y + noise[i])
 
   // 안내 문구
-  let note = `HOLD ${Math.round(sector.threshold * 100)}% FOR ${holdSeconds} SECONDS TO LINK`
+  let note = t('signal.hold', { percent: Math.round(sector.threshold * 100), seconds: holdSeconds })
   let noteTone = ''
   if (status === 'linked') {
-    note = 'LINK ESTABLISHED · TRANSMISSION RECEIVED'
+    note = t('signal.established')
     noteTone = 'is-success'
   } else if (isNoReceiver) {
-    note = `NO RECEIVER · REPAIR A RADIO TO GET ${receiverName}`
+    note = t('signal.noReceiver', { item: receiverName })
     noteTone = 'is-warning'
   } else if (isGood) {
-    note = 'SIGNAL LOCKING…'
+    note = t('signal.locking')
   }
 
   const holdPercent = status === 'linked' ? 100 : Math.min(100, (holdMs / holdTarget) * 100)
@@ -180,12 +183,12 @@ function SignalScope({ sector, status, holdSeconds, hasReceiver, receiverName, o
           </h2>
         </div>
         <dl className={isGood ? 'sig-match is-good' : 'sig-match'}>
-          <dt>MATCH</dt>
+          <dt>{t('signal.match')}</dt>
           <dd>{isNoReceiver ? '--' : `${Math.round(score * 100)}%`}</dd>
         </dl>
       </div>
 
-      <svg className="sig-scope" viewBox={`0 0 ${SCOPE_W} ${SCOPE_H}`} role="img" aria-label="목표 파형과 내 파형">
+      <svg className="sig-scope" viewBox={`0 0 ${SCOPE_W} ${SCOPE_H}`} role="img" aria-label={t('signal.scopeLabel')}>
         {/* 격자 */}
         {[1, 2, 3].map((n) => (
           <line
@@ -224,7 +227,7 @@ function SignalScope({ sector, status, holdSeconds, hasReceiver, receiverName, o
           const value = status === 'linked' ? sector.target[control.key] : wave[control.key]
           return (
             <label key={control.key} className="sig-control">
-              <span>{control.label}</span>
+              <span>{t(control.labelKey)}</span>
               <input
                 type="range"
                 min={RANGES[control.key].min}
@@ -250,6 +253,7 @@ function SignalScope({ sector, status, holdSeconds, hasReceiver, receiverName, o
 // 오른쪽 열: 무전 기록 패널
 // 받는 값: sector(선택한 구역), isLinked(연결 여부), itemName(아이템 ID → 이름 함수)
 export function SignalTransmission({ sector, isLinked, itemName }) {
+  const t = useT()
   return (
     <section className="sig-tx" aria-labelledby="sig-tx-title">
       <h2 id="sig-tx-title" className="sig-tx-title">
@@ -265,7 +269,7 @@ export function SignalTransmission({ sector, isLinked, itemName }) {
             ))}
           </div>
           <div className="sig-tx-supply">
-            <h3>SUPPLY RECEIVED</h3>
+            <h3>{t('signal.supply')}</h3>
             <ul>
               {sector.rewards.map((reward) => (
                 <li key={reward.itemId}>
@@ -277,7 +281,7 @@ export function SignalTransmission({ sector, isLinked, itemName }) {
           </div>
         </>
       ) : (
-        <p className="sig-tx-empty">NO TRANSMISSION · ESTABLISH LINK</p>
+        <p className="sig-tx-empty">{t('signal.noTransmission')}</p>
       )}
     </section>
   )

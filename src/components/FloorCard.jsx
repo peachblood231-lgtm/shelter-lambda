@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import SectorRoomsDialog from './SectorRoomsDialog'
 import { createLayout } from '../game/rooms'
 import RESIDENTIAL from '../data/residential.json'
+import { useT } from '../i18n/strings'
 import '../styles/sector-rooms.css'
 
-// 잠긴 SECTOR 칸을 눌렀을 때 보여 줄 문구와 표시 시간
-const DENIED_MESSAGE = 'INSUFFICIENT APPROACH LEVEL'
+// 잠긴 SECTOR 칸을 눌렀을 때 문구(floor.denied)를 보여 줄 시간
 const MESSAGE_DURATION_MS = 2000
 
 // 레지덴셜의 층 카드 하나입니다.
@@ -16,6 +16,7 @@ const MESSAGE_DURATION_MS = 2000
 // - layouts: 저장된 방 배치
 // - onSaveLayout: 방 배치 저장 (키, 방 목록)
 function FloorCard({ floor, sectors, repairPercent = 0, layouts = {}, onSaveLayout = () => {} }) {
+  const t = useT()
   const isRestricted = sectors.every((sector) => floor.restricted.includes(sector))
 
   const [deniedSector, setDeniedSector] = useState(null)
@@ -49,7 +50,7 @@ function FloorCard({ floor, sectors, repairPercent = 0, layouts = {}, onSaveLayo
     <article className="term-floor">
       <h2 className="term-floor-code">{floor.code}</h2>
       <p className={isRestricted ? 'term-floor-status is-restricted' : 'term-floor-status'}>
-        {isRestricted ? 'RESTRICTED' : 'OCCUPIED'}
+        {isRestricted ? t('floor.restricted') : t('floor.occupied')}
       </p>
 
       <ul className="term-floor-sectors">
@@ -58,7 +59,7 @@ function FloorCard({ floor, sectors, repairPercent = 0, layouts = {}, onSaveLayo
             return (
               <li key={sector} className="term-sector is-restricted">
                 SECTOR {sector}
-                <span className="sr-only"> (출입 제한)</span>
+                <span className="sr-only"> {t('floor.restrictedSr')}</span>
               </li>
             )
           }
@@ -76,8 +77,8 @@ function FloorCard({ floor, sectors, repairPercent = 0, layouts = {}, onSaveLayo
               >
                 {isDenied ? (
                   <>
-                    {DENIED_MESSAGE}
-                    <span className="sector-req">REQUIRES {getRequirement(sector)}% RECOVERY</span>
+                    {t('floor.denied')}
+                    <span className="sector-req">{t('floor.requires', { percent: getRequirement(sector) })}</span>
                   </>
                 ) : (
                   `SECTOR ${sector}${isUnlocked ? ' ↗' : ''}`
@@ -90,7 +91,7 @@ function FloorCard({ floor, sectors, repairPercent = 0, layouts = {}, onSaveLayo
 
       <p className="sr-only" aria-live="polite">
         {deniedSector
-          ? `${floor.code} SECTOR ${deniedSector}: ${DENIED_MESSAGE}, REQUIRES ${getRequirement(deniedSector)}% RECOVERY`
+          ? `${floor.code} SECTOR ${deniedSector}: ${t('floor.denied')}, ${t('floor.requires', { percent: getRequirement(deniedSector) })}`
           : ''}
       </p>
 

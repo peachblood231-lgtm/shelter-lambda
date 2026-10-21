@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import FloorCard from './FloorCard'
+import { useT } from '../i18n/strings'
 import '../styles/residential-dark.css'
 
 // 조명이 꺼졌을 때 화면 전체를 덮는 어둠입니다. (보이기만 하고 클릭은 막지 않음)
@@ -17,6 +18,7 @@ function DarkOverlay() {
 // - layouts: 저장된 방 배치
 // - onSaveLayout: 방 배치 저장
 function ResidentialFloors({ floors, sectors, lightOn: initialLightOn, repairPercent, layouts, onSaveLayout }) {
+  const t = useT()
   const [lightOn, setLightOn] = useState(initialLightOn)
   const scrollRef = useRef(null)
 
@@ -68,7 +70,7 @@ function ResidentialFloors({ floors, sectors, lightOn: initialLightOn, repairPer
         className="term-floors-scroll"
         tabIndex={0}
         role="region"
-        aria-label="층별 거주 현황 (좌우로 스크롤)"
+        aria-label={t('floor.scroll')}
       >
         {floors.map((floor) => (
           <FloorCard
@@ -83,7 +85,7 @@ function ResidentialFloors({ floors, sectors, lightOn: initialLightOn, repairPer
       </div>
 
       <button type="button" className={lightClassName} onClick={() => setLightOn(!lightOn)}>
-        {lightOn ? 'LIGHT OFF' : 'LIGHT ON'}
+        {lightOn ? t('unit.lightOff') : t('unit.lightOn')}
       </button>
 
       {!lightOn && <DarkOverlay />}
