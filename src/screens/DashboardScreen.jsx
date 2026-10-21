@@ -22,6 +22,8 @@ import { getStage, getRepairPercent } from '../utils/controlStage'
 import { prepareExpedition, getRations } from '../game/expedition'
 import { getRationStatus } from '../game/ration'
 import { getGrowthSpeed, getPlotProgress } from '../game/greenhouse'
+import { useLanguage } from '../i18n/language'
+import { pick, translate } from '../i18n/strings'
 
 // ─────────────────────────────────────────────
 // 화면에 보여 줄 내용은 JSON 파일에서 불러옵니다.
@@ -72,6 +74,10 @@ function DashboardScreen({ game, dispatch }) {
   const [isArchiveOpen, setIsArchiveOpen] = useState(false)
   const [isMatrixOpen, setIsMatrixOpen] = useState(false)
   const [signalSectorId, setSignalSectorId] = useState(null)
+
+  // 지금 언어와 번역 함수 (언어가 바뀌면 화면이 다시 그려짐)
+  const lang = useLanguage()
+  const t = (key, vars) => translate(lang, key, vars)
 
   // 1초마다 갱신되는 현재 시각 (배급·재배 남은 시간 표시용)
   const now = useNow(1000)
@@ -142,7 +148,7 @@ function DashboardScreen({ game, dispatch }) {
     }
   }
 
-  // ── 레지덴셜: SECTOR 해금 기준(복구도)과 방 배치 저장 ──
+  // ── 레지덴셜 ──
   const residentialProps = {
     repairPercent,
     layouts: game.sectorRooms ?? {},
@@ -152,13 +158,16 @@ function DashboardScreen({ game, dispatch }) {
   // ── 다이닝홀 로그: 비상 배급 기록 ──
   const rationDistributionLogs = game.rationLog.map((entry) => ({
     time: formatClock(entry.time),
-    text: `EMERGENCY RATION DISTRIBUTED · ${RATION_ITEM?.name ?? RATION.itemId} ×${entry.units} (+${
-      entry.units * unitRation
-    })`,
+    text: t('log.rationDistributed', {
+      item: RATION_ITEM?.name ?? RATION.itemId,
+      count: entry.units,
+      amount: entry.units * unitRation,
+    }),
   }))
 
+  // ── 하단 진행 바 ──
   const recovery = {
-    label: isOperational ? CONTROL.operationalLabel : CONTROL.recoveryLabel,
+    label: isOperational ? t('recovery.operational') : t('recovery.inProgress'),
     percent: repairPercent,
   }
 
@@ -179,39 +188,42 @@ function DashboardScreen({ game, dispatch }) {
   }
 
   // ── 메인 CURRENT LOG ──
+  const baseLogs = LOGS.map((log) => ({ time: log.time, text: pick(log.text, lang) }))
+
   const eventLogs = [
     ...game.installLog.map((entry) => ({
       time: entry.time,
-      text: `${findItemName(entry.itemId)} INSTALLED +${entry.gained}`,
+      text: t('log.installed', { item: findItemName(entry.itemId), points: entry.gained }),
     })),
     ...game.expeditionLog.map((entry) => ({
       time: entry.time,
-      text: `${findLocationName(entry.locationId)} EXPEDITION ${
-        entry.earlyReturn ? 'RETURNED EARLY' : 'RETURNED'
-      } · ${entry.found.length} ITEMS`,
+      text: t(entry.earlyReturn ? 'log.expeditionEarly' : 'log.expedition', {
+        location: findLocationName(entry.locationId),
+        count: entry.found.length,
+      }),
     })),
     ...game.calibrationLog.map((entry) => ({
       time: entry.time,
-      text: entry.success ? `HEAT MATRIX CALIBRATED +${entry.gained}` : 'HEAT MATRIX CALIBRATION FAILED',
+      text: entry.success ? t('log.calibrated', { points: entry.gained }) : t('log.calibrationFailed'),
     })),
     ...game.rationLog.map((entry) => ({
       time: entry.time,
-      text: `EMERGENCY RATION COLLECTED +${entry.units * unitRation}`,
+      text: t('log.rationCollected', { amount: entry.units * unitRation }),
     })),
     ...game.signalLog.map((entry) => ({
       time: entry.time,
-      text: `${findSectorName(entry.sectorId)} SIGNAL LINKED`,
+      text: t('log.signalLinked', { sector: findSectorName(entry.sectorId) }),
     })),
     ...game.harvestLog.map((entry) => ({
       time: entry.time,
-      text: `GREENHOUSE HARVEST · ${entry.harvest
-        .map((item) => `${findItemName(item.itemId)} ×${item.count}`)
-        .join(', ')}`,
+      text: t('log.harvest', {
+        items: entry.harvest.map((item) => `${findItemName(item.itemId)} ×${item.count}`).join(', '),
+      }),
     })),
   ]
     .sort((a, b) => a.time.localeCompare(b.time))
     .map((entry) => ({ time: formatClock(entry.time), text: entry.text }))
-  const mainLogs = [...LOGS, ...eventLogs]
+  const mainLogs = [...baseLogs, ...eventLogs]
 
   const archiveReadIds = game.archiveReadIds
 
@@ -266,7 +278,7 @@ function DashboardScreen({ game, dispatch }) {
   }
 
   function craftItem(recipeId) {
-    dispatch({ type: 'craft/make', recipeId })
+    dispatch({ type: 'craft/make', recipeId, time: nowIso() })
   }
 
   // ── 지금 열린 화면 그리기 ──

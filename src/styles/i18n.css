@@ -1,0 +1,77 @@
+/* =========================================
+   다국어: 한글 글꼴 연결 + KO | EN 버튼
+   ========================================= */
+
+/* 영어는 지금 글꼴 그대로, 한글만 뒤에 붙인 글꼴로 나옴
+   (Inter·IBM Plex에는 한글이 없어서 한글 글자만 다음 글꼴로 넘어감) */
+:root {
+  --font-serif: 'IBM Plex Serif', 'Noto Serif KR', Georgia, serif;
+  --font-sans: 'Inter', 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+}
+
+/* 한국어일 때 단어 중간에서 줄이 끊기지 않게 */
+html:lang(ko) body {
+  word-break: keep-all;
+}
+
+/* ── KO | EN 버튼 ── */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 400 11px var(--font-sans);
+  letter-spacing: 0.12em;
+}
+
+.lang-toggle-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lang-toggle-sep {
+  opacity: 0.4;
+}
+
+.lang-toggle-btn {
+  padding: 2px 0;
+  border: none;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.lang-toggle-btn:hover {
+  opacity: 0.85;
+}
+
+/* 지금 언어: 또렷하게 + 밑줄 */
+.lang-toggle-btn.is-active {
+  border-bottom-color: currentColor;
+  opacity: 1;
+}
+
+.lang-toggle-btn:focus-visible {
+  outline: 1px dashed currentColor;
+  outline-offset: 3px;
+}
+
+/* 인트로: 오른쪽 아래 구석 (RESET DATA 반대편) */
+.lang-toggle--intro {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  color: #ffffff;
+}
+
+/* 대시보드: 오른쪽 위 상태 표시 맨 아래, 오른쪽 정렬 */
+.lang-toggle--readout {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}

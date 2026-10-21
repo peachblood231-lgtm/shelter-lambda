@@ -7,8 +7,8 @@
     "sectors": ["THETA", "IOTA", "KAPPA", "MU", "NU", "XI"]
   },
   "logs": [
-    { "time": "03:12", "text": "TEMPERATURE SYSTEM FAILURE DETECTED" },
-    { "time": "03:14", "text": "EMERGENCY HEATING ENABLED" },
-    { "time": "03:20", "text": "RECOVERY PROTOCOL INITIATED" }
+    { "time": "03:12", "text": { "en": "TEMPERATURE SYSTEM FAILURE DETECTED", "ko": "온도 시스템 고장 감지" } },
+    { "time": "03:14", "text": { "en": "EMERGENCY HEATING ENABLED", "ko": "비상 난방 가동" } },
+    { "time": "03:20", "text": { "en": "RECOVERY PROTOCOL INITIATED", "ko": "복구 절차 개시" } }
   ]
 }
