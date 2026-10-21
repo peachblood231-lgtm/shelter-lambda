@@ -371,10 +371,14 @@ function DashboardScreen({ game, dispatch }) {
             title={`${openFacility.name} ARCHIVE`}
             headerAside={
               <div className="arc-header-meta">
-                <p className="arc-subtitle">{archiveInfo.subtitle}</p>
+                <p className="arc-subtitle">{pick(archiveInfo.subtitle, lang)}</p>
                 <p className="arc-summary">
-                  ACCESS LEVEL {archiveInfo.accessLevel} · {stats.total} RECORDS · {stats.locked} LOCKED ·{' '}
-                  {stats.corrupted} CORRUPTED
+                  {t('archive.summary', {
+                    level: archiveInfo.accessLevel,
+                    total: stats.total,
+                    locked: stats.locked,
+                    corrupted: stats.corrupted,
+                  })}
                 </p>
               </div>
             }

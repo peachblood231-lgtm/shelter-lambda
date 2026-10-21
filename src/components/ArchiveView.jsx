@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import RecordDetail from './RecordDetail'
 import { getRecordStatus, isLocked } from '../utils/archiveStats'
+import { useT } from '../i18n/strings'
 
 // 분류 탭 순서 (기록이 있는 분류만 탭으로 보여 줌)
 const CATEGORY_ORDER = ['DISTRIBUTION', 'INVENTORY', 'INCIDENT', 'PERSONAL']
@@ -12,6 +13,8 @@ const CATEGORY_ORDER = ['DISTRIBUTION', 'INVENTORY', 'INCIDENT', 'PERSONAL']
 // - readIds: 지금까지 읽은 기록 ID 목록
 // - onRead: 기록을 읽었을 때 실행할 함수 (읽은 목록에 추가)
 function ArchiveView({ records, external, readIds, onRead }) {
+  const t = useT()
+
   // 기록이 하나라도 있는 분류만 골라 탭으로 만듭니다.
   const categories = CATEGORY_ORDER.filter((category) =>
     records.some((record) => record.category === category),
@@ -94,7 +97,7 @@ function ArchiveView({ records, external, readIds, onRead }) {
       let state = readIds.includes(id) ? 'READ' : 'UNREAD'
       if (status === 'LOCKED') state = 'LOCKED'
       if (status === 'CORRUPTED') state = 'CORRUPTED'
-      return { id, title: own.title ?? 'DATA LOST', external: false, state }
+      return { id, title: own.title ?? t('archive.dataLost'), external: false, state }
     }
 
     // 2) 다른 시설의 기록인지
@@ -104,7 +107,7 @@ function ArchiveView({ records, external, readIds, onRead }) {
     }
 
     // 3) 어디에도 없는 ID (데이터 오타 등)
-    return { id, title: 'UNKNOWN RECORD', facility: 'UNKNOWN', external: true }
+    return { id, title: t('archive.unknown'), facility: 'UNKNOWN', external: true }
   }
 
   const grantedRecord = records.find((record) => record.id === grantedId)
@@ -112,8 +115,8 @@ function ArchiveView({ records, external, readIds, onRead }) {
   return (
     <div className="arc">
       {/* ── 왼쪽: 분류 탭 + 해금 알림 + 기록 목록 ── */}
-      <section className="arc-index" aria-label="RECORD INDEX">
-        <div className="arc-tabs" role="group" aria-label="분류 필터">
+      <section className="arc-index" aria-label={t('archive.index')}>
+        <div className="arc-tabs" role="group" aria-label={t('archive.filter')}>
           {['ALL', ...categories].map((category) => (
             <button
               key={category}
@@ -122,7 +125,7 @@ function ArchiveView({ records, external, readIds, onRead }) {
               aria-pressed={category === filter}
               onClick={() => setFilter(category)}
             >
-              {category}
+              {t(`archive.cat.${category}`)}
             </button>
           ))}
         </div>
@@ -131,7 +134,7 @@ function ArchiveView({ records, external, readIds, onRead }) {
         <div role="status">
           {grantedRecord && (
             <button type="button" className="arc-granted" onClick={() => selectRecord(grantedRecord.id)}>
-              ACCESS GRANTED — {grantedRecord.id} {grantedRecord.title} →
+              {t('archive.granted', { id: grantedRecord.id, title: grantedRecord.title })}
             </button>
           )}
         </div>
@@ -157,12 +160,14 @@ function ArchiveView({ records, external, readIds, onRead }) {
                 >
                   <span className="arc-item-top">
                     <span>{record.id}</span>
-                    <span className={`arc-status arc-status--${status.toLowerCase()}`}>{status}</span>
+                    <span className={`arc-status arc-status--${status.toLowerCase()}`}>
+                      {t(`archive.status.${status}`)}
+                    </span>
                   </span>
-                  <span className="arc-item-title">{isCorrupted ? 'DATA LOST' : record.title}</span>
+                  <span className="arc-item-title">{isCorrupted ? t('archive.dataLost') : record.title}</span>
                   {!isCorrupted && (
                     <span className="arc-item-meta">
-                      {record.category} · {record.date}
+                      {t(`archive.cat.${record.category}`)} · {record.date}
                     </span>
                   )}
                 </button>

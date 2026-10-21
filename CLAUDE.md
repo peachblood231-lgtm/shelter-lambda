@@ -58,7 +58,10 @@
     - `recipes.json`(label은 craft.* 키), `greenhouse-crops.json`은 화면 글자가 없어 그대로
   - L3-B: `signals.json`(무전 기록, transmission이 `{ en: [...], ko: [...] }`), `achievements.json` — 사용자 승인 초안 반영
     - 업적 인물 영어 표기: 베네티 후 = Benetti Hu (임시, 사용자 확인 전)
+  - L4: `archive-records.json`과 아카이브 화면(ArchiveView, RecordDetail, RecordBody, ArchiveProgress, DashboardScreen 헤더)
+    - 기록의 `blocks`는 `{ en: [...], ko: [...] }`, `summary`·`missing`·`unlock.message`·`subtitle`은 `{ en, ko }`
+    - 영어 그대로: 기록 제목, ID, 작성자, 날짜, 패널 제목(ARCHIVE PROGRESS), 시설 이름
+    - 한국어 본문의 표 속 메뉴·품목 이름은 원문대로 영어로 남아 있음
 - 남은 것
   - 보류: `greenhouse-plants.json`(식물 이름 318개, 영어 그대로), 재배 구역 작물 분류(LEAFY GREENS 등, 카드 이름으로 보고 영어 유지)
-  - L4: `archive-records.json`(아카이브 기록, 가장 긴 글)과 아카이브 화면(ArchiveView, RecordDetail, RecordBody, ArchiveProgress)
   - 마지막: 전체 점검 → GitHub push(사용자 결정) → itch.io용 다시 빌드

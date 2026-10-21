@@ -1,10 +1,12 @@
 // 문서 본문을 그리는 컴포넌트입니다.
 // JSON의 blocks 배열을 하나씩 보고, 종류(type)에 맞는 모양으로 그립니다.
 // 이렇게 하면 공지문, 장부, 보고서가 같은 코드로도 서로 다른 형식으로 보입니다.
+import { useT } from '../i18n/strings'
 
 // 글자 안의 손상 구간(▓)을 따로 꾸며 줍니다.
 // 예: "2432.04.28 ▓▓▓▓ 88 kg" → "2432.04.28 [손상] 88 kg"
-function renderText(text) {
+// redactedLabel: 화면 낭독기가 ▓ 대신 읽을 말 (예: "판독 불가")
+function renderRedacted(text, redactedLabel) {
   // ▓가 이어진 부분을 기준으로 글자를 나눕니다. (괄호로 감싸면 나눈 기준도 배열에 남음)
   const parts = text.split(/(▓+)/)
 
@@ -14,7 +16,7 @@ function renderText(text) {
         <span key={index} className="arc-redacted">
           {/* 화면에는 ▓, 화면 낭독기에는 "판독 불가"로 읽힘 */}
           <span aria-hidden="true">{part}</span>
-          <span className="sr-only">판독 불가</span>
+          <span className="sr-only">{redactedLabel}</span>
         </span>
       )
     }
@@ -23,6 +25,10 @@ function renderText(text) {
 }
 
 function RecordBody({ blocks }) {
+  const t = useT()
+  const redacted = t('archive.redacted')
+  const renderText = (text) => renderRedacted(text, redacted)
+
   return (
     <>
       {blocks.map((block, index) => {

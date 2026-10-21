@@ -1,14 +1,18 @@
+import { useT } from '../i18n/strings'
+
 // 아카이브 화면 오른쪽 열의 진행 패널입니다.
 // 받는 값: stats (getArchiveStats로 계산한 개수)
 // 5-3단계에서 "읽은 기록 수", 진행 바, NEXT LEAD가 추가될 예정입니다.
 function ArchiveProgress({ stats }) {
+  const t = useT()
+
   // [이름, 숫자] 짝으로 정리해 두고 반복해서 그립니다.
   const rows = [
-    ['TOTAL RECORDS', stats.total],
-    ['RECOVERED', stats.recovered],
-    ['PARTIAL', stats.partial],
-    ['CORRUPTED', stats.corrupted],
-    ['LOCKED', stats.locked],
+    [t('archive.total'), stats.total],
+    [t('archive.status.RECOVERED'), stats.recovered],
+    [t('archive.status.PARTIAL'), stats.partial],
+    [t('archive.status.CORRUPTED'), stats.corrupted],
+    [t('archive.status.LOCKED'), stats.locked],
   ]
 
   return (

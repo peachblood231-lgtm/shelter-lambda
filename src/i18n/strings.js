@@ -241,6 +241,43 @@ export const STRINGS = {
   'rooms.label': { en: 'Room layout', ko: '방 배치' },
   'rooms.room': { en: 'ROOM {number}', ko: '{number}번 방' },
   'rooms.selected': { en: 'SELECTED', ko: '선택됨' },
+
+  // ── 아카이브 ──
+  'archive.summary': {
+    en: 'ACCESS LEVEL {level} · {total} RECORDS · {locked} LOCKED · {corrupted} CORRUPTED',
+    ko: '접근 등급 {level} · 기록 {total}건 · 잠김 {locked} · 손상 {corrupted}',
+  },
+  'archive.index': { en: 'Record index', ko: '기록 목록' },
+  'archive.filter': { en: 'Category filter', ko: '분류 필터' },
+  'archive.cat.ALL': { en: 'ALL', ko: '전체' },
+  'archive.cat.DISTRIBUTION': { en: 'DISTRIBUTION', ko: '배급' },
+  'archive.cat.INVENTORY': { en: 'INVENTORY', ko: '재고' },
+  'archive.cat.INCIDENT': { en: 'INCIDENT', ko: '사건' },
+  'archive.cat.PERSONAL': { en: 'PERSONAL', ko: '개인' },
+  'archive.status.RECOVERED': { en: 'RECOVERED', ko: '복구됨' },
+  'archive.status.PARTIAL': { en: 'PARTIAL', ko: '일부 손상' },
+  'archive.status.LOCKED': { en: 'LOCKED', ko: '잠김' },
+  'archive.status.CORRUPTED': { en: 'CORRUPTED', ko: '손상됨' },
+  'archive.status.READ': { en: 'READ', ko: '읽음' },
+  'archive.status.UNREAD': { en: 'UNREAD', ko: '읽지 않음' },
+  'archive.granted': { en: 'ACCESS GRANTED — {id} {title} →', ko: '접근 허가 — {id} {title} →' },
+  'archive.dataLost': { en: 'DATA LOST', ko: '데이터 손실' },
+  'archive.unknown': { en: 'UNKNOWN RECORD', ko: '알 수 없는 기록' },
+  'archive.notRecoverable': {
+    en: 'DATA NOT RECOVERABLE — SECTOR CHECKSUM FAILED',
+    ko: '데이터 복구 불가 — 섹터 체크섬 오류',
+  },
+  'archive.verified': { en: 'VERIFIED', ko: '확인 완료' },
+  'archive.notReviewed': { en: 'NOT REVIEWED', ko: '미확인' },
+  'archive.author': { en: 'AUTHOR', ko: '작성자' },
+  'archive.date': { en: 'DATE', ko: '날짜' },
+  'archive.integrity': { en: 'INTEGRITY', ko: '문서 상태' },
+  'archive.missing': { en: 'MISSING DATA', ko: '누락 데이터' },
+  'archive.related': { en: 'RELATED RECORDS', ko: '관련 기록' },
+  'archive.relatedFacility': { en: 'RELATED FACILITY', ko: '관련 시설' },
+  'archive.notAvailable': { en: '{facility} — NOT AVAILABLE ON THIS TERMINAL', ko: '{facility} — 이 터미널에서 열람 불가' },
+  'archive.redacted': { en: 'illegible', ko: '판독 불가' },
+  'archive.total': { en: 'TOTAL RECORDS', ko: '전체 기록' },
 }
 
 // 글자 속 {이름} 자리를 값으로 채우기
