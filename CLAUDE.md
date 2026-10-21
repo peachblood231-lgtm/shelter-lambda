@@ -57,7 +57,7 @@
     - 아이템은 DashboardScreen의 `localizeItems(lang)`에서 지금 언어로 바꿔 각 화면에 넘김
     - `recipes.json`(label은 craft.* 키), `greenhouse-crops.json`은 화면 글자가 없어 그대로
   - L3-B: `signals.json`(무전 기록, transmission이 `{ en: [...], ko: [...] }`), `achievements.json` — 사용자 승인 초안 반영
-    - 업적 인물 영어 표기: 베네티 후 = Benetti Hu (임시, 사용자 확인 전)
+    - 업적 인물 영어 표기: 베네티 후 = Benetti Hu (사용자 확정)
   - L4: `archive-records.json`과 아카이브 화면(ArchiveView, RecordDetail, RecordBody, ArchiveProgress, DashboardScreen 헤더)
     - 기록의 `blocks`는 `{ en: [...], ko: [...] }`, `summary`·`missing`·`unlock.message`·`subtitle`은 `{ en, ko }`
     - 영어 그대로: 기록 제목, ID, 작성자, 날짜, 패널 제목(ARCHIVE PROGRESS), 시설 이름
